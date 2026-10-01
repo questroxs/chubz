@@ -2,10 +2,78 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { WornCap } from "@/components/worn-cap";
 import { ColorPalette } from "@/components/color-palette";
-import { blankById, blankColors, blankSizesFor, blanksFor } from "@/lib/blanks";
+import { blankById, blankColors, blankSizesFor, blanksFor, type Blank } from "@/lib/blanks";
 import { getProduct, money, slugForChub, type Size } from "@/lib/catalog";
 import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
+
+function HatMenu({
+  caps,
+  value,
+  onChange,
+}: {
+  caps: Blank[];
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = caps.find((item) => item.id === value) ?? caps[0];
+  return (
+    <div className="relative mt-4">
+      <span className="text-sm font-semibold uppercase tracking-widest">Embroidery</span>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((current) => !current)}
+        className="mt-2 flex w-full items-center gap-3 border border-line bg-ink p-2 text-left"
+      >
+        <img src={`/caps/${selected.id}.jpg`} alt="" className="h-28 w-24 shrink-0 bg-white object-contain" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-lg font-semibold">{selected.name}</span>
+          <span className="block text-sm text-mute">Front · {money(selected.price)}</span>
+        </span>
+        <span aria-hidden="true" className="px-2 text-lg">
+          {open ? "▴" : "▾"}
+        </span>
+      </button>
+      {open ? (
+        <ul role="listbox" className="absolute z-30 mt-1 max-h-80 w-full overflow-auto border border-line bg-ink">
+          {caps.map((option) => {
+            const active = option.id === selected.id;
+            return (
+              <li key={option.id}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => {
+                    onChange(option.id);
+                    setOpen(false);
+                  }}
+                  className={
+                    active
+                      ? "flex w-full items-center gap-3 bg-panel p-2 text-left"
+                      : "flex w-full items-center gap-3 p-2 text-left"
+                  }
+                >
+                  <img src={`/caps/${option.id}.jpg`} alt="" className="h-16 w-14 shrink-0 bg-white object-contain" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">{option.name}</span>
+                    <span className="block text-sm text-mute">Front · {money(option.price)}</span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+      <p className="mt-2 text-sm text-mute">
+        {selected.note} Hat style only. The sample mark is not your order. You get the chub.
+      </p>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/caps")({
   validateSearch: (search: Record<string, unknown>): { blank?: string } => {
@@ -126,25 +194,15 @@ function CapsPage() {
           </select>
         </label>
 
-        <label className="mt-4 block">
-          <span className="text-sm font-semibold uppercase tracking-widest">Embroidery</span>
-          <select
-            className="mt-2 w-full min-h-11 border border-line bg-ink px-3 text-paper"
-            value={blank.id}
-            onChange={(event) => {
-              setBlankId(event.target.value);
-              setSize(null);
-              setNote("");
-            }}
-          >
-            {caps.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name} · front · {money(option.price)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <p className="mt-2 text-sm text-mute">{blank.note} Embroidered on the front.</p>
+        <HatMenu
+          caps={caps}
+          value={blank.id}
+          onChange={(id) => {
+            setBlankId(id);
+            setSize(null);
+            setNote("");
+          }}
+        />
 
         <div className="mt-8">
           <ColorPalette
