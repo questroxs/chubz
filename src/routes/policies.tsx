@@ -28,7 +28,7 @@ function PoliciesPage() {
         <h2 className="text-2xl font-semibold">Shipping</h2>
         <div className="mt-3 space-y-3 text-mute">
           <p>
-            Tees and hoodies are printed after you order. Ninja POD makes them in about 2–4 business days, then the carrier takes over.
+            Tees and hoodies are printed after you order. Printful makes them in about 2–5 business days, then the carrier takes over.
           </p>
           <p>
             Standard shipping is ${STANDARD_SHIPPING.toFixed(2)} and arrives in 5–10 business days after it leaves the printer. It is free on

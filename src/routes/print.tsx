@@ -15,7 +15,7 @@ import { useShop } from "@/lib/shop-store";
 
 export const Route = createFileRoute("/print")({
   head: () => ({
-    meta: [{ title: "Print yours — Chubz" }, { name: "description", content: "Upload art. Pick a Gildan color and size. Ninja POD prints it." }],
+    meta: [{ title: "Print yours — Chubz" }, { name: "description", content: "Upload art. Pick a Gildan color and size. Printful prints it." }],
   }),
   component: PrintPage,
 });
@@ -90,7 +90,7 @@ function PrintPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-pink">Print yours</p>
         <h1 className="mt-2 text-4xl font-semibold">Put it on a Gildan</h1>
         <p className="mt-3 text-mute">
-          Upload a picture, pick the blank color and a size from S to XXL. Ninja POD prints the file you send.
+          Upload a picture, pick the blank color and a size from S to XXL. Printful prints the file you send.
         </p>
         <div className="mt-6 flex gap-2">
           {(["tee", "hoodie"] as const).map((option) => (
@@ -130,7 +130,7 @@ function PrintPage() {
         >
           {art ? "Change picture" : "Upload a picture"}
         </button>
-        <p className="mt-2 text-sm text-mute">PNG or JPG. It shows on the shirt. Ninja wants 300 DPI, true to {product.printFront}.</p>
+        <p className="mt-2 text-sm text-mute">PNG or JPG. It shows on the shirt. Printful wants 300 DPI, true to {product.printFront}.</p>
         <div className="mt-6">
           <ColorPalette lane={lane} value={colorId} onChange={setColorId} />
         </div>

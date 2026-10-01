@@ -160,7 +160,7 @@ function Home() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow">02</p>
             <h3 className="mt-2 text-xl font-semibold">It prints</h3>
-            <p className="mt-2 text-mute">Ninja POD prints the DTF after Stripe clears the order. Nothing sits on a shelf.</p>
+            <p className="mt-2 text-mute">Printful prints the DTF after Stripe clears the order. Nothing sits on a shelf.</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-volt">03</p>

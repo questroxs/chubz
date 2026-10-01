@@ -56,7 +56,7 @@ function ProductPage() {
 
   const frames = product.looks.filter((look) => look.src);
   const frame = frames[Math.min(shot, Math.max(frames.length - 1, 0))];
-  const worn = product.supplier === "ninja" && !product.custom;
+  const worn = product.supplier === "printful" && !product.custom;
   const color = colorById(colorId);
   const chart = product.lane === "hoodie" ? HOOD_CHART : SIZE_CHART;
   const faces = CHUB_FACES;
@@ -261,7 +261,7 @@ function ProductPage() {
                   ))}
                 </tbody>
               </table>
-              <p className="mt-2 text-sm text-mute">Ninja’s blank also goes to 5XL. We sell S through XXL.</p>
+              <p className="mt-2 text-sm text-mute">Printful’s blank also goes to 5XL. We sell S through XXL.</p>
             </details>
           </>
         )}

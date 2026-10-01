@@ -13,7 +13,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Chubz" },
-      { name: "description", content: "Chubz streetwear. Ninja POD tees and hoodies, S through XXL, plus a wall for city pieces." },
+      { name: "description", content: "Chubz streetwear. Printful tees and hoodies, S through XXL, plus a wall for city pieces." },
       { name: "theme-color", content: "#070708" },
     ],
     links: [

@@ -1,3 +1,5 @@
+import { printfulVariantId } from "@/lib/printful-variants";
+
 export type ColorGroup = "solid" | "heather" | "safety";
 
 export type ShirtColor = {
@@ -5,7 +7,7 @@ export type ShirtColor = {
   name: string;
   hex: string;
   group: ColorGroup;
-  /** On the Gildan Heavy Cotton tee Ninja POD prints (G500). */
+  /** On the Printful Gildan 5000 tee. */
   tee: boolean;
   /** On the Gildan Heavy Blend hoodie blank. */
   hood: boolean;
@@ -87,5 +89,6 @@ export const SHIRT_COLORS: ShirtColor[] = [
 
 export function colorsFor(lane: "tee" | "hoodie" | "bag") {
   if (lane === "bag") return SHIRT_COLORS.filter((color) => color.id === "black");
-  return SHIRT_COLORS.filter((color) => (lane === "hoodie" ? color.hood : color.tee));
+  const kind = lane === "hoodie" ? "hoodie" : "tee";
+  return SHIRT_COLORS.filter((color) => printfulVariantId(kind, color.name, "M") != null);
 }

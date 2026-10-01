@@ -11,13 +11,11 @@ export type Lane = "tee" | "hoodie" | "bag";
 export type Look = { src: string; alt: string };
 
 /**
- * Ninja POD public prices, one DTF location included (ninjaprintondemand.com).
- * Tee: Gildan Heavy Cotton G500 from $7.19. Hoodie: Gildan Heavy Blend from $16.49.
- * Second print location +$2.49. Retail is ~70% gross on that base, before Stripe.
+ * Printful catalog prices, one front print (Gildan 5000 tee, Gildan 18500 hoodie).
+ * Tee from $9.44. Hoodie from $22.63. Retail is the street price on the site.
  */
-export const NINJA_TEE_COST = 7.19;
-export const NINJA_HOOD_COST = 16.49;
-export const NINJA_EXTRA_PRINT = 2.49;
+export const PRINTFUL_TEE_COST = 9.44;
+export const PRINTFUL_HOOD_COST = 22.63;
 export const BACK_PRINT_PRICE = 7;
 
 export const STANDARD_SHIPPING = 7.95;
@@ -38,7 +36,7 @@ export type Product = {
   looks: Look[];
   custom: boolean;
   oneSize: boolean;
-  supplier: "ninja" | "cj";
+  supplier: "printful" | "cj";
   blank: string;
   printFront: string;
   printBack: string;
@@ -62,17 +60,17 @@ export const HOOD_CHART: Record<ApparelSize, { chest: string; length: string }> 
 };
 
 const teeDetails = [
-  "Gildan Heavy Cotton, 5.3 oz, DTF through Ninja POD. Sizes S–XXL (blank goes to 5XL).",
+  "Gildan 5000 Heavy Cotton, DTF through Printful. Sizes S–XXL.",
   "Front print up to 11\" × 16\". Same print size on every size.",
   "Art: PNG, 300 DPI, true to size. One print location is in the price. Back is +$7.",
-  "Ninja makes it in about 2–4 business days, then ships.",
+  "Printful makes it in about 2–5 business days, then ships.",
 ];
 
 const hoodDetails = [
-  "Gildan Heavy Blend pullover, DTF through Ninja POD. Sizes S–XXL.",
+  "Gildan 18500 Heavy Blend pullover, DTF through Printful. Sizes S–XXL.",
   "Front print up to 11\" wide × 9\" tall, stopping at the pocket. Back up to 11\" × 16\".",
   "Art: PNG, 300 DPI. One print location is in the price. Back is +$7.",
-  "Ninja makes it in about 2–4 business days, then ships.",
+  "Printful makes it in about 2–5 business days, then ships.",
 ];
 
 export const products: Product[] = [
@@ -81,7 +79,7 @@ export const products: Product[] = [
     name: "Mean Orange",
     lane: "tee",
     price: 26,
-    cost: NINJA_TEE_COST,
+    cost: PRINTFUL_TEE_COST,
     tag: "X eyes",
     blurb: "The grin with the stitches. Pick the chub color and the shirt.",
     details: teeDetails,
@@ -93,8 +91,8 @@ export const products: Product[] = [
     ],
     custom: false,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Cotton G500",
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
     printFront: '11" × 16"',
     printBack: '11" × 16"',
   },
@@ -103,7 +101,7 @@ export const products: Product[] = [
     name: "Blue Mood",
     lane: "tee",
     price: 26,
-    cost: NINJA_TEE_COST,
+    cost: PRINTFUL_TEE_COST,
     tag: "Drip face",
     blurb: "Droopy eyes, paint still running. Recolor it, or leave it blue.",
     details: teeDetails,
@@ -115,8 +113,8 @@ export const products: Product[] = [
     ],
     custom: false,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Cotton G500",
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
     printFront: '11" × 16"',
     printBack: '11" × 16"',
   },
@@ -125,7 +123,7 @@ export const products: Product[] = [
     name: "Round Green",
     lane: "tee",
     price: 26,
-    cost: NINJA_TEE_COST,
+    cost: PRINTFUL_TEE_COST,
     tag: "Round eyes",
     blurb: "The round-eyed chub, left green. Recolor it, or leave it.",
     details: teeDetails,
@@ -134,8 +132,8 @@ export const products: Product[] = [
     looks: [{ src: "/looks/mean-green.jpg", alt: "Model in a tee with the green chub" }],
     custom: false,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Cotton G500",
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
     printFront: '11" × 16"',
     printBack: '11" × 16"',
   },
@@ -144,7 +142,7 @@ export const products: Product[] = [
     name: "Mean Orange Hood",
     lane: "hoodie",
     price: 58,
-    cost: NINJA_HOOD_COST,
+    cost: PRINTFUL_HOOD_COST,
     tag: "X eyes",
     blurb: "Same mean chub on a pullover. Color the chub, then the hoodie.",
     details: hoodDetails,
@@ -153,8 +151,8 @@ export const products: Product[] = [
     looks: [{ src: "/looks/orange-hoodie.jpg", alt: "Model in a black hoodie with the orange chub, rooftop" }],
     custom: false,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Blend hoodie",
+    supplier: "printful",
+    blank: "Gildan 18500 · Printful",
     printFront: '11" × 9"',
     printBack: '11" × 16"',
   },
@@ -163,7 +161,7 @@ export const products: Product[] = [
     name: "Blue Mood Hood",
     lane: "hoodie",
     price: 58,
-    cost: NINJA_HOOD_COST,
+    cost: PRINTFUL_HOOD_COST,
     tag: "Drip face",
     blurb: "The sad-eyed chub on a hoodie. Same color picker as the tee.",
     details: hoodDetails,
@@ -172,8 +170,8 @@ export const products: Product[] = [
     looks: [{ src: "/looks/blue-hoodie.jpg", alt: "Model in a black hoodie with the blue chub, night court" }],
     custom: false,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Blend hoodie",
+    supplier: "printful",
+    blank: "Gildan 18500 · Printful",
     printFront: '11" × 9"',
     printBack: '11" × 16"',
   },
@@ -182,7 +180,7 @@ export const products: Product[] = [
     name: "Round Green Hood",
     lane: "hoodie",
     price: 58,
-    cost: NINJA_HOOD_COST,
+    cost: PRINTFUL_HOOD_COST,
     tag: "Round eyes",
     blurb: "The round-eyed chub on a pullover. Color the chub, then the hoodie.",
     details: hoodDetails,
@@ -191,8 +189,8 @@ export const products: Product[] = [
     looks: [{ src: "/looks/mean-green.jpg", alt: "Model wearing the green chub" }],
     custom: false,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Blend hoodie",
+    supplier: "printful",
+    blank: "Gildan 18500 · Printful",
     printFront: '11" × 9"',
     printBack: '11" × 16"',
   },
@@ -204,7 +202,7 @@ export const customProducts: Product[] = [
     name: "Your art · Tee",
     lane: "tee",
     price: 24,
-    cost: NINJA_TEE_COST,
+    cost: PRINTFUL_TEE_COST,
     tag: "Upload",
     blurb: "Your file, their size, a Gildan color. Printed when the order lands.",
     details: teeDetails,
@@ -213,8 +211,8 @@ export const customProducts: Product[] = [
     looks: [{ src: "/looks/orange-tee-a.jpg", alt: "Black tee, custom print goes on the chest" }],
     custom: true,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Cotton G500",
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
     printFront: '11" × 16"',
     printBack: '11" × 16"',
   },
@@ -223,7 +221,7 @@ export const customProducts: Product[] = [
     name: "Your art · Hoodie",
     lane: "hoodie",
     price: 54,
-    cost: NINJA_HOOD_COST,
+    cost: PRINTFUL_HOOD_COST,
     tag: "Upload",
     blurb: "Same upload, heavier blank. Front print stops at the pocket.",
     details: hoodDetails,
@@ -232,8 +230,8 @@ export const customProducts: Product[] = [
     looks: [{ src: "/looks/blue-hoodie.jpg", alt: "Black hoodie, custom print goes on the chest" }],
     custom: true,
     oneSize: false,
-    supplier: "ninja",
-    blank: "Gildan Heavy Blend hoodie",
+    supplier: "printful",
+    blank: "Gildan 18500 · Printful",
     printFront: '11" × 9"',
     printBack: '11" × 16"',
   },

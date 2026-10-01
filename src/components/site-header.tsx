@@ -17,8 +17,8 @@ export function SiteHeader() {
           {Array.from({ length: 2 }).map((_, copy) => (
             <p key={copy} className="flex shrink-0 gap-8 px-4 py-2 text-sm font-semibold uppercase tracking-widest">
               <span>Straight off the wall, onto your back</span>
-              <span aria-hidden="true">chubz.com</span>
-              <span aria-hidden="true">Ninja POD · DTF</span>
+              <span aria-hidden="true">mrchubz.com</span>
+              <span aria-hidden="true">Printful · DTF</span>
               <span aria-hidden="true">S · M · L · XL · XXL</span>
               <span aria-hidden="true">Your art or the chub</span>
               <span aria-hidden="true">Free ship over $90</span>

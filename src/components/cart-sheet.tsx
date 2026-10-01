@@ -130,7 +130,7 @@ export function CartSheet() {
             <p className="mt-3 text-xs text-mute">Standard shipping is free on this cart.</p>
           ) : null}
           <p className="mt-2 text-xs text-mute">
-            Pick Standard or Expedited on Stripe. You see tax before you pay. Print jobs queue for Ninja POD. Bags and markers queue for CJdropshipping.
+            Pick Standard or Expedited on Stripe. You see tax before you pay. Shirts queue for Printful. Bags queue for CJdropshipping.
           </p>
           {error ? (
             <p className="mt-3 text-pink" role="alert">

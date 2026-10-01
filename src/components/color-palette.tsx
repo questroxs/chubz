@@ -20,10 +20,10 @@ export function ColorPalette({
   return (
     <fieldset>
       <legend className="text-sm font-semibold uppercase tracking-widest">
-        Color · {colors.length} on this Ninja POD blank
+        Color · {colors.length} on this Printful blank
       </legend>
       <p className="mt-1 text-sm text-mute">
-        Same Gildan names Ninja POD prints. {selected?.name}.
+        Same Gildan names Printful prints. {selected?.name}.
       </p>
       <div className="mt-3 flex flex-col gap-3">
         {groups.map((group) => {

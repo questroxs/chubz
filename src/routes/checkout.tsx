@@ -57,7 +57,7 @@ function CheckoutPage() {
     <main className="mx-auto max-w-xl px-4 py-10">
       <h1 className="text-4xl font-semibold">Checkout</h1>
       <p className="mt-3 text-mute">
-        Stripe takes the card, the ship-to, and tax — same shape as Happy Bowl. Ninja POD prints after the payment.
+        Stripe takes the card, the ship-to, and tax. Printful prints the shirt after the payment.
         Standard shipping is {money(STANDARD_SHIPPING)}, free over {money(FREE_SHIP_AT)}.
       </p>
       {!hydrated ? <p className="mt-6 text-mute">Loading the cart…</p> : null}

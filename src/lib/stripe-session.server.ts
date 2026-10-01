@@ -86,7 +86,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
         tax_behavior: "exclusive",
         product_data: {
           name,
-          description: `${product.blank}. Ninja POD DTF. Job ${jobIds[index]}.`,
+          description: `${product.blank}. Printful DTF. Job ${jobIds[index]}.`,
           images: withImages && product.looks[0]?.src ? [`${origin}${product.looks[0].src}`] : undefined,
           metadata: { slug: product.slug, job: jobIds[index], size: line.size, color: color.name },
         },
@@ -110,7 +110,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
       enabled: true,
       invoice_data: {
         description: `Chubz — ${items.length} print ${items.length === 1 ? "job" : "jobs"}`,
-        footer: "Printed by Ninja POD after this payment. Questions stay with Chubz.",
+        footer: "Printed by Printful after this payment. Questions stay with Chubz.",
       },
     },
     payment_intent_data: {
@@ -119,7 +119,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
     },
     custom_text: {
       shipping_address: {
-        message: "US only. Ninja POD prints in about 2–4 business days, then the carrier has it. Standard shipping is $7.95, free at $90.",
+        message: "US only. Printful prints in about 2–5 business days, then the carrier has it. Standard shipping is $7.95, free at $90.",
       },
       submit: { message: "Gear (caps, cans, markers) is not in this charge." },
     },
@@ -159,11 +159,5 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
     if (!imageBlocked && !taxBlocked) break;
   }
   if (!session.url) throw new Error(session.error?.message || "Stripe did not return a checkout URL.");
-  try {
-    const { pushNinjaOrder } = await import("@/lib/ninja.server");
-    await pushNinjaOrder(lines, jobIds);
-  } catch {
-    // Stripe already has the payment link. A Ninja miss must not block checkout.
-  }
   return { url: session.url, livemode: Boolean(session.livemode) };
 }
