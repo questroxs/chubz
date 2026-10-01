@@ -105,7 +105,11 @@ export function WornLook({
             context.putImageData(photo, 0, 0);
           }
         }
-        const print = recolorChub(chub, color);
+        const native =
+          (face === "mean" && ink === "orange") ||
+          (face === "blue" && ink === "blue") ||
+          (face === "green" && ink === "green");
+        const print = native ? chub : recolorChub(chub, color);
         const printWidth = Math.round(width * 0.3);
         const printHeight = Math.round((printWidth * print.height) / print.width);
         const top = Math.round(height * 0.5 - printHeight / 2);
