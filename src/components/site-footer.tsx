@@ -36,8 +36,8 @@ export function SiteFooter() {
             </a>
           </p>
           <p className="mt-3">
-            <a className="hover:text-pink" href="https://chubz-tau.vercel.app">
-              chubz-tau.vercel.app
+            <a className="hover:text-pink" href="https://mrchubz.com">
+              mrchubz.com
             </a>
           </p>
         </div>
