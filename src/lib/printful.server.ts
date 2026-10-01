@@ -63,7 +63,9 @@ export async function pushPrintfulDraft(jobs: PrintJobRow[], recipient: Printful
     const blank = blankById(job.blank_id);
     const variantId = blank
       ? blankVariantId(blank.id, job.color_name, job.size)
-      : printfulVariantId(product.lane, job.color_name, job.size);
+      : product.lane === "cap"
+        ? null
+        : printfulVariantId(product.lane, job.color_name, job.size);
     const url = fileUrl(job);
     if (!variantId || !url) continue;
     const files: Array<{ type: string; url: string }> = [{ type: blank?.file ?? "front", url }];

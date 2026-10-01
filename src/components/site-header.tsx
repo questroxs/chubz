@@ -34,6 +34,9 @@ export function SiteHeader() {
           <Link to="/shop" search={{ lane: "all" }} className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
             Shop
           </Link>
+          <Link to="/shop" search={{ lane: "cap" }} className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
+            Caps
+          </Link>
           <Link to="/print" className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
             Print yours
           </Link>
@@ -70,6 +73,9 @@ export function SiteHeader() {
         <nav className="flex flex-col border-t border-line px-4 py-2 md:hidden" aria-label="Mobile">
           <Link to="/shop" search={{ lane: "all" }} className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
             Shop
+          </Link>
+          <Link to="/shop" search={{ lane: "cap" }} className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
+            Caps
           </Link>
           <Link to="/print" className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
             Print yours

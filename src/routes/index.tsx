@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CapRack } from "@/components/cap-rack";
 import { ColorPalette } from "@/components/color-palette";
 import { ProductCard } from "@/components/product-card";
 import { WornLook } from "@/components/worn-look";
@@ -47,6 +48,13 @@ function Home() {
               className="inline-flex min-h-11 items-center bg-pink px-5 font-semibold uppercase tracking-widest text-pink-ink"
             >
               Shop the drop
+            </Link>
+            <Link
+              to="/shop"
+              search={{ lane: "cap" }}
+              className="inline-flex min-h-11 items-center bg-yellow px-5 font-semibold uppercase tracking-widest text-yellow-ink"
+            >
+              Embroidered caps
             </Link>
             <Link
               to="/print"
@@ -121,7 +129,21 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-6">
+      <section className="mx-auto max-w-6xl px-4 pb-4 pt-14">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-pink">Printful</p>
+            <h2 className="mt-2 text-2xl font-semibold">Embroidered caps</h2>
+            <p className="mt-2 max-w-lg text-mute">Dad hats, truckers, snapbacks. The chub is stitched on the front. Unisex.</p>
+          </div>
+          <Link to="/shop" search={{ lane: "cap" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
+            All caps
+          </Link>
+        </div>
+        <CapRack />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-6 pt-14">
         <div className="mb-5 flex items-end justify-between gap-4">
           <h2 className="text-2xl font-semibold">On the rack</h2>
           <Link to="/shop" search={{ lane: "all" }} className="text-sm font-semibold uppercase tracking-widest text-volt">

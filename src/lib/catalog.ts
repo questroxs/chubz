@@ -7,7 +7,7 @@ export type { ShirtColor };
 export const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 export type ApparelSize = (typeof SIZES)[number];
 export type Size = ApparelSize | "OS" | "XS" | "S/M" | "L/XL";
-export type Lane = "tee" | "hoodie" | "bag";
+export type Lane = "tee" | "hoodie" | "bag" | "cap";
 
 export type Look = { src: string; alt: string };
 
@@ -264,13 +264,79 @@ function bag(slug: string, name: string, price: number, cost: number, tag: strin
   };
 }
 
+const capDetails = [
+  "Embroidered on the front through Printful. The chub is stitched, not printed.",
+  "Unisex. Most caps are one size. The structured Flexfit is S/M and L/XL.",
+  "Printful makes it in about 2–5 business days, then ships.",
+];
+
+export const capProducts: Product[] = [
+  {
+    slug: "mean-orange-cap",
+    name: "Mean Orange Cap",
+    lane: "cap",
+    price: 32,
+    cost: 14.94,
+    tag: "X eyes",
+    blurb: "The X-eyed chub, embroidered on the front of the cap.",
+    details: capDetails,
+    art: "/art/chub-orange.png",
+    artAlt: "Orange chub with X eyes and a stitch scar",
+    looks: [{ src: "/art/chub-orange.png", alt: "Orange chub embroidered on a cap" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Printful embroidered cap",
+    printFront: "Embroidery",
+    printBack: "—",
+  },
+  {
+    slug: "blue-mood-cap",
+    name: "Blue Mood Cap",
+    lane: "cap",
+    price: 32,
+    cost: 14.94,
+    tag: "Drip face",
+    blurb: "The slanted-eye chub, embroidered on the front of the cap.",
+    details: capDetails,
+    art: "/art/chub-blue.png",
+    artAlt: "Blue chub with droopy eyes and a paint drip",
+    looks: [{ src: "/art/chub-blue.png", alt: "Blue chub embroidered on a cap" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Printful embroidered cap",
+    printFront: "Embroidery",
+    printBack: "—",
+  },
+  {
+    slug: "round-green-cap",
+    name: "Round Green Cap",
+    lane: "cap",
+    price: 32,
+    cost: 14.94,
+    tag: "Round eyes",
+    blurb: "The round-eyed chub, embroidered on the front of the cap.",
+    details: capDetails,
+    art: "/art/chub-green.png",
+    artAlt: "Green chub with round eyes",
+    looks: [{ src: "/art/chub-green.png", alt: "Green chub embroidered on a cap" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Printful embroidered cap",
+    printFront: "Embroidery",
+    printBack: "—",
+  },
+];
+
 export function getProduct(slug: string) {
-  return [...products, ...customProducts, ...bagProducts].find((product) => product.slug === slug);
+  return [...products, ...customProducts, ...capProducts, ...bagProducts].find((product) => product.slug === slug);
 }
 
-/** The tee or hoodie that carries this face. Checkout uses the slug, so the green chub must not stay on Mean Orange. */
-export function slugForChub(lane: "tee" | "hoodie", face: "mean" | "blue" | "green") {
-  const piece = lane === "hoodie" ? "hood" : "tee";
+/** Checkout uses the slug, so the green chub must not stay on Mean Orange. */
+export function slugForChub(lane: "tee" | "hoodie" | "cap", face: "mean" | "blue" | "green") {
+  const piece = lane === "hoodie" ? "hood" : lane === "cap" ? "cap" : "tee";
   if (face === "blue") return `blue-mood-${piece}`;
   if (face === "green") return `round-green-${piece}`;
   return `mean-orange-${piece}`;
@@ -295,6 +361,7 @@ export function unitPrice(slug: string, backPrint: boolean, blankId?: string) {
 export function laneLabel(lane: Lane) {
   if (lane === "tee") return "Tee";
   if (lane === "hoodie") return "Hoodie";
+  if (lane === "cap") return "Cap";
   return "Bag";
 }
 

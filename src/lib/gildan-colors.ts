@@ -87,7 +87,7 @@ export const SHIRT_COLORS: ShirtColor[] = [
   { id: "neon-green", name: "Neon Green", hex: "#39ff14", group: "safety", tee: true, hood: false },
 ];
 
-export function colorsFor(lane: "tee" | "hoodie" | "bag") {
+export function colorsFor(lane: "tee" | "hoodie" | "bag" | "cap") {
   if (lane === "bag") return SHIRT_COLORS.filter((color) => color.id === "black");
   const kind = lane === "hoodie" ? "hoodie" : "tee";
   return SHIRT_COLORS.filter((color) => printfulVariantId(kind, color.name, "M") != null);

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ColorPalette } from "@/components/color-palette";
 import {
   colorById,
@@ -13,11 +13,16 @@ import {
   type Size,
 } from "@/lib/catalog";
 import { WornLook } from "@/components/worn-look";
+import { CapMark, hatShape } from "@/components/cap-mark";
 import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type BlankLane } from "@/lib/blanks";
-import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
+import { CHUB_FACES, CHUB_INKS, faceSrc, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
 
 export const Route = createFileRoute("/product/$slug")({
+  validateSearch: (search: Record<string, unknown>): { blank?: string } => {
+    const blank = typeof search.blank === "string" ? search.blank : "";
+    return blankById(blank) ? { blank } : {};
+  },
   head: ({ params }) => {
     const product = getProduct(params.slug);
     return {
@@ -29,7 +34,9 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { slug } = Route.useParams();
+  const { blank: requestedBlank } = Route.useSearch();
   const product = getProduct(slug);
+  const requested = blankById(requestedBlank);
   const add = useShop((state) => state.add);
   const fromHome = useShop((state) => state.chubFromHome);
   const storedFace = useShop((state) => state.chubFace);
@@ -43,10 +50,31 @@ function ProductPage() {
   const [shot, setShot] = useState(0);
   const [note, setNote] = useState("");
   const openingFace: ChubFace = slug.includes("blue") ? "blue" : slug.includes("green") ? "green" : "mean";
-  const [face, setFace] = useState<ChubFace>(fromHome ? storedFace : openingFace);
-  const [ink, setInk] = useState(fromHome ? storedInk : openingFace === "blue" ? "blue" : openingFace === "green" ? "green" : "orange");
-  const [wear, setWear] = useState<BlankLane>(product?.lane === "hoodie" ? "hoodie" : "tee");
-  const [blankId, setBlankId] = useState(defaultBlankId(product?.lane === "hoodie" ? "hoodie" : "tee"));
+  const openingWear: BlankLane =
+    requested?.lane ?? (product?.lane === "hoodie" ? "hoodie" : product?.lane === "cap" ? "cap" : "tee");
+  const keepFace = fromHome && !requested;
+  const [face, setFace] = useState<ChubFace>(keepFace ? storedFace : openingFace);
+  const [ink, setInk] = useState(keepFace ? storedInk : openingFace === "blue" ? "blue" : openingFace === "green" ? "green" : "orange");
+  const [wear, setWear] = useState<BlankLane>(openingWear);
+  const [blankId, setBlankId] = useState(requested?.id ?? defaultBlankId(openingWear));
+  const [mark, setMark] = useState(faceSrc(keepFace ? storedFace : openingFace));
+
+  useEffect(() => {
+    if (!requested) return;
+    setWear(requested.lane);
+    setBlankId(requested.id);
+    setSize(null);
+  }, [requested]);
+
+  useEffect(() => {
+    let cancel = false;
+    void renderChub(face, ink).then((url) => {
+      if (!cancel) setMark(url);
+    });
+    return () => {
+      cancel = true;
+    };
+  }, [face, ink]);
 
   if (!product) {
     return (
@@ -89,8 +117,8 @@ function ProductPage() {
       return;
     }
     const finish = (art?: string) => {
-      const sellingLane = wear === "hoodie" ? "hoodie" : "tee";
-      const selling = !product.custom && (product.lane === "tee" || product.lane === "hoodie")
+      const sellingLane = wear === "hoodie" ? "hoodie" : wear === "cap" ? "cap" : "tee";
+      const selling = !product.custom && (product.lane === "tee" || product.lane === "hoodie" || product.lane === "cap")
         ? getProduct(slugForChub(sellingLane, face)) ?? product
         : product;
       add({
@@ -123,7 +151,15 @@ function ProductPage() {
   return (
     <main className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
       <div>
-        {worn ? (
+        {worn && wear === "cap" ? (
+          <CapMark
+            src={mark}
+            alt={`${blank.name} with the ${inkById(ink).name} chub embroidered on the front`}
+            hex={color?.hex ?? "#181717"}
+            shape={hatShape(blank.id)}
+            className="relative aspect-[3/4] w-full overflow-hidden border border-line bg-[#2c2a28]"
+          />
+        ) : worn ? (
           <WornLook
             face={face}
             ink={ink}
@@ -161,7 +197,7 @@ function ProductPage() {
           {laneLabel(product.lane)} · {product.tag}
           {product.oneSize ? " · one size" : ` · ${color?.name ?? "Black"}`}
         </p>
-        <h1 className="mt-2 text-4xl font-semibold">{product.name}</h1>
+        <h1 className="mt-2 text-4xl font-semibold">{wear === "cap" ? blank.name : product.name}</h1>
         <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(product.custom || product.oneSize ? product.price : blank.price)}</p>
         <p className="mt-4 text-lg">{product.blurb}</p>
         <ul className="mt-4 space-y-2 text-mute">
@@ -221,7 +257,7 @@ function ProductPage() {
                 ))}
               </div>
               <p className="mt-2 text-sm text-mute">
-                {inkById(ink).name} print. Shirt stays {color?.name ?? "black"} until you change it below.
+                {inkById(ink).name} print. {wear === "cap" ? "Cap" : "Shirt"} stays {color?.name ?? "black"} until you change it below.
               </p>
             </fieldset>
           </div>
@@ -248,24 +284,52 @@ function ProductPage() {
                 </button>
               ))}
             </div>
-            <label className="mt-4 block">
-              <span className="text-sm font-semibold uppercase tracking-widest">Blank</span>
-              <select
-                className="mt-2 w-full min-h-11 border border-line bg-ink px-3 text-paper"
-                value={blank.id}
-                onChange={(event) => {
-                  setBlankId(event.target.value);
-                  setSize(null);
-                  setNote("");
-                }}
-              >
-                {blanksFor(wear).map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name} · {money(option.price)}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {wear === "cap" ? (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {blanksFor("cap").map((option) => {
+                  const active = option.id === blank.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => {
+                        setBlankId(option.id);
+                        setSize(null);
+                        setNote("");
+                      }}
+                      className={
+                        active
+                          ? "min-h-16 border-2 border-pink bg-panel px-3 py-2 text-left"
+                          : "min-h-16 border border-line bg-panel px-3 py-2 text-left"
+                      }
+                    >
+                      <span className="block font-semibold">{option.name}</span>
+                      <span className="text-sm text-yellow">{money(option.price)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <label className="mt-4 block">
+                <span className="text-sm font-semibold uppercase tracking-widest">Blank</span>
+                <select
+                  className="mt-2 w-full min-h-11 border border-line bg-ink px-3 text-paper"
+                  value={blank.id}
+                  onChange={(event) => {
+                    setBlankId(event.target.value);
+                    setSize(null);
+                    setNote("");
+                  }}
+                >
+                  {blanksFor(wear).map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name} · {money(option.price)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <p className="mt-2 text-sm text-mute">{blank.note} {blank.lane === "cap" ? "Embroidered on the front." : "Printed on the front."}</p>
           </div>
         )}
