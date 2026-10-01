@@ -110,7 +110,7 @@ export function WornLook({
         const print = native ? chub : recolorChub(chub, color);
         const printWidth = Math.round(width * 0.42);
         const printHeight = Math.round((printWidth * print.height) / print.width);
-        const centerX = width * 0.52;
+        const centerX = width * 0.49;
         const centerY = height * 0.59;
         context.drawImage(
           print,
