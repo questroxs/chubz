@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CapRack } from "@/components/cap-rack";
 import { ColorPalette } from "@/components/color-palette";
 import { ProductCard } from "@/components/product-card";
 import { WornLook } from "@/components/worn-look";
@@ -50,8 +49,7 @@ function Home() {
               Shop the drop
             </Link>
             <Link
-              to="/shop"
-              search={{ lane: "cap" }}
+              to="/caps"
               className="inline-flex min-h-11 items-center bg-yellow px-5 font-semibold uppercase tracking-widest text-yellow-ink"
             >
               Embroidered caps
@@ -129,21 +127,29 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-4 pt-14">
+      <section className="mx-auto max-w-6xl px-4 pb-6">
         <div className="mb-5 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-pink">Printful</p>
-            <h2 className="mt-2 text-2xl font-semibold">Embroidered caps</h2>
-            <p className="mt-2 max-w-lg text-mute">Dad hats, truckers, snapbacks. The chub is stitched on the front. Unisex.</p>
+            <h2 className="text-2xl font-semibold">On the models</h2>
+            <p className="mt-2 text-mute">The chub on a person. Tees and hoodies.</p>
           </div>
-          <Link to="/shop" search={{ lane: "cap" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
-            All caps
+          <Link to="/shop" search={{ lane: "all" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
+            The rack
           </Link>
         </div>
-        <CapRack />
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+          <img src="/looks/orange-tee-a.jpg" alt="Model in a black tee with the orange chub" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/blue-tee-a.jpg" alt="Model in a black tee with the blue chub" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/orange-hoodie.jpg" alt="Model in a black hoodie with the orange chub" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/blue-hoodie.jpg" alt="Model in a black hoodie with the blue chub" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/orange-tee-b.jpg" alt="Model in a tee with the orange chub, alley" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/blue-tee-b.jpg" alt="Model in a tee with the blue chub" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/mean-green.jpg" alt="Model wearing the green chub" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/campaign.jpg" alt="Campaign shot of the chub on a model" className="aspect-[3/4] w-full object-cover" />
+        </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-6 pt-14">
+      <section className="mx-auto max-w-6xl px-4 pb-6 pt-10">
         <div className="mb-5 flex items-end justify-between gap-4">
           <h2 className="text-2xl font-semibold">On the rack</h2>
           <Link to="/shop" search={{ lane: "all" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
@@ -177,7 +183,7 @@ function Home() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-pink">01</p>
             <h3 className="mt-2 text-xl font-semibold">Pick a size</h3>
-            <p className="mt-2 text-mute">Tee, hoodie, or embroidered cap. Pick the blank and the price, then the chub color and the garment color.</p>
+            <p className="mt-2 text-mute">Tee or hoodie. Pick the chub color and the shirt color. Caps are on their own page.</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow">02</p>
@@ -198,7 +204,7 @@ function Home() {
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold">House fits</h2>
-            <p className="mt-2 text-mute">Campaign shots. Tag your own on the wall.</p>
+            <p className="mt-2 text-mute">Same models, closer crop. Tag your own on the wall.</p>
           </div>
           <Link to="/wall" className="text-sm font-semibold uppercase tracking-widest text-pink">
             The wall

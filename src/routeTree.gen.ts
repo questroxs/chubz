@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BagRouteImport } from './routes/bag'
+import { Route as CapsRouteImport } from './routes/caps'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as GearRouteImport } from './routes/gear'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const BagRoute = BagRouteImport.update({
   id: '/bag',
   path: '/bag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CapsRoute = CapsRouteImport.update({
+  id: '/caps',
+  path: '/caps',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -80,6 +86,7 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bag': typeof BagRoute
+  '/caps': typeof CapsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gear': typeof GearRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bag': typeof BagRoute
+  '/caps': typeof CapsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gear': typeof GearRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/bag': typeof BagRoute
+  '/caps': typeof CapsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/gear': typeof GearRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/bag'
+    | '/caps'
     | '/cart'
     | '/checkout'
     | '/gear'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/bag'
+    | '/caps'
     | '/cart'
     | '/checkout'
     | '/gear'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/bag'
+    | '/caps'
     | '/cart'
     | '/checkout'
     | '/gear'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BagRoute: typeof BagRoute
+  CapsRoute: typeof CapsRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   GearRoute: typeof GearRoute
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/bag'
       fullPath: '/bag'
       preLoaderRoute: typeof BagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/caps': {
+      id: '/caps'
+      path: '/caps'
+      fullPath: '/caps'
+      preLoaderRoute: typeof CapsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -258,6 +278,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BagRoute: BagRoute,
+  CapsRoute: CapsRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   GearRoute: GearRoute,
