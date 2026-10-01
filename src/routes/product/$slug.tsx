@@ -1,0 +1,296 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { ColorPalette } from "@/components/color-palette";
+import {
+  colorById,
+  getProduct,
+  HOOD_CHART,
+  laneLabel,
+  money,
+  SIZE_CHART,
+  SIZES,
+  type Size,
+} from "@/lib/catalog";
+import { WornLook } from "@/components/worn-look";
+import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
+import { useShop } from "@/lib/shop-store";
+
+export const Route = createFileRoute("/product/$slug")({
+  head: ({ params }) => {
+    const product = getProduct(params.slug);
+    return {
+      meta: [{ title: product ? `${product.name} — Chubz` : "Missing piece — Chubz" }],
+    };
+  },
+  component: ProductPage,
+});
+
+function ProductPage() {
+  const { slug } = Route.useParams();
+  const product = getProduct(slug);
+  const add = useShop((state) => state.add);
+  const fromHome = useShop((state) => state.chubFromHome);
+  const storedFace = useShop((state) => state.chubFace);
+  const storedInk = useShop((state) => state.chubInk);
+  const setChub = useShop((state) => state.setChub);
+  const setShirt = useShop((state) => state.setShirt);
+  const storedShirt = useShop((state) => state.chubShirt);
+  const [size, setSize] = useState<Size | null>(null);
+  const [colorId, setColorId] = useState(storedShirt || "black");
+  const [qty, setQty] = useState(1);
+  const [shot, setShot] = useState(0);
+  const [note, setNote] = useState("");
+  const [face, setFace] = useState<ChubFace>(fromHome ? storedFace : slug.includes("blue") ? "blue" : "mean");
+  const [ink, setInk] = useState(fromHome ? storedInk : slug.includes("blue") ? "blue" : "orange");
+
+  if (!product) {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-16">
+        <h1 className="text-3xl font-semibold">That piece isn’t up.</h1>
+        <Link to="/shop" search={{ lane: "all" }} className="mt-6 inline-flex min-h-11 items-center text-pink">
+          Back to the rack
+        </Link>
+      </main>
+    );
+  }
+
+  const frames = product.looks.filter((look) => look.src);
+  const frame = frames[Math.min(shot, Math.max(frames.length - 1, 0))];
+  const worn = product.supplier === "ninja" && !product.custom;
+  const color = colorById(colorId);
+  const chart = product.lane === "hoodie" ? HOOD_CHART : SIZE_CHART;
+  const faces = CHUB_FACES;
+
+  function addToCart() {
+    if (!product) return;
+    if (product.oneSize) {
+      add({ slug: product.slug, size: "OS", colorId: "black", backPrint: false, qty });
+      setNote(`${product.name} is in the cart.`);
+      return;
+    }
+    if (!size || size === "OS") {
+      setNote("Pick a size first.");
+      return;
+    }
+    const finish = (art?: string) => {
+      add({
+        slug: product.slug,
+        size,
+        colorId,
+        backPrint: false,
+        qty,
+        art,
+        ink: product.custom ? undefined : `${face}-${ink}`,
+      });
+      const inkName = product.custom ? "" : `${inkById(ink).name} chub · `;
+      setNote(`${product.name} · ${inkName}${color?.name ?? colorId} · ${size} is in the cart.`);
+    };
+    if (product.custom) {
+      finish();
+      return;
+    }
+    void renderChub(face, ink).then((rendered) => {
+      const art = rendered.startsWith("data:") ? rendered : undefined;
+      if (art && art.length > 180_000) {
+        setNote("That color is too heavy to send. Pick it again.");
+        return;
+      }
+      finish(art);
+    });
+  }
+
+  return (
+    <main className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
+      <div>
+        {worn ? (
+          <WornLook
+            face={face}
+            ink={ink}
+            shirtHex={color?.hex ?? "#141414"}
+            alt={`Model in a ${color?.name ?? "black"} tee with the ${inkById(ink).name} chub`}
+            className="aspect-[2/3] w-full border border-line bg-panel"
+          />
+        ) : frame ? (
+          <img src={frame.src} alt={frame.alt} className="aspect-[3/4] w-full border border-line object-cover bg-panel" />
+        ) : (
+          <div className="flex aspect-[3/4] flex-col justify-end border border-line bg-panel p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-yellow">{product.tag}</p>
+            <p className="mt-2 text-2xl font-semibold">{product.name}</p>
+            <p className="mt-2 text-mute">Wholesale {money(product.cost)}.</p>
+          </div>
+        )}
+        {worn ? null : (
+          <div className="mt-3 flex gap-2">
+            {frames.map((item, index) => (
+              <button
+                key={item.src + index}
+                type="button"
+                onClick={() => setShot(index)}
+                className={index === shot ? "size-16 overflow-hidden border-2 border-pink" : "size-16 overflow-hidden border border-line"}
+                aria-label={`Show photo ${index + 1}`}
+              >
+                <img src={item.src} alt="" className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-volt">
+          {laneLabel(product.lane)} · {product.tag}
+          {product.oneSize ? " · one size" : ` · ${color?.name ?? "Black"}`}
+        </p>
+        <h1 className="mt-2 text-4xl font-semibold">{product.name}</h1>
+        <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(product.price)}</p>
+        <p className="mt-4 text-lg">{product.blurb}</p>
+        <ul className="mt-4 space-y-2 text-mute">
+          {product.details.map((detail) => (
+            <li key={detail}>{detail}</li>
+          ))}
+        </ul>
+
+        {product.oneSize || product.custom ? null : (
+          <div className="mt-8">
+            <p className="text-sm font-semibold uppercase tracking-widest">Chub</p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {faces.map((option) => {
+                const active = face === option.face;
+                return (
+                  <button
+                    key={option.face}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => {
+                      setFace(option.face);
+                      setInk(option.ink);
+                      setChub(option.face, option.ink);
+                    }}
+                    className={active ? "border-2 border-pink bg-panel p-2" : "border border-line bg-panel p-2"}
+                  >
+                    <img
+                      src={`/art/chub-${option.face === "mean" ? "orange" : option.face}.png`}
+                      alt=""
+                      className="mx-auto h-32 w-full object-contain"
+                    />
+                    <span className="mt-1 block text-xs font-semibold uppercase tracking-widest">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <fieldset className="mt-4">
+              <legend className="text-sm font-semibold uppercase tracking-widest">Chub color</legend>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {CHUB_INKS.map((swatch) => (
+                  <button
+                    key={swatch.id}
+                    type="button"
+                    aria-label={swatch.name}
+                    aria-pressed={ink === swatch.id}
+                    title={swatch.name}
+                    onClick={() => {
+                      setInk(swatch.id);
+                      setChub(face, swatch.id);
+                    }}
+                    className={ink === swatch.id ? "size-11 border-2 border-pink" : "size-11 border border-line"}
+                    style={{ background: swatch.hex }}
+                  />
+                ))}
+              </div>
+              <p className="mt-2 text-sm text-mute">
+                {inkById(ink).name} print. Shirt stays {color?.name ?? "black"} until you change it below.
+              </p>
+            </fieldset>
+          </div>
+        )}
+
+        {product.oneSize ? null : (
+          <>
+            <div className="mt-8">
+              <ColorPalette
+                lane={product.lane}
+                value={colorId}
+                onChange={(id) => {
+                  setColorId(id);
+                  setShirt(id);
+                }}
+              />
+            </div>
+            <fieldset className="mt-6">
+              <legend className="text-sm font-semibold uppercase tracking-widest">Size</legend>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {SIZES.map((option) => {
+                  const active = option === size;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => {
+                        setSize(option);
+                        setNote("");
+                      }}
+                      className={
+                        active
+                          ? "min-h-11 min-w-14 bg-pink px-3 font-bold text-pink-ink"
+                          : "min-h-11 min-w-14 border border-line bg-panel px-3 font-bold text-paper hover:border-paper"
+                      }
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+            <details className="mt-4 border border-line bg-panel px-4 py-3">
+              <summary className="cursor-pointer font-semibold">Size chart · Gildan</summary>
+              <table className="mt-3 w-full text-left text-sm">
+                <thead className="text-mute">
+                  <tr>
+                    <th className="py-2 font-medium">Size</th>
+                    <th className="py-2 font-medium">Chest</th>
+                    <th className="py-2 font-medium">Body</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SIZES.map((option) => (
+                    <tr key={option} className="border-t border-line">
+                      <td className="py-2 font-semibold">{option}</td>
+                      <td className="py-2">{chart[option].chest}</td>
+                      <td className="py-2">{chart[option].length}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="mt-2 text-sm text-mute">Ninja’s blank also goes to 5XL. We sell S through XXL.</p>
+            </details>
+          </>
+        )}
+
+        <div className="mt-6 flex items-center gap-3">
+          <span className="text-sm font-semibold uppercase tracking-widest">Qty</span>
+          <button type="button" className="size-11 border border-line bg-panel text-lg" onClick={() => setQty((value) => Math.max(1, value - 1))} aria-label="Decrease quantity">
+            −
+          </button>
+          <span className="w-6 text-center font-semibold" aria-live="polite">
+            {qty}
+          </span>
+          <button type="button" className="size-11 border border-line bg-panel text-lg" onClick={() => setQty((value) => Math.min(8, value + 1))} aria-label="Increase quantity">
+            +
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={addToCart}
+          className="mt-6 inline-flex min-h-12 w-full items-center justify-center bg-pink px-5 text-lg font-semibold uppercase tracking-widest text-pink-ink sm:w-auto"
+        >
+          {product.oneSize ? "Add to cart" : size ? `Add ${size} to cart` : "Pick a size"}
+        </button>
+        {note ? (
+          <p className="mt-3 text-yellow" role="status">
+            {note}
+          </p>
+        ) : null}
+      </div>
+    </main>
+  );
+}

@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #070708;
+  --color-panel: #141416;
+  --color-panel-2: #1e1e22;
+  --color-line: #2e2e34;
+  --color-paper: #f3efe6;
+  --color-mute: #a39e96;
+  --color-pink: #ff2d78;
+  --color-pink-ink: #2a0614;
+  --color-yellow: #ffe14a;
+  --color-yellow-ink: #1c1603;
+  --color-volt: #4c93ff;
+  --color-volt-ink: #041018;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rubik Spray Paint", "Outfit", system-ui, sans-serif;
+  --radius-sm: 2px;
+  --radius-md: 8px;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-ink);
+    min-height: 100%;
+  }
+
+  ::selection {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pink);
+    outline-offset: 3px;
+  }
+}
+
+@keyframes chubbz-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: chubbz-ticker 36s linear infinite;
+}
+
+.hero-frame {
+  height: 72vh;
+  min-height: 28rem;
+  max-height: 52rem;
+  width: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
