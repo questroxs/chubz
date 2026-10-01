@@ -1,19 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { WornCap } from "@/components/worn-cap";
-import { hatShape } from "@/components/cap-mark";
 import { ColorPalette } from "@/components/color-palette";
 import { blankById, blankColors, blankSizesFor, blanksFor } from "@/lib/blanks";
 import { getProduct, money, slugForChub, type Size } from "@/lib/catalog";
 import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
-
-const SHOTS = [
-  { id: "cap-dad", src: "/looks/cap-dad.jpg", label: "Dad hat" },
-  { id: "cap-trucker", src: "/looks/cap-trucker.jpg", label: "Trucker" },
-  { id: "cap-snap", src: "/looks/cap-snap.jpg", label: "Snapback" },
-  { id: "cap-5", src: "/looks/cap-panel.jpg", label: "5-panel" },
-];
 
 export const Route = createFileRoute("/caps")({
   validateSearch: (search: Record<string, unknown>): { blank?: string } => {
@@ -88,27 +80,6 @@ function CapsPage() {
           className="aspect-[3/4] w-full border border-line bg-panel object-cover"
         />
         <p className="mt-2 text-sm text-mute">Model is in black. The cap you buy is {color?.name ?? "black"}.</p>
-        <div className="mt-3 grid grid-cols-4 gap-2">
-          {SHOTS.map((shot) => {
-            const active = hatShape(blank.id) === hatShape(shot.id);
-            return (
-              <button
-                key={shot.id}
-                type="button"
-                aria-label={shot.label}
-                aria-pressed={active}
-                onClick={() => {
-                  setBlankId(shot.id);
-                  setSize(null);
-                  setNote("");
-                }}
-                className={active ? "overflow-hidden border-2 border-pink" : "overflow-hidden border border-line"}
-              >
-                <img src={shot.src} alt="" className="aspect-[3/4] w-full object-cover" />
-              </button>
-            );
-          })}
-        </div>
       </div>
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-volt">Printful · embroidery front</p>
