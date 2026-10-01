@@ -9,6 +9,7 @@ import {
   money,
   SIZE_CHART,
   SIZES,
+  slugForChub,
   type Size,
 } from "@/lib/catalog";
 import { WornLook } from "@/components/worn-look";
@@ -40,8 +41,9 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const [shot, setShot] = useState(0);
   const [note, setNote] = useState("");
-  const [face, setFace] = useState<ChubFace>(fromHome ? storedFace : slug.includes("blue") ? "blue" : "mean");
-  const [ink, setInk] = useState(fromHome ? storedInk : slug.includes("blue") ? "blue" : "orange");
+  const openingFace: ChubFace = slug.includes("blue") ? "blue" : slug.includes("green") ? "green" : "mean";
+  const [face, setFace] = useState<ChubFace>(fromHome ? storedFace : openingFace);
+  const [ink, setInk] = useState(fromHome ? storedInk : openingFace === "blue" ? "blue" : openingFace === "green" ? "green" : "orange");
 
   if (!product) {
     return (
@@ -73,17 +75,20 @@ function ProductPage() {
       return;
     }
     const finish = (art?: string) => {
+      const selling = !product.custom && (product.lane === "tee" || product.lane === "hoodie")
+        ? getProduct(slugForChub(product.lane, face)) ?? product
+        : product;
       add({
-        slug: product.slug,
+        slug: selling.slug,
         size,
         colorId,
         backPrint: false,
         qty,
         art,
-        ink: product.custom ? undefined : `${face}-${ink}`,
+        ink: product.custom ? undefined : ink,
       });
       const inkName = product.custom ? "" : `${inkById(ink).name} chub · `;
-      setNote(`${product.name} · ${inkName}${color?.name ?? colorId} · ${size} is in the cart.`);
+      setNote(`${selling.name} · ${inkName}${color?.name ?? colorId} · ${size} is in the cart.`);
     };
     if (product.custom) {
       finish();

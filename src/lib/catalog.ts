@@ -267,6 +267,14 @@ export function getProduct(slug: string) {
   return [...products, ...customProducts, ...bagProducts].find((product) => product.slug === slug);
 }
 
+/** The tee or hoodie that carries this face. Checkout uses the slug, so the green chub must not stay on Mean Orange. */
+export function slugForChub(lane: "tee" | "hoodie", face: "mean" | "blue" | "green") {
+  const piece = lane === "hoodie" ? "hood" : "tee";
+  if (face === "blue") return `blue-mood-${piece}`;
+  if (face === "green") return `round-green-${piece}`;
+  return `mean-orange-${piece}`;
+}
+
 export function colorById(id: string) {
   return SHIRT_COLORS.find((color) => color.id === id);
 }

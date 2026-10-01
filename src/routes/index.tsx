@@ -3,7 +3,7 @@ import { ColorPalette } from "@/components/color-palette";
 import { ProductCard } from "@/components/product-card";
 import { WornLook } from "@/components/worn-look";
 import { CHUB_FACES, CHUB_INKS, inkById } from "@/lib/chub-ink";
-import { colorById, FREE_SHIP_AT, products, SIZES } from "@/lib/catalog";
+import { colorById, FREE_SHIP_AT, products, SIZES, slugForChub } from "@/lib/catalog";
 import { useShop } from "@/lib/shop-store";
 
 export const Route = createFileRoute("/")({
@@ -113,7 +113,7 @@ function Home() {
           </div>
           <Link
             to="/product/$slug"
-            params={{ slug: face === "blue" ? "blue-mood-tee" : "mean-orange-tee" }}
+            params={{ slug: slugForChub("tee", face) }}
             className="mt-6 inline-flex min-h-11 items-center bg-pink px-5 font-semibold uppercase tracking-widest text-pink-ink"
           >
             Print this chub
