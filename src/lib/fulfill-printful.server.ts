@@ -1,10 +1,11 @@
 import { getSql } from "@/lib/db";
 import { env } from "@/lib/env.server";
+import { jobsFromMetadata } from "@/lib/order-record";
 import { pushPrintfulDraft, type PrintJobRow, type PrintfulRecipient } from "@/lib/printful.server";
 
 type StripeSession = {
   payment_status?: string;
-  metadata?: { jobs?: string };
+  metadata?: Record<string, string>;
   customer_details?: { email?: string | null; phone?: string | null; name?: string | null };
   shipping_details?: {
     name?: string | null;
@@ -48,12 +49,17 @@ export async function fulfillPaidSessionOnServer(sessionId: string) {
     if (session.payment_status !== "paid") return { pushed: false as const, reason: "unpaid" as const };
     const recipient = recipientFrom(session);
     if (!recipient) return { pushed: false as const, reason: "missing-address" as const };
+    const fromPayment = jobsFromMetadata(session.metadata);
     const ids = (session.metadata?.jobs ?? "").split(",").map((id) => id.trim()).filter(Boolean);
-    if (ids.length === 0) return { pushed: false as const, reason: "no-jobs" as const };
-    const sql = await getSql();
-    const rows = await sql.query<PrintJobRow>(
-      "select id, slug, size, color_name, back_print, quantity, art from print_jobs where id = any($1::text[])",
-      [ids],
-    );
+    let rows = fromPayment;
+    if (rows.length === 0) {
+      if (ids.length === 0) return { pushed: false as const, reason: "no-jobs" as const };
+      const sql = await getSql();
+      rows = await sql.query<PrintJobRow>(
+        "select id, slug, size, color_name, back_print, quantity, art from print_jobs where id = any($1::text[])",
+        [ids],
+      );
+    }
+    if (rows.length === 0) return { pushed: false as const, reason: "no-jobs" as const };
     return pushPrintfulDraft(rows, recipient, sessionId);
 }

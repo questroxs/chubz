@@ -3,6 +3,7 @@ import { colorById, getProduct, money, unitPrice } from "@/lib/catalog";
 import type { CheckoutLine } from "@/lib/checkout";
 import { getSql } from "@/lib/db";
 import { env } from "@/lib/env.server";
+import { encodeJobs, type SavedJob } from "@/lib/order-record";
 import { dollarsToCents, shippingOptions } from "@/lib/shipping";
 import { flattenStripeParams } from "@/lib/stripe-form";
 
@@ -44,16 +45,23 @@ async function postCheckout(payload: Record<string, unknown>): Promise<StripeSes
   return (await response.json()) as StripeSession;
 }
 
-async function saveJobs(lines: CheckoutLine[]) {
+async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
   const sql = await getSql();
-  const ids: string[] = [];
+  const jobs: SavedJob[] = [];
   for (const line of lines) {
     const product = getProduct(line.slug);
     const color = colorById(line.colorId);
     const price = unitPrice(line.slug, line.backPrint);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
     const id = `job_${crypto.randomUUID()}`;
-    ids.push(id);
+    jobs.push({
+      id,
+      slug: line.slug,
+      size: line.size,
+      color: color.name,
+      quantity: line.quantity,
+      back: line.backPrint,
+    });
     await sql`
       insert into print_jobs (id, slug, size, color_name, back_print, quantity, unit_price, art)
       values (
@@ -68,10 +76,10 @@ async function saveJobs(lines: CheckoutLine[]) {
       )
     `;
   }
-  return ids;
+  return jobs;
 }
 
-function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[], withImages: boolean, withTax: boolean) {
+function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[], withImages: boolean, withTax: boolean) {
   const items = lines.map((line, index) => {
     const product = getProduct(line.slug);
     const color = colorById(line.colorId);
@@ -86,9 +94,9 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
         tax_behavior: "exclusive",
         product_data: {
           name,
-          description: `${product.blank}. Printful DTF. Job ${jobIds[index]}.`,
+          description: `${product.blank}. Printful DTF. Job ${jobs[index]?.id ?? ""}.`,
           images: withImages && product.looks[0]?.src ? [`${origin}${product.looks[0].src}`] : undefined,
-          metadata: { slug: product.slug, job: jobIds[index], size: line.size, color: color.name },
+          metadata: { slug: product.slug, job: jobs[index]?.id ?? "", size: line.size, color: color.name },
         },
       },
     };
@@ -115,7 +123,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
     },
     payment_intent_data: {
       description: `Chubz print order ${money(subtotal)}`,
-      metadata: { jobs: jobIds.join(",") },
+      metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs) },
     },
     custom_text: {
       shipping_address: {
@@ -123,7 +131,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
       },
       submit: { message: "Gear (caps, cans, markers) is not in this charge." },
     },
-    metadata: { jobs: jobIds.join(",") },
+    metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs) },
     automatic_tax: withTax ? { enabled: true } : undefined,
     shipping_options: shippingOptions(subtotal).map((option) => ({
       shipping_rate_data: {
@@ -143,7 +151,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobIds: string[]
 
 export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ url: string; livemode: boolean }> {
   const origin = requestOrigin();
-  const jobIds = await saveJobs(lines);
+  const jobs = await saveJobs(lines);
   const attempts: Array<[boolean, boolean]> = [
     [true, true],
     [false, true],
@@ -151,7 +159,7 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
   ];
   let session: StripeSession = {};
   for (const [withImages, withTax] of attempts) {
-    session = await postCheckout(checkoutPayload(lines, origin, jobIds, withImages, withTax));
+    session = await postCheckout(checkoutPayload(lines, origin, jobs, withImages, withTax));
     if (session.url) break;
     const message = session.error?.message?.toLowerCase() ?? "";
     const imageBlocked = message.includes("image") || message.includes("url");
