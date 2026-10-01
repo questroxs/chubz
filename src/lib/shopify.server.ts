@@ -1,9 +1,10 @@
 import { bagProducts, products } from "@/lib/catalog";
 import { env } from "@/lib/env.server";
 
-/** Admin API. Set SHOPIFY_SHOP (your-store.myshopify.com) and SHOPIFY_ADMIN_TOKEN. */
+/** Chubz store. Admin token is SHOPIFY_ADMIN_TOKEN. */
+const SHOP = "8kq1u0-db.myshopify.com";
 export function shopifyConfig() {
-  const shop = env("SHOPIFY_SHOP")?.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const shop = (env("SHOPIFY_SHOP") ?? SHOP).replace(/^https?:\/\//, "").replace(/\/$/, "");
   const token = env("SHOPIFY_ADMIN_TOKEN");
   if (!shop || !token) return null;
   return { shop, token };
