@@ -31,7 +31,7 @@ function ShopPage() {
       <p className="text-xs font-semibold uppercase tracking-widest text-pink">Print on demand</p>
       <h1 className="mt-2 text-4xl font-semibold">The rack</h1>
       <p className="mt-3 max-w-xl text-mute">
-        Six pieces. Pick the chub color and the shirt color. Every size from S to XXL.
+        Unisex tees, hoodies, and embroidered caps. Open a chub, then pick the blank. The price is on each one.
       </p>
       <div className="mt-6 flex flex-wrap gap-2" aria-label="Filter">
         {filters.map((filter) => {

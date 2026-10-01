@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { colorById, FREE_SHIP_AT, getProduct, money, STANDARD_SHIPPING, unitPrice } from "@/lib/catalog";
+import { blankById, colorOnBlank, defaultBlankId } from "@/lib/blanks";
 import { bagCount, useShop } from "@/lib/shop-store";
 
 export const Route = createFileRoute("/cart")({
@@ -17,8 +18,9 @@ function CartPage() {
   const rows = lines
     .map((line) => {
       const product = getProduct(line.slug);
-      const price = unitPrice(line.slug, line.backPrint);
-      const color = colorById(line.colorId);
+      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+      const price = unitPrice(line.slug, line.backPrint, blankId);
+      const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;
       return { ...line, product, price, color };
     })
@@ -53,7 +55,7 @@ function CartPage() {
                     <div>
                       <h2 className="font-semibold">{row.product.name}</h2>
                       <p className="text-sm text-mute">
-                        {row.product.oneSize ? "One size" : `${row.color.name} · size ${row.size}`}
+                        {row.product.oneSize ? "One size" : `${blankById(row.blankId)?.name ? `${blankById(row.blankId)?.name} · ` : ""}${row.color.name} · size ${row.size}`}
                         {row.backPrint ? " · front + back" : ""}
                       </p>
                     </div>

@@ -1,4 +1,5 @@
 import { colorById, colorsFor, getProduct, SIZES, unitPrice, type Size } from "@/lib/catalog";
+import { blankById, blankSizes, blankVariantId, colorOnBlank, defaultBlankId } from "@/lib/blanks";
 
 export type CheckoutLine = {
   slug: string;
@@ -8,6 +9,7 @@ export type CheckoutLine = {
   backPrint: boolean;
   art?: string;
   ink?: string;
+  blankId?: string;
 };
 
 const ART_LIMIT = 180_000;
@@ -32,24 +34,36 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       backPrint?: unknown;
       art?: unknown;
       ink?: unknown;
+      blankId?: unknown;
     };
     const slug = typeof record.slug === "string" ? record.slug.trim() : "";
     const product = getProduct(slug);
     const sizeOk =
-      record.size === "OS" || (typeof record.size === "string" && SIZES.some((option) => option === record.size));
+      record.size === "OS" ||
+      record.size === "XS" ||
+      record.size === "S/M" ||
+      record.size === "L/XL" ||
+      (typeof record.size === "string" && SIZES.some((option) => option === record.size));
     const size = sizeOk ? (record.size as Size) : undefined;
     const colorId = typeof record.colorId === "string" ? record.colorId : "";
-    const color = colorById(colorId);
+    const blankId = typeof record.blankId === "string" && blankById(record.blankId) ? record.blankId : undefined;
+    const resolvedBlank = blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+    const color = (resolvedBlank ? colorOnBlank(resolvedBlank, colorId) : undefined) ?? colorById(colorId);
     const quantity = typeof record.quantity === "number" ? record.quantity : Number(record.quantity);
     const backPrint = record.backPrint === true;
     if (!product || !size || !color || !Number.isFinite(quantity) || quantity < 1) continue;
     if (product.oneSize && size !== "OS") throw new Error("That bag is one size.");
-    if (!product.oneSize && size === "OS") throw new Error("Pick a shirt size.");
-    if (!colorsFor(product.lane).some((swatch) => swatch.id === colorId)) {
+    if (!product.oneSize && size === "OS" && blankById(resolvedBlank)?.lane !== "cap") throw new Error("Pick a shirt size.");
+    if (resolvedBlank && !blankSizes(resolvedBlank).includes(size)) throw new Error("That size isn’t on this blank.");
+    if (resolvedBlank && !colorOnBlank(resolvedBlank, colorId)) throw new Error("That color isn’t on this blank.");
+    if (resolvedBlank && color && blankVariantId(resolvedBlank, color.name, size) == null) {
+      throw new Error("That size isn’t on this color.");
+    }
+    if (!resolvedBlank && !colorsFor(product.lane).some((swatch) => swatch.id === colorId)) {
       throw new Error("That color isn’t on this blank.");
     }
-    if (backPrint && !product.custom) throw new Error("Back prints are on custom pieces only.");
-    if (unitPrice(slug, backPrint) == null) throw new Error("That piece isn’t priced.");
+    if (backPrint && (!product.custom || blankById(resolvedBlank)?.lane === "cap")) throw new Error("Back prints are on custom pieces only.");
+    if (unitPrice(slug, backPrint, resolvedBlank) == null) throw new Error("That piece isn’t priced.");
     let art: string | undefined;
     if (typeof record.art === "string" && record.art.length > 0) {
       if (!record.art.startsWith("data:image/jpeg")) throw new Error("Art has to be a JPEG upload.");
@@ -58,7 +72,7 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
     }
     if (product.custom && !art) throw new Error("Custom pieces need your artwork.");
     const ink =
-      typeof record.ink === "string" && /^[a-z]+-[a-z]+$/.test(record.ink) ? record.ink : undefined;
+      typeof record.ink === "string" && /^[a-z]+(-[a-z]+)?$/.test(record.ink) ? record.ink : undefined;
     lines.push({
       slug,
       quantity: Math.min(8, Math.floor(quantity)),
@@ -67,6 +81,7 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       backPrint,
       art,
       ink,
+      blankId: resolvedBlank,
     });
   }
 

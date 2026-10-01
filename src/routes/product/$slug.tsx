@@ -13,6 +13,7 @@ import {
   type Size,
 } from "@/lib/catalog";
 import { WornLook } from "@/components/worn-look";
+import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type BlankLane } from "@/lib/blanks";
 import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
 
@@ -44,6 +45,8 @@ function ProductPage() {
   const openingFace: ChubFace = slug.includes("blue") ? "blue" : slug.includes("green") ? "green" : "mean";
   const [face, setFace] = useState<ChubFace>(fromHome ? storedFace : openingFace);
   const [ink, setInk] = useState(fromHome ? storedInk : openingFace === "blue" ? "blue" : openingFace === "green" ? "green" : "orange");
+  const [wear, setWear] = useState<BlankLane>(product?.lane === "hoodie" ? "hoodie" : "tee");
+  const [blankId, setBlankId] = useState(defaultBlankId(product?.lane === "hoodie" ? "hoodie" : "tee"));
 
   if (!product) {
     return (
@@ -59,8 +62,11 @@ function ProductPage() {
   const frames = product.looks.filter((look) => look.src);
   const frame = frames[Math.min(shot, Math.max(frames.length - 1, 0))];
   const worn = product.supplier === "printful" && !product.custom;
-  const color = colorById(colorId);
-  const chart = product.lane === "hoodie" ? HOOD_CHART : SIZE_CHART;
+  const blank = blankById(blankId) ?? blanksFor(wear)[0];
+  const swatches = blankColors(blank.id);
+  const color = swatches.find((item) => item.id === colorId) ?? swatches[0] ?? colorById(colorId);
+  const fit = blankSizesFor(blank.id, color?.name ?? "");
+  const chart = wear === "hoodie" ? HOOD_CHART : SIZE_CHART;
   const faces = CHUB_FACES;
 
   function addToCart() {
@@ -71,24 +77,34 @@ function ProductPage() {
       return;
     }
     if (!size || size === "OS") {
-      setNote("Pick a size first.");
+      if (fit.length !== 1) {
+        setNote("Pick a size first.");
+        return;
+      }
+    }
+    const pickedSize = (fit.length === 1 ? fit[0] : size) as Size;
+    const pickedColor = swatches.find((item) => item.id === colorId) ?? swatches[0];
+    if (!pickedSize || !pickedColor || !fit.includes(pickedSize)) {
+      setNote("Pick a color and a size.");
       return;
     }
     const finish = (art?: string) => {
+      const sellingLane = wear === "hoodie" ? "hoodie" : "tee";
       const selling = !product.custom && (product.lane === "tee" || product.lane === "hoodie")
-        ? getProduct(slugForChub(product.lane, face)) ?? product
+        ? getProduct(slugForChub(sellingLane, face)) ?? product
         : product;
       add({
         slug: selling.slug,
-        size,
-        colorId,
+        size: pickedSize,
+        colorId: pickedColor.id,
         backPrint: false,
         qty,
         art,
         ink: product.custom ? undefined : ink,
+        blankId: product.custom ? undefined : blank.id,
       });
       const inkName = product.custom ? "" : `${inkById(ink).name} chub · `;
-      setNote(`${selling.name} · ${inkName}${color?.name ?? colorId} · ${size} is in the cart.`);
+      setNote(`${selling.name} · ${blank.name} · ${inkName}${pickedColor.name} · ${pickedSize} is in the cart.`);
     };
     if (product.custom) {
       finish();
@@ -146,10 +162,13 @@ function ProductPage() {
           {product.oneSize ? " · one size" : ` · ${color?.name ?? "Black"}`}
         </p>
         <h1 className="mt-2 text-4xl font-semibold">{product.name}</h1>
-        <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(product.price)}</p>
+        <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(product.custom || product.oneSize ? product.price : blank.price)}</p>
         <p className="mt-4 text-lg">{product.blurb}</p>
         <ul className="mt-4 space-y-2 text-mute">
-          {product.details.map((detail) => (
+          {(worn
+            ? [`${blank.note} ${blank.lane === "cap" ? "Embroidered on the front." : "Printed on the front."}`, ...product.details.slice(1)]
+            : product.details
+          ).map((detail) => (
             <li key={detail}>{detail}</li>
           ))}
         </ul>
@@ -208,12 +227,56 @@ function ProductPage() {
           </div>
         )}
 
+        {product.oneSize || product.custom ? null : (
+          <div className="mt-6">
+            <p className="text-sm font-semibold uppercase tracking-widest">Wear it on</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(["tee", "hoodie", "cap"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  aria-pressed={wear === option}
+                  onClick={() => {
+                    setWear(option);
+                    setBlankId(defaultBlankId(option));
+                    setSize(null);
+                    setNote("");
+                  }}
+                  className={wear === option ? "min-h-11 bg-pink px-3 font-semibold uppercase tracking-widest text-pink-ink" : "min-h-11 border border-line bg-panel px-3 font-semibold uppercase tracking-widest"}
+                >
+                  {option === "tee" ? "Tee" : option === "hoodie" ? "Hoodie" : "Cap"}
+                </button>
+              ))}
+            </div>
+            <label className="mt-4 block">
+              <span className="text-sm font-semibold uppercase tracking-widest">Blank</span>
+              <select
+                className="mt-2 w-full min-h-11 border border-line bg-ink px-3 text-paper"
+                value={blank.id}
+                onChange={(event) => {
+                  setBlankId(event.target.value);
+                  setSize(null);
+                  setNote("");
+                }}
+              >
+                {blanksFor(wear).map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name} · {money(option.price)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="mt-2 text-sm text-mute">{blank.note} {blank.lane === "cap" ? "Embroidered on the front." : "Printed on the front."}</p>
+          </div>
+        )}
+
         {product.oneSize ? null : (
           <>
             <div className="mt-8">
               <ColorPalette
-                lane={product.lane}
-                value={colorId}
+                lane={wear === "cap" ? "tee" : wear}
+                value={color?.id ?? colorId}
+                colors={swatches.map((swatch) => ({ ...swatch, group: "solid", tee: true, hood: true }))}
                 onChange={(id) => {
                   setColorId(id);
                   setShirt(id);
@@ -223,15 +286,15 @@ function ProductPage() {
             <fieldset className="mt-6">
               <legend className="text-sm font-semibold uppercase tracking-widest">Size</legend>
               <div className="mt-3 flex flex-wrap gap-2">
-                {SIZES.map((option) => {
-                  const active = option === size;
+                {fit.map((option) => {
+                  const active = option === size || (fit.length === 1 && option === fit[0]);
                   return (
                     <button
                       key={option}
                       type="button"
                       aria-pressed={active}
                       onClick={() => {
-                        setSize(option);
+                        setSize(option as Size);
                         setNote("");
                       }}
                       className={
@@ -246,8 +309,9 @@ function ProductPage() {
                 })}
               </div>
             </fieldset>
+            {blank.lane === "cap" ? null : (
             <details className="mt-4 border border-line bg-panel px-4 py-3">
-              <summary className="cursor-pointer font-semibold">Size chart · Gildan</summary>
+              <summary className="cursor-pointer font-semibold">Size chart</summary>
               <table className="mt-3 w-full text-left text-sm">
                 <thead className="text-mute">
                   <tr>
@@ -266,8 +330,9 @@ function ProductPage() {
                   ))}
                 </tbody>
               </table>
-              <p className="mt-2 text-sm text-mute">Printful’s blank also goes to 5XL. We sell S through XXL.</p>
+              <p className="mt-2 text-sm text-mute">House chart for the Gildan blanks. Other blanks fit a little different. XS shows up when that blank has it.</p>
             </details>
+            )}
           </>
         )}
 
@@ -288,7 +353,7 @@ function ProductPage() {
           onClick={addToCart}
           className="mt-6 inline-flex min-h-12 w-full items-center justify-center bg-pink px-5 text-lg font-semibold uppercase tracking-widest text-pink-ink sm:w-auto"
         >
-          {product.oneSize ? "Add to cart" : size ? `Add ${size} to cart` : "Pick a size"}
+          {product.oneSize ? "Add to cart" : fit.length === 1 ? `Add ${fit[0]} to cart` : size && fit.includes(size) ? `Add ${size} to cart` : "Pick a size"}
         </button>
         {note ? (
           <p className="mt-3 text-yellow" role="status">

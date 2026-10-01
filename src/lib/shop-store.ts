@@ -13,6 +13,7 @@ export type BagLine = {
   art?: string;
   /** mean-orange, blue-yellow, and so on. The print file is `art`. */
   ink?: string;
+  blankId?: string;
 };
 
 type ShopState = {
@@ -52,7 +53,7 @@ export const useShop = create<ShopState>()(
           line.id ??
           (line.art && !line.ink
             ? `${line.slug}:${line.size}:${line.colorId}:${Date.now()}`
-            : `${line.slug}:${line.size}:${line.colorId}:${line.ink ?? "house"}:${line.backPrint ? "b" : "f"}`);
+            : `${line.slug}:${line.blankId ?? "house"}:${line.size}:${line.colorId}:${line.ink ?? "house"}:${line.backPrint ? "b" : "f"}`);
         const lines = get().lines.slice();
         const index = lines.findIndex((item) => item.id === id);
         if (index >= 0) {

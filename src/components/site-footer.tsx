@@ -30,7 +30,7 @@ export function SiteFooter() {
         </div>
         <div className="text-sm text-mute">
           <p>
-            Tees and hoodies print on demand through Printful. Gear ships from CJdropshipping. Questions:{" "}
+            Tees, hoodies, and embroidered caps are made to order through Printful. Gear ships from CJdropshipping. Questions:{" "}
             <a className="text-paper underline" href="mailto:questroxs18@gmail.com">
               questroxs18@gmail.com
             </a>

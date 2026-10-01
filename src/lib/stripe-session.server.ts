@@ -1,5 +1,6 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { colorById, getProduct, money, unitPrice } from "@/lib/catalog";
+import { blankById, colorOnBlank } from "@/lib/blanks";
 import type { CheckoutLine } from "@/lib/checkout";
 import { getSql } from "@/lib/db";
 import { env } from "@/lib/env.server";
@@ -49,8 +50,8 @@ async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
   const jobs: SavedJob[] = [];
   for (const line of lines) {
     const product = getProduct(line.slug);
-    const color = colorById(line.colorId);
-    const price = unitPrice(line.slug, line.backPrint);
+    const color = (line.blankId ? colorOnBlank(line.blankId, line.colorId) : undefined) ?? colorById(line.colorId);
+    const price = unitPrice(line.slug, line.backPrint, line.blankId);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
     jobs.push({
       id: `job_${crypto.randomUUID()}`,
@@ -59,13 +60,14 @@ async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
       color: color.name,
       quantity: line.quantity,
       back: line.backPrint,
+      blank: line.blankId ?? "",
     });
   }
   try {
     const sql = await getSql();
     for (const [index, line] of lines.entries()) {
       const job = jobs[index];
-      const price = unitPrice(line.slug, line.backPrint);
+      const price = unitPrice(line.slug, line.backPrint, line.blankId);
       if (!job || price == null) continue;
       await sql`
         insert into print_jobs (id, slug, size, color_name, back_print, quantity, unit_price, art)
@@ -90,10 +92,11 @@ async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
 function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[], withImages: boolean, withTax: boolean) {
   const items = lines.map((line, index) => {
     const product = getProduct(line.slug);
-    const color = colorById(line.colorId);
-    const price = unitPrice(line.slug, line.backPrint);
+    const color = (line.blankId ? colorOnBlank(line.blankId, line.colorId) : undefined) ?? colorById(line.colorId);
+    const price = unitPrice(line.slug, line.backPrint, line.blankId);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
-    const name = `${product.name}${line.ink ? ` · ${line.ink.replace("-", " ")} chub` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}`;
+    const blank = blankById(line.blankId);
+    const name = `${product.name}${blank ? ` · ${blank.name}` : ""}${line.ink ? ` · ${line.ink.replace("-", " ")} chub` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}`;
     return {
       quantity: line.quantity,
       price_data: {
@@ -102,7 +105,9 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
         tax_behavior: "exclusive",
         product_data: {
           name,
-          description: `${product.blank}. Printful DTF. Job ${jobs[index]?.id ?? ""}.`,
+          description: blank
+            ? `${blank.note} ${blank.file === "embroidery_front" ? "Embroidered on the front." : "Printed on the front."}`
+            : `${product.blank}. Printful DTF.`,
           images: withImages && product.looks[0]?.src ? [`${origin}${product.looks[0].src}`] : undefined,
           metadata: { slug: product.slug, job: jobs[index]?.id ?? "", size: line.size, color: color.name },
         },
@@ -110,7 +115,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
     };
   });
 
-  const subtotal = lines.reduce((sum, line) => sum + (unitPrice(line.slug, line.backPrint) ?? 0) * line.quantity, 0);
+  const subtotal = lines.reduce((sum, line) => sum + (unitPrice(line.slug, line.backPrint, line.blankId) ?? 0) * line.quantity, 0);
 
   return {
     mode: "payment",

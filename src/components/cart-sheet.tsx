@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { colorById, FREE_SHIP_AT, getProduct, money, unitPrice } from "@/lib/catalog";
+import { blankById, colorOnBlank, defaultBlankId } from "@/lib/blanks";
 import { createCheckoutSession } from "@/lib/create-checkout";
 import { remainingToFreeShipping, shippingOptions } from "@/lib/shipping";
 import { useShop } from "@/lib/shop-store";
@@ -18,8 +19,9 @@ export function CartSheet() {
   const rows = lines
     .map((line) => {
       const product = getProduct(line.slug);
-      const price = unitPrice(line.slug, line.backPrint);
-      const color = colorById(line.colorId);
+      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+      const price = unitPrice(line.slug, line.backPrint, blankId);
+      const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;
       return { ...line, product, price, color };
     })
@@ -43,6 +45,7 @@ export function CartSheet() {
             backPrint: row.backPrint,
             art: row.art,
             ink: row.ink,
+            blankId: row.blankId,
           })),
         },
       });
@@ -87,7 +90,7 @@ export function CartSheet() {
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold">{row.product.name}</p>
                   <p className="text-sm text-mute">
-                    {row.product.oneSize ? "One size" : `${row.ink ? `${row.ink.replace("-", " ")} · ` : ""}${row.color.name} · ${row.size}`}
+                    {row.product.oneSize ? "One size" : `${blankById(row.blankId)?.name ? `${blankById(row.blankId)?.name} · ` : ""}${row.ink ? `${row.ink.replace("-", " ")} · ` : ""}${row.color.name} · ${row.size}`}
                     {row.backPrint ? " · front + back" : ""} · {money(row.price)}
                   </p>
                   <div className="mt-2 flex items-center gap-2">

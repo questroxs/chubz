@@ -7,6 +7,7 @@ export type SavedJob = {
   color: string;
   quantity: number;
   back: boolean;
+  blank: string;
 };
 
 /** Stripe metadata values cap at 500 characters. The shirt details ride on the payment so a later request can still print. */
@@ -16,7 +17,7 @@ export function encodeJobs(jobs: SavedJob[]): Record<string, string> {
   let index = 0;
   const key = () => (index === 0 ? "order" : `order${index}`);
   for (const job of jobs) {
-    const piece = [job.id, job.slug, job.size, job.color.replaceAll("~", " ").replaceAll(";", ","), String(job.quantity), job.back ? "1" : "0"].join("~");
+    const piece = [job.id, job.slug, job.size, job.color.replaceAll("~", " ").replaceAll(";", ","), String(job.quantity), job.back ? "1" : "0", job.blank].join("~");
     if (piece.length > 480) continue;
     const next = bucket ? `${bucket};${piece}` : piece;
     if (next.length > 480 && bucket) {
@@ -39,7 +40,7 @@ export function jobsFromMetadata(metadata: Record<string, string> | undefined): 
   const rows: PrintJobRow[] = [];
   for (const name of keys) {
     for (const piece of metadata[name].split(";")) {
-      const [id, slug, size, color, qty, back] = piece.split("~");
+      const [id, slug, size, color, qty, back, blank = ""] = piece.split("~");
       const quantity = Number(qty);
       if (!id || !slug || !size || !color || !Number.isFinite(quantity)) continue;
       rows.push({
@@ -50,6 +51,7 @@ export function jobsFromMetadata(metadata: Record<string, string> | undefined): 
         quantity,
         back_print: back === "1",
         art: null,
+        blank_id: blank,
       });
     }
   }

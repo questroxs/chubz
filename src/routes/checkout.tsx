@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { colorById, FREE_SHIP_AT, getProduct, money, STANDARD_SHIPPING, unitPrice } from "@/lib/catalog";
+import { colorOnBlank, defaultBlankId } from "@/lib/blanks";
 import { createCheckoutSession } from "@/lib/create-checkout";
 import { useShop } from "@/lib/shop-store";
 
@@ -19,8 +20,9 @@ function CheckoutPage() {
   const rows = lines
     .map((line) => {
       const product = getProduct(line.slug);
-      const price = unitPrice(line.slug, line.backPrint);
-      const color = colorById(line.colorId);
+      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+      const price = unitPrice(line.slug, line.backPrint, blankId);
+      const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;
       return { ...line, product, price, color };
     })
@@ -42,6 +44,7 @@ function CheckoutPage() {
             backPrint: row.backPrint,
             art: row.art,
             ink: row.ink,
+            blankId: row.blankId,
           })),
         },
       });
@@ -57,7 +60,7 @@ function CheckoutPage() {
     <main className="mx-auto max-w-xl px-4 py-10">
       <h1 className="text-4xl font-semibold">Checkout</h1>
       <p className="mt-3 text-mute">
-        Stripe takes the card, the ship-to, and tax. Printful prints the shirt after the payment.
+        Stripe takes the card, the ship-to, and tax. Printful prints the shirt, or embroiders the cap, after the payment.
         Standard shipping is {money(STANDARD_SHIPPING)}, free over {money(FREE_SHIP_AT)}.
       </p>
       {!hydrated ? <p className="mt-6 text-mute">Loading the cart…</p> : null}

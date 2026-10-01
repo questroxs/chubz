@@ -4,12 +4,14 @@ export function ColorPalette({
   lane,
   value,
   onChange,
+  colors: colorsOverride,
 }: {
   lane: Lane;
   value: string;
   onChange: (id: string) => void;
+  colors?: ShirtColor[];
 }) {
-  const colors = colorsFor(lane);
+  const colors = colorsOverride ?? colorsFor(lane);
   const selected = colors.find((color) => color.id === value) ?? colors[0];
   const groups: Array<{ id: ShirtColor["group"]; label: string }> = [
     { id: "solid", label: "Solids" },
@@ -23,7 +25,7 @@ export function ColorPalette({
         Color · {colors.length} on this Printful blank
       </legend>
       <p className="mt-1 text-sm text-mute">
-        Same Gildan names Printful prints. {selected?.name}.
+        {colorsOverride ? "Printful blank colors." : "Same Gildan names Printful prints."} {selected?.name}.
       </p>
       <div className="mt-3 flex flex-col gap-3">
         {groups.map((group) => {

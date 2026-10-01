@@ -1,3 +1,4 @@
+import { blankById } from "@/lib/blanks";
 import { colorsFor, SHIRT_COLORS, type ShirtColor } from "@/lib/gildan-colors";
 
 export { colorsFor, SHIRT_COLORS };
@@ -5,7 +6,7 @@ export type { ShirtColor };
 
 export const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 export type ApparelSize = (typeof SIZES)[number];
-export type Size = ApparelSize | "OS";
+export type Size = ApparelSize | "OS" | "XS" | "S/M" | "L/XL";
 export type Lane = "tee" | "hoodie" | "bag";
 
 export type Look = { src: string; alt: string };
@@ -279,9 +280,14 @@ export function colorById(id: string) {
   return SHIRT_COLORS.find((color) => color.id === id);
 }
 
-export function unitPrice(slug: string, backPrint: boolean) {
+export function unitPrice(slug: string, backPrint: boolean, blankId?: string) {
   const product = getProduct(slug);
   if (!product) return null;
+  const blank = blankById(blankId);
+  if (blank) {
+    if (backPrint && blank.lane === "cap") return null;
+    return blank.price + (backPrint ? BACK_PRINT_PRICE : 0);
+  }
   if (backPrint && !product.custom) return null;
   return product.price + (backPrint ? BACK_PRINT_PRICE : 0);
 }

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
       { title: "Chubz — Straight off the wall" },
       {
         name: "description",
-        content: "Black tees and hoodies with the chub. Print on demand. S through XXL.",
+        content: "Tees, hoodies, and embroidered caps with the chub. Unisex blanks from Printful.",
       },
     ],
   }),
@@ -155,12 +155,12 @@ function Home() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-pink">01</p>
             <h3 className="mt-2 text-xl font-semibold">Pick a size</h3>
-            <p className="mt-2 text-mute">Tee or hoodie. Pick the chub color and the shirt color. S, M, L, XL, XXL.</p>
+            <p className="mt-2 text-mute">Tee, hoodie, or embroidered cap. Pick the blank and the price, then the chub color and the garment color.</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow">02</p>
             <h3 className="mt-2 text-xl font-semibold">It prints</h3>
-            <p className="mt-2 text-mute">Printful prints the DTF after Stripe clears the order. Nothing sits on a shelf.</p>
+            <p className="mt-2 text-mute">Printful prints the shirt, or embroiders the cap, after Stripe clears the order. Nothing sits on a shelf.</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-volt">03</p>
