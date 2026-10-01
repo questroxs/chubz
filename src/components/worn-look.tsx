@@ -83,27 +83,25 @@ export function WornLook({
         context.drawImage(model, 0, 0, width, height);
         const [tr, tg, tb] = hexToRgb(shirtHex);
         const shirtIsBlack = tr + tg + tb < 90;
-        if (!shirtIsBlack) {
-          const maskCanvas = document.createElement("canvas");
-          maskCanvas.width = width;
-          maskCanvas.height = height;
-          const maskContext = maskCanvas.getContext("2d", { willReadFrequently: true });
-          maskContext?.drawImage(mask, 0, 0, width, height);
+        const maskCanvas = document.createElement("canvas");
+        maskCanvas.width = width;
+        maskCanvas.height = height;
+        const maskContext = maskCanvas.getContext("2d", { willReadFrequently: true });
+        maskContext?.drawImage(mask, 0, 0, width, height);
+        const matte = maskContext?.getImageData(0, 0, width, height);
+        if (matte && !shirtIsBlack) {
           const photo = context.getImageData(0, 0, width, height);
-          const matte = maskContext?.getImageData(0, 0, width, height);
-          if (matte) {
-            const data = photo.data;
-            const alpha = matte.data;
-            for (let i = 0; i < data.length; i += 4) {
-              if (alpha[i] < 128) continue;
-              const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
-              const shade = 0.55 + 0.55 * Math.min(1, lum / 42);
-              data[i] = Math.min(255, Math.round(tr * shade));
-              data[i + 1] = Math.min(255, Math.round(tg * shade));
-              data[i + 2] = Math.min(255, Math.round(tb * shade));
-            }
-            context.putImageData(photo, 0, 0);
+          const data = photo.data;
+          const alpha = matte.data;
+          for (let i = 0; i < data.length; i += 4) {
+            if (alpha[i] < 128) continue;
+            const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            const shade = 0.55 + 0.55 * Math.min(1, lum / 42);
+            data[i] = Math.min(255, Math.round(tr * shade));
+            data[i + 1] = Math.min(255, Math.round(tg * shade));
+            data[i + 2] = Math.min(255, Math.round(tb * shade));
           }
+          context.putImageData(photo, 0, 0);
         }
         const native =
           (face === "mean" && ink === "orange") ||
@@ -112,8 +110,31 @@ export function WornLook({
         const print = native ? chub : recolorChub(chub, color);
         const printWidth = Math.round(width * 0.3);
         const printHeight = Math.round((printWidth * print.height) / print.width);
-        const top = Math.round(height * 0.5 - printHeight / 2);
-        context.drawImage(print, (width - printWidth) / 2, top, printWidth, printHeight);
+        let minX = width;
+        let minY = height;
+        let maxX = 0;
+        let maxY = 0;
+        if (matte) {
+          const alpha = matte.data;
+          for (let y = 0; y < height; y += 4) {
+            for (let x = 0; x < width; x += 4) {
+              if (alpha[(y * width + x) * 4] < 128) continue;
+              if (x < minX) minX = x;
+              if (y < minY) minY = y;
+              if (x > maxX) maxX = x;
+              if (y > maxY) maxY = y;
+            }
+          }
+        }
+        const centerX = maxX > minX ? (minX + maxX) / 2 : width / 2;
+        const centerY = maxY > minY ? (minY + maxY) / 2 : height * 0.62;
+        context.drawImage(
+          print,
+          Math.round(centerX - printWidth / 2),
+          Math.round(centerY - printHeight / 2),
+          printWidth,
+          printHeight,
+        );
       })
       .catch(() => undefined);
     return () => {
