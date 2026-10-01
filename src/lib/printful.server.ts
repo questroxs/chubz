@@ -23,6 +23,18 @@ export type PrintfulRecipient = {
   phone?: string;
 };
 
+async function printfulStoreId(token: string): Promise<number | null> {
+  const forced = env("PRINTFUL_STORE_ID");
+  if (forced && /^\d+$/.test(forced)) return Number(forced);
+  const response = await fetch("https://api.printful.com/stores", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) return null;
+  const body = (await response.json()) as { result?: Array<{ id?: number }> };
+  const stores = body.result ?? [];
+  return stores.length === 1 && stores[0]?.id ? stores[0].id : stores[0]?.id ?? null;
+}
+
 const ART_ORIGIN = "https://mrchubz.com";
 
 function fileUrl(job: PrintJobRow): string | null {
@@ -36,6 +48,8 @@ function fileUrl(job: PrintJobRow): string | null {
 export async function pushPrintfulDraft(jobs: PrintJobRow[], recipient: PrintfulRecipient, externalId: string) {
   const token = env("PRINTFUL_API_TOKEN");
   if (!token) return { pushed: false as const, reason: "missing-token" as const };
+  const storeId = await printfulStoreId(token);
+  if (!storeId) return { pushed: false as const, reason: "missing-store" as const };
   const items = [];
   for (const job of jobs) {
     const product = getProduct(job.slug);
@@ -59,6 +73,7 @@ export async function pushPrintfulDraft(jobs: PrintJobRow[], recipient: Printful
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      "X-PF-Store-Id": String(storeId),
     },
     body: JSON.stringify({ external_id: externalId, confirm: false, recipient, items }),
   });

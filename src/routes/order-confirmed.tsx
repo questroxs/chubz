@@ -25,6 +25,7 @@ function ConfirmedPage() {
         if (cancel) return;
         if (result.pushed) setNote("Printful has the order as a draft. Nothing prints until you confirm it there.");
         else if (result.reason === "missing-token") setNote("Paid. Printful is not connected yet, so the print job is saved here.");
+        else if (result.reason === "missing-store") setNote("Paid. Printful has no store yet, so the print job is saved here.");
         else if (result.reason === "missing-stripe") setNote("The print job is saved. Stripe’s secret is not on the server, so Printful did not get the address.");
         else if (result.reason === "unpaid") setNote("This checkout is not paid, so Printful was not called.");
         else setNote("The print job is saved. Printful did not take the draft yet.");
