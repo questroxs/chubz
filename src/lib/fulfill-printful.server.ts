@@ -54,11 +54,15 @@ export async function fulfillPaidSessionOnServer(sessionId: string) {
     let rows = fromPayment;
     if (rows.length === 0) {
       if (ids.length === 0) return { pushed: false as const, reason: "no-jobs" as const };
-      const sql = await getSql();
-      rows = await sql.query<PrintJobRow>(
-        "select id, slug, size, color_name, back_print, quantity, art from print_jobs where id = any($1::text[])",
-        [ids],
-      );
+      try {
+        const sql = await getSql();
+        rows = await sql.query<PrintJobRow>(
+          "select id, slug, size, color_name, back_print, quantity, art from print_jobs where id = any($1::text[])",
+          [ids],
+        );
+      } catch {
+        return { pushed: false as const, reason: "no-jobs" as const };
+      }
     }
     if (rows.length === 0) return { pushed: false as const, reason: "no-jobs" as const };
     return pushPrintfulDraft(rows, recipient, sessionId);

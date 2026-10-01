@@ -46,35 +46,43 @@ async function postCheckout(payload: Record<string, unknown>): Promise<StripeSes
 }
 
 async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
-  const sql = await getSql();
   const jobs: SavedJob[] = [];
   for (const line of lines) {
     const product = getProduct(line.slug);
     const color = colorById(line.colorId);
     const price = unitPrice(line.slug, line.backPrint);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
-    const id = `job_${crypto.randomUUID()}`;
     jobs.push({
-      id,
+      id: `job_${crypto.randomUUID()}`,
       slug: line.slug,
       size: line.size,
       color: color.name,
       quantity: line.quantity,
       back: line.backPrint,
     });
-    await sql`
-      insert into print_jobs (id, slug, size, color_name, back_print, quantity, unit_price, art)
-      values (
-        ${id},
-        ${line.slug},
-        ${line.size},
-        ${color.name},
-        ${line.backPrint},
-        ${line.quantity},
-        ${dollarsToCents(price)},
-        ${line.art ?? null}
-      )
-    `;
+  }
+  try {
+    const sql = await getSql();
+    for (const [index, line] of lines.entries()) {
+      const job = jobs[index];
+      const price = unitPrice(line.slug, line.backPrint);
+      if (!job || price == null) continue;
+      await sql`
+        insert into print_jobs (id, slug, size, color_name, back_print, quantity, unit_price, art)
+        values (
+          ${job.id},
+          ${job.slug},
+          ${job.size},
+          ${job.color},
+          ${job.back},
+          ${job.quantity},
+          ${dollarsToCents(price)},
+          ${line.art ?? null}
+        )
+      `;
+    }
+  } catch {
+    // Vercel has no durable Postgres file. The Stripe payment carries the order.
   }
   return jobs;
 }
