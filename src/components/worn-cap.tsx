@@ -3,10 +3,10 @@ import { hatShape, type HatShape } from "@/components/cap-mark";
 import { faceSrc, renderChub, type ChubFace } from "@/lib/chub-ink";
 
 const SHOTS: Record<HatShape, { src: string; cx: number; cy: number; w: number }> = {
-  dad: { src: "/looks/cap-dad.jpg", cx: 0.5, cy: 0.27, w: 0.22 },
-  trucker: { src: "/looks/cap-trucker.jpg", cx: 0.5, cy: 0.3, w: 0.2 },
-  snap: { src: "/looks/cap-snap.jpg", cx: 0.5, cy: 0.26, w: 0.2 },
-  panel: { src: "/looks/cap-panel.jpg", cx: 0.5, cy: 0.23, w: 0.16 },
+  dad: { src: "/looks/cap-dad.jpg", cx: 0.525, cy: 0.22, w: 0.15 },
+  trucker: { src: "/looks/cap-trucker.jpg", cx: 0.5, cy: 0.24, w: 0.145 },
+  snap: { src: "/looks/cap-snap.jpg", cx: 0.52, cy: 0.23, w: 0.15 },
+  panel: { src: "/looks/cap-panel.jpg", cx: 0.52, cy: 0.21, w: 0.13 },
 };
 
 function loadImage(src: string) {
