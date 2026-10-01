@@ -131,6 +131,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
     },
     payment_intent_data: {
       description: `Chubz print order ${money(subtotal)}`,
+      receipt_email: "questroxs18@gmail.com",
       metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs) },
     },
     custom_text: {
