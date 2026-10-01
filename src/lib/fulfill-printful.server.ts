@@ -3,26 +3,34 @@ import { env } from "@/lib/env.server";
 import { jobsFromMetadata } from "@/lib/order-record";
 import { pushPrintfulDraft, type PrintJobRow, type PrintfulRecipient } from "@/lib/printful.server";
 
+type StripeAddress = {
+  line1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
+};
+
 type StripeSession = {
   payment_status?: string;
   metadata?: Record<string, string>;
-  customer_details?: { email?: string | null; phone?: string | null; name?: string | null };
-  shipping_details?: {
+  customer_details?: {
+    email?: string | null;
+    phone?: string | null;
     name?: string | null;
-    address?: {
-      line1?: string | null;
-      city?: string | null;
-      state?: string | null;
-      postal_code?: string | null;
-      country?: string | null;
-    } | null;
+    address?: StripeAddress | null;
+  };
+  shipping_details?: { name?: string | null; address?: StripeAddress | null } | null;
+  collected_information?: {
+    shipping_details?: { name?: string | null; address?: StripeAddress | null } | null;
   } | null;
   error?: { message?: string };
 };
 
 function recipientFrom(session: StripeSession): PrintfulRecipient | null {
-  const address = session.shipping_details?.address;
-  const name = session.shipping_details?.name || session.customer_details?.name;
+  const shipping = session.collected_information?.shipping_details ?? session.shipping_details;
+  const address = shipping?.address ?? session.customer_details?.address;
+  const name = shipping?.name || session.customer_details?.name;
   if (!address?.line1 || !address.city || !address.state || !address.postal_code || !address.country || !name) {
     return null;
   }

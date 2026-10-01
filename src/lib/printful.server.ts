@@ -35,6 +35,10 @@ async function printfulStoreId(token: string): Promise<number | null> {
   return stores.length === 1 && stores[0]?.id ? stores[0].id : stores[0]?.id ?? null;
 }
 
+function printfulExternalId(id: string): string {
+  return `chubz${id.replace(/[^a-zA-Z0-9]/g, "").slice(-24)}`;
+}
+
 const ART_ORIGIN = "https://mrchubz.com";
 
 function fileUrl(job: PrintJobRow): string | null {
@@ -62,7 +66,7 @@ export async function pushPrintfulDraft(jobs: PrintJobRow[], recipient: Printful
     items.push({
       variant_id: variantId,
       quantity: job.quantity,
-      external_id: job.id,
+      external_id: printfulExternalId(job.id),
       name: product.name,
       files,
     });
@@ -75,7 +79,7 @@ export async function pushPrintfulDraft(jobs: PrintJobRow[], recipient: Printful
       "Content-Type": "application/json",
       "X-PF-Store-Id": String(storeId),
     },
-    body: JSON.stringify({ external_id: externalId, confirm: false, recipient, items }),
+    body: JSON.stringify({ external_id: printfulExternalId(externalId), confirm: false, recipient, items }),
   });
   const body = (await response.json().catch(() => ({}))) as {
     result?: { id?: number };
