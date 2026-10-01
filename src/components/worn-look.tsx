@@ -108,26 +108,10 @@ export function WornLook({
           (face === "blue" && ink === "blue") ||
           (face === "green" && ink === "green");
         const print = native ? chub : recolorChub(chub, color);
-        const printWidth = Math.round(width * 0.3);
+        const printWidth = Math.round(width * 0.42);
         const printHeight = Math.round((printWidth * print.height) / print.width);
-        let minX = width;
-        let minY = height;
-        let maxX = 0;
-        let maxY = 0;
-        if (matte) {
-          const alpha = matte.data;
-          for (let y = 0; y < height; y += 4) {
-            for (let x = 0; x < width; x += 4) {
-              if (alpha[(y * width + x) * 4] < 128) continue;
-              if (x < minX) minX = x;
-              if (y < minY) minY = y;
-              if (x > maxX) maxX = x;
-              if (y > maxY) maxY = y;
-            }
-          }
-        }
-        const centerX = maxX > minX ? (minX + maxX) / 2 : width / 2;
-        const centerY = maxY > minY ? (minY + maxY) / 2 : height * 0.62;
+        const centerX = width * 0.52;
+        const centerY = height * 0.59;
         context.drawImage(
           print,
           Math.round(centerX - printWidth / 2),
