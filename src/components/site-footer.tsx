@@ -24,10 +24,23 @@ export function SiteFooter() {
           <Link to="/cart" className="min-h-11 py-2 hover:text-pink">
             Cart
           </Link>
+          <Link to="/policies" className="min-h-11 py-2 hover:text-pink">
+            Policies
+          </Link>
         </div>
-        <p className="text-sm text-mute">
-          Tees and hoodies print on demand through Ninja POD. Pick the chub color and the shirt. Gear is CJdropshipping bags and markers, with the wholesale price on the listing. chubz.com
-        </p>
+        <div className="text-sm text-mute">
+          <p>
+            Tees and hoodies print on demand through Ninja POD. Gear ships from CJdropshipping. Questions:{" "}
+            <a className="text-paper underline" href="mailto:questroxs18@gmail.com">
+              questroxs18@gmail.com
+            </a>
+          </p>
+          <p className="mt-3">
+            <a className="hover:text-pink" href="https://chubz-tau.vercel.app">
+              chubz-tau.vercel.app
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

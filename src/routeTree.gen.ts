@@ -15,6 +15,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as GearRouteImport } from './routes/gear'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
+import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as PrintRouteImport } from './routes/print'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as WallRouteImport } from './routes/wall'
@@ -50,6 +51,11 @@ const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
   path: '/order-confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PoliciesRoute = PoliciesRouteImport.update({
+  id: '/policies',
+  path: '/policies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrintRoute = PrintRouteImport.update({
   id: '/print',
   path: '/print',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/gear': typeof GearRoute
   '/order-confirmed': typeof OrderConfirmedRoute
+  '/policies': typeof PoliciesRoute
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
   '/wall': typeof WallRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/gear': typeof GearRoute
   '/order-confirmed': typeof OrderConfirmedRoute
+  '/policies': typeof PoliciesRoute
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
   '/wall': typeof WallRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/gear': typeof GearRoute
   '/order-confirmed': typeof OrderConfirmedRoute
+  '/policies': typeof PoliciesRoute
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
   '/wall': typeof WallRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/gear'
     | '/order-confirmed'
+    | '/policies'
     | '/print'
     | '/shop'
     | '/wall'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/gear'
     | '/order-confirmed'
+    | '/policies'
     | '/print'
     | '/shop'
     | '/wall'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/gear'
     | '/order-confirmed'
+    | '/policies'
     | '/print'
     | '/shop'
     | '/wall'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   GearRoute: typeof GearRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
+  PoliciesRoute: typeof PoliciesRoute
   PrintRoute: typeof PrintRoute
   ShopRoute: typeof ShopRoute
   WallRoute: typeof WallRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/policies': {
+      id: '/policies'
+      path: '/policies'
+      fullPath: '/policies'
+      preLoaderRoute: typeof PoliciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/print': {
       id: '/print'
       path: '/print'
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   GearRoute: GearRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
+  PoliciesRoute: PoliciesRoute,
   PrintRoute: PrintRoute,
   ShopRoute: ShopRoute,
   WallRoute: WallRoute,
