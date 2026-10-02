@@ -7,37 +7,36 @@ export type Blank = {
   printfulId: number;
   file: "front" | "embroidery_front";
   price: number;
-  cost: number;
   note: string;
 };
 
 export type BlankColor = { id: string; name: string; hex: string };
 
 export const BLANKS: Blank[] = [
-  { id: "tee-classic", name: "Classic Tee", lane: "tee", printfulId: 438, file: "front", price: 26, cost: 9.44, note: "Gildan 5000. The heavy cotton we already print." },
-  { id: "tee-soft", name: "Softstyle Tee", lane: "tee", printfulId: 12, file: "front", price: 26, cost: 9.63, note: "Gildan 64000. Lighter, softer cotton." },
-  { id: "tee-staple", name: "Staple Tee", lane: "tee", printfulId: 71, file: "front", price: 28, cost: 11.92, note: "Bella + Canvas 3001. The retail staple." },
-  { id: "tee-heavy", name: "Heavyweight Tee", lane: "tee", printfulId: 586, file: "front", price: 36, cost: 15.6, note: "Comfort Colors 1717. Garment-dyed, heavy." },
-  { id: "tee-boxy", name: "Boxy Tee", lane: "tee", printfulId: 1592, file: "front", price: 38, cost: 16.97, note: "Bella+Canvas 3010. Oversized, boxy." },
-  { id: "tee-active", name: "Active Tee", lane: "tee", printfulId: 1637, file: "front", price: 36, cost: 16.39, note: "Shaka Wear SHASS. Performance cut." },
-  { id: "tee-drop", name: "Drop-Shoulder Tee", lane: "tee", printfulId: 1626, file: "front", price: 46, cost: 20.71, note: "Shaka Wear SHGDD. Garment-dyed, dropped shoulder." },
-  { id: "tee-premium", name: "Premium Tee", lane: "tee", printfulId: 733, file: "front", price: 36, cost: 16.39, note: "AS Colour 5001T." },
-  { id: "hood-heavy", name: "Heavy Blend Hoodie", lane: "hoodie", printfulId: 146, file: "front", price: 58, cost: 22.63, note: "Gildan 18500. The pullover we already print." },
-  { id: "hood-zip", name: "Zip Hoodie", lane: "hoodie", printfulId: 692, file: "front", price: 58, cost: 24.92, note: "Gildan 18600. Full zip." },
-  { id: "hood-premium", name: "Premium Hoodie", lane: "hoodie", printfulId: 380, file: "front", price: 64, cost: 27.84, note: "Cotton Heritage M2580." },
-  { id: "hood-mid", name: "Midweight Hoodie", lane: "hoodie", printfulId: 602, file: "front", price: 72, cost: 32.2, note: "Independent Trading Co. SS4500." },
-  { id: "hood-relax", name: "Relax Hoodie", lane: "hoodie", printfulId: 734, file: "front", price: 86, cost: 38.97, note: "AS Colour 5161. Relaxed fit." },
-  { id: "hood-boxy", name: "Oversized Hoodie", lane: "hoodie", printfulId: 892, file: "front", price: 84, cost: 37.23, note: "Bella + Canvas 4719. Heavy and boxy." },
-  { id: "hood-light", name: "Lightweight Hoodie", lane: "hoodie", printfulId: 294, file: "front", price: 70, cost: 31.68, note: "Bella + Canvas 3719." },
-  { id: "hood-classic", name: "Classic Hoodie", lane: "hoodie", printfulId: 1653, file: "front", price: 60, cost: 26.5, note: "Tultex 320." },
-  { id: "cap-dad", name: "Dad Hat", lane: "cap", printfulId: 206, file: "embroidery_front", price: 32, cost: 14.94, note: "Yupoong 6245CM. Embroidered front." },
-  { id: "cap-distressed", name: "Distressed Dad Hat", lane: "cap", printfulId: 396, file: "embroidery_front", price: 34, cost: 16.05, note: "Otto Cap 104-1018. Embroidered." },
-  { id: "cap-snap", name: "Snapback", lane: "cap", printfulId: 77, file: "embroidery_front", price: 36, cost: 17.34, note: "Otto Cap 125-978. Embroidered." },
-  { id: "cap-trucker", name: "Foam Trucker", lane: "cap", printfulId: 627, file: "embroidery_front", price: 28, cost: 12.8, note: "Otto Cap 39-165. Embroidered front." },
-  { id: "cap-retro", name: "Retro Trucker", lane: "cap", printfulId: 252, file: "embroidery_front", price: 30, cost: 13.56, note: "Yupoong 6606. Embroidered." },
-  { id: "cap-flex", name: "Structured Cap", lane: "cap", printfulId: 140, file: "embroidery_front", price: 36, cost: 16.51, note: "Flexfit 6277. Embroidered. S/M and L/XL." },
-  { id: "cap-trucker-5", name: "5-Panel Trucker", lane: "cap", printfulId: 100, file: "embroidery_front", price: 32, cost: 15.09, note: "Yupoong 6006. Embroidered." },
-  { id: "cap-5", name: "5-Panel Cap", lane: "cap", printfulId: 92, file: "embroidery_front", price: 38, cost: 17.93, note: "Yupoong 7005. Embroidered." },
+  { id: "tee-classic", name: "Classic Tee", lane: "tee", printfulId: 438, file: "front", price: 26, note: "Gildan 5000. The heavy cotton we already print." },
+  { id: "tee-soft", name: "Softstyle Tee", lane: "tee", printfulId: 12, file: "front", price: 26, note: "Gildan 64000. Lighter, softer cotton." },
+  { id: "tee-staple", name: "Staple Tee", lane: "tee", printfulId: 71, file: "front", price: 28, note: "Bella + Canvas 3001. The retail staple." },
+  { id: "tee-heavy", name: "Heavyweight Tee", lane: "tee", printfulId: 586, file: "front", price: 36, note: "Comfort Colors 1717. Garment-dyed, heavy." },
+  { id: "tee-boxy", name: "Boxy Tee", lane: "tee", printfulId: 1592, file: "front", price: 38, note: "Bella+Canvas 3010. Oversized, boxy." },
+  { id: "tee-active", name: "Active Tee", lane: "tee", printfulId: 1637, file: "front", price: 36, note: "Shaka Wear SHASS. Performance cut." },
+  { id: "tee-drop", name: "Drop-Shoulder Tee", lane: "tee", printfulId: 1626, file: "front", price: 46, note: "Shaka Wear SHGDD. Garment-dyed, dropped shoulder." },
+  { id: "tee-premium", name: "Premium Tee", lane: "tee", printfulId: 733, file: "front", price: 36, note: "AS Colour 5001T." },
+  { id: "hood-heavy", name: "Heavy Blend Hoodie", lane: "hoodie", printfulId: 146, file: "front", price: 58, note: "Gildan 18500. The pullover we already print." },
+  { id: "hood-zip", name: "Zip Hoodie", lane: "hoodie", printfulId: 692, file: "front", price: 58, note: "Gildan 18600. Full zip." },
+  { id: "hood-premium", name: "Premium Hoodie", lane: "hoodie", printfulId: 380, file: "front", price: 64, note: "Cotton Heritage M2580." },
+  { id: "hood-mid", name: "Midweight Hoodie", lane: "hoodie", printfulId: 602, file: "front", price: 72, note: "Independent Trading Co. SS4500." },
+  { id: "hood-relax", name: "Relax Hoodie", lane: "hoodie", printfulId: 734, file: "front", price: 86, note: "AS Colour 5161. Relaxed fit." },
+  { id: "hood-boxy", name: "Oversized Hoodie", lane: "hoodie", printfulId: 892, file: "front", price: 84, note: "Bella + Canvas 4719. Heavy and boxy." },
+  { id: "hood-light", name: "Lightweight Hoodie", lane: "hoodie", printfulId: 294, file: "front", price: 70, note: "Bella + Canvas 3719." },
+  { id: "hood-classic", name: "Classic Hoodie", lane: "hoodie", printfulId: 1653, file: "front", price: 60, note: "Tultex 320." },
+  { id: "cap-dad", name: "Dad Hat", lane: "cap", printfulId: 206, file: "embroidery_front", price: 32, note: "Yupoong 6245CM. Embroidered front." },
+  { id: "cap-distressed", name: "Distressed Dad Hat", lane: "cap", printfulId: 396, file: "embroidery_front", price: 34, note: "Otto Cap 104-1018. Embroidered." },
+  { id: "cap-snap", name: "Snapback", lane: "cap", printfulId: 77, file: "embroidery_front", price: 36, note: "Otto Cap 125-978. Embroidered." },
+  { id: "cap-trucker", name: "Foam Trucker", lane: "cap", printfulId: 627, file: "embroidery_front", price: 28, note: "Otto Cap 39-165. Embroidered front." },
+  { id: "cap-retro", name: "Retro Trucker", lane: "cap", printfulId: 252, file: "embroidery_front", price: 30, note: "Yupoong 6606. Embroidered." },
+  { id: "cap-flex", name: "Structured Cap", lane: "cap", printfulId: 140, file: "embroidery_front", price: 36, note: "Flexfit 6277. Embroidered. S/M and L/XL." },
+  { id: "cap-trucker-5", name: "5-Panel Trucker", lane: "cap", printfulId: 100, file: "embroidery_front", price: 32, note: "Yupoong 6006. Embroidered." },
+  { id: "cap-5", name: "5-Panel Cap", lane: "cap", printfulId: 92, file: "embroidery_front", price: 38, note: "Yupoong 7005. Embroidered." },
 ];
 
 const VARIANTS: Record<string, Record<string, number>> = {

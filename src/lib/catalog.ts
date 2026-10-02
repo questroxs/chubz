@@ -12,11 +12,8 @@ export type Lane = "tee" | "hoodie" | "bag" | "cap";
 export type Look = { src: string; alt: string };
 
 /**
- * Printful catalog prices, one front print (Gildan 5000 tee, Gildan 18500 hoodie).
- * Tee from $9.44. Hoodie from $22.63. Retail is the street price on the site.
+ * Retail is the street price on the site.
  */
-export const PRINTFUL_TEE_COST = 9.44;
-export const PRINTFUL_HOOD_COST = 22.63;
 export const BACK_PRINT_PRICE = 7;
 
 export const STANDARD_SHIPPING = 7.95;
@@ -28,7 +25,6 @@ export type Product = {
   name: string;
   lane: Lane;
   price: number;
-  cost: number;
   tag: string;
   blurb: string;
   details: string[];
@@ -80,7 +76,6 @@ export const products: Product[] = [
     name: "Mean Orange",
     lane: "tee",
     price: 26,
-    cost: PRINTFUL_TEE_COST,
     tag: "X eyes",
     blurb: "The grin with the stitches. Pick the chub color and the shirt.",
     details: teeDetails,
@@ -102,7 +97,6 @@ export const products: Product[] = [
     name: "Blue Mood",
     lane: "tee",
     price: 26,
-    cost: PRINTFUL_TEE_COST,
     tag: "Drip face",
     blurb: "Droopy eyes, paint still running. Recolor it, or leave it blue.",
     details: teeDetails,
@@ -124,7 +118,6 @@ export const products: Product[] = [
     name: "Round Green",
     lane: "tee",
     price: 26,
-    cost: PRINTFUL_TEE_COST,
     tag: "Round eyes",
     blurb: "The round-eyed chub, left green. Recolor it, or leave it.",
     details: teeDetails,
@@ -143,7 +136,6 @@ export const products: Product[] = [
     name: "Mean Orange Hood",
     lane: "hoodie",
     price: 58,
-    cost: PRINTFUL_HOOD_COST,
     tag: "X eyes",
     blurb: "Same mean chub on a pullover. Color the chub, then the hoodie.",
     details: hoodDetails,
@@ -162,7 +154,6 @@ export const products: Product[] = [
     name: "Blue Mood Hood",
     lane: "hoodie",
     price: 58,
-    cost: PRINTFUL_HOOD_COST,
     tag: "Drip face",
     blurb: "The sad-eyed chub on a hoodie. Same color picker as the tee.",
     details: hoodDetails,
@@ -181,7 +172,6 @@ export const products: Product[] = [
     name: "Round Green Hood",
     lane: "hoodie",
     price: 58,
-    cost: PRINTFUL_HOOD_COST,
     tag: "Round eyes",
     blurb: "The round-eyed chub on a pullover. Color the chub, then the hoodie.",
     details: hoodDetails,
@@ -203,7 +193,6 @@ export const customProducts: Product[] = [
     name: "Your art · Tee",
     lane: "tee",
     price: 24,
-    cost: PRINTFUL_TEE_COST,
     tag: "Upload",
     blurb: "Your file, their size, a Gildan color. Printed when the order lands.",
     details: teeDetails,
@@ -222,7 +211,6 @@ export const customProducts: Product[] = [
     name: "Your art · Hoodie",
     lane: "hoodie",
     price: 54,
-    cost: PRINTFUL_HOOD_COST,
     tag: "Upload",
     blurb: "Same upload, heavier blank. Front print stops at the pocket.",
     details: hoodDetails,
@@ -240,23 +228,23 @@ export const customProducts: Product[] = [
 
 /** Ten bags with the actual product photo, including a person wearing it where the photo has one. */
 export const bagProducts: Product[] = [
-  bag("usb-sling", "USB chest sling", 28, 13.98, "CJNS1600337", "/gear/bags/usb.jpg", "Model wearing the black USB chest sling.", "CJdropshipping SKU CJNS1600337-Black. Wholesale $13.98. Oxford, USB port, 33×16×11 cm."),
-  bag("nylon-chest", "Nylon chest sling", 26, 12.86, "CJBHNSNS34905", "/gear/bags/00.jpg", "Model wearing the black nylon chest sling.", "CJdropshipping SKU CJBHNSNS34905. Wholesale $12.86. PU chest bag with a USB port."),
-  bag("brown-chest", "Brown chest sling", 26, 12.86, "CJBHNSNS34905", "/gear/bags/01.jpg", "Brown tactical chest sling.", "Same CJ chest-bag listing, brown color. Wholesale $12.86."),
-  bag("ripstop-sling", "Ripstop sling", 28, 13.98, "CJNS1600337", "/gear/bags/02.jpg", "Model wearing the ripstop sling.", "Ripstop nylon sling. Wholesale band on CJ chest slings is $12.86–$13.98."),
-  bag("front-zip", "Front-zip sling", 28, 13.98, "CJNS1600337", "/gear/bags/03.jpg", "Front-zip sling on a model.", "Chest sling with a front zip. CJ oxford sling wholesale $13.98."),
-  bag("day-sling", "Day sling", 28, 13.98, "CJNS1600337", "/gear/bags/04.jpg", "Day sling worn on the chest.", "One-strap day sling. CJ wholesale $13.98 on the oxford listing."),
-  bag("tech-sling", "Tech sling", 32, 13.98, "CJNS1600337", "/gear/bags/05.jpg", "Model wearing the tech sling with a bottle pocket.", "Nylon tech sling. Street $32 on a $13.98 CJ blank, about a 56% margin."),
-  bag("canvas-sling", "Canvas sling", 16, 6.7, "CJNS1835851", "/gear/bags/06.jpg", "Model wearing the black canvas sling.", "CJdropshipping SKU CJNS1835851. Canvas shoulder bag. Wholesale $6.70."),
-  bag("military-sling", "Military sling", 32, 13.98, "CJNS1600337", "/gear/bags/07.jpg", "Model wearing the black military sling.", "Tactical sling. CJ oxford chest sling wholesale $13.98."),
-  bag("leather-sling", "Leather sling", 16, 5.31, "CJNS2229259", "/gear/bags/08.jpg", "Leather sling product photo.", "CJdropshipping SKU CJNS222925901AZ. Leather crossbody. Wholesale $5.31. Street $16."),
+  bag("usb-sling", "USB chest sling", 28, "CJNS1600337", "/gear/bags/usb.jpg", "Model wearing the black USB chest sling.", "CJdropshipping SKU CJNS1600337-Black. Oxford, USB port, 33×16×11 cm."),
+  bag("nylon-chest", "Nylon chest sling", 26, "CJBHNSNS34905", "/gear/bags/00.jpg", "Model wearing the black nylon chest sling.", "CJdropshipping SKU CJBHNSNS34905. PU chest bag with a USB port."),
+  bag("brown-chest", "Brown chest sling", 26, "CJBHNSNS34905", "/gear/bags/01.jpg", "Brown tactical chest sling.", "Same CJ chest-bag listing, brown color."),
+  bag("ripstop-sling", "Ripstop sling", 28, "CJNS1600337", "/gear/bags/02.jpg", "Model wearing the ripstop sling.", "Ripstop nylon sling."),
+  bag("front-zip", "Front-zip sling", 28, "CJNS1600337", "/gear/bags/03.jpg", "Front-zip sling on a model.", "Chest sling with a front zip."),
+  bag("day-sling", "Day sling", 28, "CJNS1600337", "/gear/bags/04.jpg", "Day sling worn on the chest.", "One-strap day sling."),
+  bag("tech-sling", "Tech sling", 32, "CJNS1600337", "/gear/bags/05.jpg", "Model wearing the tech sling with a bottle pocket.", "Nylon tech sling."),
+  bag("canvas-sling", "Canvas sling", 16, "CJNS1835851", "/gear/bags/06.jpg", "Model wearing the black canvas sling.", "CJdropshipping SKU CJNS1835851. Canvas shoulder bag."),
+  bag("military-sling", "Military sling", 32, "CJNS1600337", "/gear/bags/07.jpg", "Model wearing the black military sling.", "Tactical sling."),
+  bag("leather-sling", "Leather sling", 16, "CJNS2229259", "/gear/bags/08.jpg", "Leather sling product photo.", "CJdropshipping SKU CJNS222925901AZ. Leather crossbody."),
 ];
 
-function bag(slug: string, name: string, price: number, cost: number, tag: string, src: string, alt: string, detail: string): Product {
+function bag(slug: string, name: string, price: number, tag: string, src: string, alt: string, detail: string): Product {
   return {
-    slug, name, lane: "bag", price, cost, tag,
+    slug, name, lane: "bag", price, tag,
     blurb: alt,
-    details: [detail, "One size. The photo is the bag, on a person when the shot includes one.", "About a 50% margin on the CJ wholesale price."],
+    details: [detail, "One size. The photo is the bag, on a person when the shot includes one."],
     art: src, artAlt: alt,
     looks: [{ src, alt }],
     custom: false, oneSize: true, supplier: "cj",
@@ -276,7 +264,6 @@ export const capProducts: Product[] = [
     name: "Mean Orange Cap",
     lane: "cap",
     price: 32,
-    cost: 14.94,
     tag: "X eyes",
     blurb: "The X-eyed chub, embroidered on the front of the cap.",
     details: capDetails,
@@ -295,7 +282,6 @@ export const capProducts: Product[] = [
     name: "Blue Mood Cap",
     lane: "cap",
     price: 32,
-    cost: 14.94,
     tag: "Drip face",
     blurb: "The slanted-eye chub, embroidered on the front of the cap.",
     details: capDetails,
@@ -314,7 +300,6 @@ export const capProducts: Product[] = [
     name: "Round Green Cap",
     lane: "cap",
     price: 32,
-    cost: 14.94,
     tag: "Round eyes",
     blurb: "The round-eyed chub, embroidered on the front of the cap.",
     details: capDetails,

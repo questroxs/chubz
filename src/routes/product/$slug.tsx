@@ -17,6 +17,7 @@ import { CapMark, hatShape } from "@/components/cap-mark";
 import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type BlankLane } from "@/lib/blanks";
 import { CHUB_FACES, CHUB_INKS, faceSrc, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
+import { useOwnerDesk } from "@/lib/owner-desk";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>): { blank?: string } => {
@@ -38,6 +39,7 @@ function ProductPage() {
   const product = getProduct(slug);
   const requested = blankById(requestedBlank);
   const add = useShop((state) => state.add);
+  const desk = useOwnerDesk();
   const fromHome = useShop((state) => state.chubFromHome);
   const storedFace = useShop((state) => state.chubFace);
   const storedInk = useShop((state) => state.chubInk);
@@ -173,7 +175,6 @@ function ProductPage() {
           <div className="flex aspect-[3/4] flex-col justify-end border border-line bg-panel p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow">{product.tag}</p>
             <p className="mt-2 text-2xl font-semibold">{product.name}</p>
-            <p className="mt-2 text-mute">Wholesale {money(product.cost)}.</p>
           </div>
         )}
         {worn ? null : (
@@ -199,12 +200,19 @@ function ProductPage() {
         </p>
         <h1 className="mt-2 text-4xl font-semibold">{wear === "cap" ? blank.name : product.name}</h1>
         <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(product.custom || product.oneSize ? product.price : blank.price)}</p>
+        {desk && (desk.costs[product.oneSize || product.custom ? product.slug : blank.id] ?? desk.costs[product.slug]) != null ? (
+          <p className="mt-2 text-sm text-mute">
+            Wholesale {money(desk.costs[product.oneSize || product.custom ? product.slug : blank.id] ?? desk.costs[product.slug])}.
+          </p>
+        ) : null}
         <p className="mt-4 text-lg">{product.blurb}</p>
         <ul className="mt-4 space-y-2 text-mute">
           {(worn
             ? [`${blank.note} ${blank.lane === "cap" ? "Embroidered on the front." : "Printed on the front."}`, ...product.details.slice(1)]
             : product.details
-          ).map((detail) => (
+          )
+            .concat(desk?.notes[product.slug] ? [desk.notes[product.slug]] : [])
+            .map((detail) => (
             <li key={detail}>{detail}</li>
           ))}
         </ul>

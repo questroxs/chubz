@@ -6,6 +6,7 @@ import { blankById, blankColors, blankSizesFor, blanksFor, type Blank } from "@/
 import { getProduct, money, slugForChub, type Size } from "@/lib/catalog";
 import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
+import { useOwnerDesk } from "@/lib/owner-desk";
 
 function HatMenu({
   caps,
@@ -93,6 +94,7 @@ export const Route = createFileRoute("/caps")({
 function CapsPage() {
   const { blank: requested } = Route.useSearch();
   const add = useShop((state) => state.add);
+  const desk = useOwnerDesk();
   const caps = blanksFor("cap");
   const [face, setFace] = useState<ChubFace>("mean");
   const [ink, setInk] = useState("orange");
@@ -153,6 +155,9 @@ function CapsPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-volt">Printful · embroidery front</p>
         <h1 className="mt-2 text-4xl font-semibold">Embroidered caps</h1>
         <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(blank.price)}</p>
+        {desk && desk.costs[blank.id] != null ? (
+          <p className="mt-2 text-sm text-mute">Wholesale {money(desk.costs[blank.id])}.</p>
+        ) : null}
         <p className="mt-4 text-lg">The chub is stitched on the front. Unisex. Pick the face, then the hat.</p>
 
         <label className="mt-8 block">
