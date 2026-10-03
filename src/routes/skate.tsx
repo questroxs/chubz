@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { compressImage } from "@/lib/compress-image";
-import { money, type Product } from "@/lib/catalog";
+import { money } from "@/lib/catalog";
 import { useOwnerDesk } from "@/lib/owner-desk";
-import { useSkateGate } from "@/lib/skate-host";
+import { skatePageAllowed } from "@/lib/skate-host";
+import { skateProducts } from "@/lib/skate-catalog";
 import { useShop } from "@/lib/shop-store";
 
 export const Route = createFileRoute("/skate")({
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/skate")({
     const deck = typeof search.deck === "string" ? search.deck : "";
     return /^steep-\d{3}$/.test(deck) ? { deck } : {};
   },
+  loader: async () => ({ show: await skatePageAllowed() }),
   head: () => ({
     meta: [{ title: "Chubz" }, { name: "description", content: "Chubz streetwear." }],
   }),
@@ -40,10 +42,8 @@ const PARTS = [
 ];
 
 function SkatePage() {
-  const gate = useSkateGate();
-  const on = gate === "yes";
+  const { show } = Route.useLoaderData();
   const requested = Route.useSearch().deck;
-  const [decks, setDecks] = useState<Product[] | null>(null);
   const [slug, setSlug] = useState(requested ?? "steep-800");
   const add = useShop((state) => state.add);
   const desk = useOwnerDesk();
@@ -52,26 +52,15 @@ function SkatePage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!on) return;
-    let cancel = false;
-    void import("@/lib/skate-catalog").then((mod) => {
-      if (!cancel) setDecks(mod.skateProducts);
-    });
-    return () => {
-      cancel = true;
-    };
-  }, [on]);
-
-  useEffect(() => {
-    if (!on) return;
+    if (!show) return;
     document.title = "Skateboard gear — Chubz";
-  }, [on]);
+  }, [show]);
 
   useEffect(() => {
     if (requested) setSlug(requested);
   }, [requested]);
 
-  const deck = decks?.find((item) => item.slug === slug) ?? decks?.find((item) => item.slug === "steep-800") ?? decks?.[0];
+  const deck = skateProducts.find((item) => item.slug === slug) ?? skateProducts.find((item) => item.slug === "steep-800") ?? skateProducts[0];
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -102,11 +91,7 @@ function SkatePage() {
     setNote(`${deck.name} is in the cart.`);
   }
 
-  if (gate !== "no" && (!on || !deck || !decks)) {
-    return <main className="mx-auto max-w-3xl px-4 py-16" />;
-  }
-
-  if (!on || !deck || !decks) {
+  if (!show || !deck) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16">
         <h1 className="text-3xl font-semibold">That page isn’t on this shop.</h1>
@@ -160,7 +145,7 @@ function SkatePage() {
           <fieldset className="mt-6">
             <legend className="text-sm font-semibold uppercase tracking-widest">Width</legend>
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {decks.map((item) => {
+              {skateProducts.map((item) => {
                 const active = item.slug === deck.slug;
                 return (
                   <button

@@ -76,6 +76,15 @@ export function SiteHeader() {
           </button>
         </div>
       </div>
+      {skate ? (
+        <Link
+          to="/skate"
+          className="flex min-h-12 items-center justify-center bg-yellow text-sm font-semibold uppercase tracking-widest text-yellow-ink md:hidden"
+          onClick={() => setOpen(false)}
+        >
+          Skateboard gear
+        </Link>
+      ) : null}
       {open ? (
         <nav className="flex flex-col border-t border-line px-4 py-2 md:hidden" aria-label="Mobile">
           <Link to="/shop" search={{ lane: "all" }} className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>

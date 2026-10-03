@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { faceSrc, inkById, type ChubFace } from "@/lib/chub-ink";
 
 const MODEL = "/looks/blank-tee.jpg";
@@ -65,11 +65,13 @@ export function WornLook({
   alt: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [drawn, setDrawn] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     let cancel = false;
+    setDrawn(false);
     const color = inkById(ink).hex;
     Promise.all([loadImage(MODEL), loadImage(MASK), loadImage(faceSrc(face))])
       .then(([model, mask, chub]) => {
@@ -119,6 +121,7 @@ export function WornLook({
           printWidth,
           printHeight,
         );
+        if (!cancel) setDrawn(true);
       })
       .catch(() => undefined);
     return () => {
@@ -126,5 +129,15 @@ export function WornLook({
     };
   }, [face, ink, shirtHex]);
 
-  return <canvas ref={canvasRef} className={className} role="img" aria-label={alt} />;
+  return (
+    <div className={`relative overflow-hidden bg-panel ${className ?? ""}`}>
+      <img src={MODEL} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
+      <canvas
+        ref={canvasRef}
+        className={drawn ? "absolute inset-0 h-full w-full object-cover" : "absolute inset-0 h-full w-full object-cover opacity-0"}
+        role="img"
+        aria-label={alt}
+      />
+    </div>
+  );
 }

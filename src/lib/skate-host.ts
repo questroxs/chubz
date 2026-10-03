@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createServerFn } from "@tanstack/react-start";
 
 /** Skate rack is a preview. mrchubz.com never shows it. */
 export function skateHost(hostname: string) {
@@ -6,6 +7,11 @@ export function skateHost(hostname: string) {
   if (host === "mrchubz.com" || host === "www.mrchubz.com") return false;
   return host === "localhost" || host === "127.0.0.1" || host === "vercel.app" || host.endsWith(".vercel.app");
 }
+
+export const skatePageAllowed = createServerFn({ method: "GET" }).handler(async () => {
+  const { requestIsSkateHost } = await import("@/lib/skate-request.server");
+  return requestIsSkateHost();
+});
 
 export function useSkateGate(): "wait" | "yes" | "no" {
   const [gate, setGate] = useState<"wait" | "yes" | "no">("wait");
