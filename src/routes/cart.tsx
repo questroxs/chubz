@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { colorById, FREE_SHIP_AT, getProduct, money, STANDARD_SHIPPING, unitPrice } from "@/lib/catalog";
 import { blankById, colorOnBlank, defaultBlankId } from "@/lib/blanks";
 import { bagCount, useShop } from "@/lib/shop-store";
+import { useSkateCatalog } from "@/lib/skate-host";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Chubz" }] }),
@@ -14,11 +15,12 @@ function CartPage() {
   const setQty = useShop((state) => state.setQty);
   const remove = useShop((state) => state.remove);
   const setCartOpen = useShop((state) => state.setCartOpen);
+  useSkateCatalog();
 
   const rows = lines
     .map((line) => {
       const product = getProduct(line.slug);
-      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" && product.lane !== "skate" ? defaultBlankId(product.lane) : undefined);
       const price = unitPrice(line.slug, line.backPrint, blankId);
       const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;

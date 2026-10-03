@@ -59,7 +59,7 @@ export async function pushPrintfulDraft(jobs: PrintJobRow[], recipient: Printful
   const items = [];
   for (const job of jobs) {
     const product = getProduct(job.slug);
-    if (!product || product.supplier !== "printful" || product.lane === "bag") continue;
+    if (!product || product.supplier !== "printful" || product.lane === "bag" || product.lane === "skate") continue;
     const blank = blankById(job.blank_id);
     const variantId = blank
       ? blankVariantId(blank.id, job.color_name, job.size)

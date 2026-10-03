@@ -5,6 +5,7 @@ import { blankById, colorOnBlank, defaultBlankId } from "@/lib/blanks";
 import { createCheckoutSession } from "@/lib/create-checkout";
 import { remainingToFreeShipping, shippingOptions } from "@/lib/shipping";
 import { useShop } from "@/lib/shop-store";
+import { useSkateCatalog } from "@/lib/skate-host";
 
 export function CartSheet() {
   const open = useShop((state) => state.cartOpen);
@@ -15,11 +16,12 @@ export function CartSheet() {
   const clear = useShop((state) => state.clear);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  useSkateCatalog();
 
   const rows = lines
     .map((line) => {
       const product = getProduct(line.slug);
-      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" && product.lane !== "skate" ? defaultBlankId(product.lane) : undefined);
       const price = unitPrice(line.slug, line.backPrint, blankId);
       const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;

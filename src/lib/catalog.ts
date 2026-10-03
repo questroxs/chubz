@@ -7,7 +7,7 @@ export type { ShirtColor };
 export const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 export type ApparelSize = (typeof SIZES)[number];
 export type Size = ApparelSize | "OS" | "XS" | "S/M" | "L/XL";
-export type Lane = "tee" | "hoodie" | "bag" | "cap";
+export type Lane = "tee" | "hoodie" | "bag" | "cap" | "skate";
 
 export type Look = { src: string; alt: string };
 
@@ -33,7 +33,7 @@ export type Product = {
   looks: Look[];
   custom: boolean;
   oneSize: boolean;
-  supplier: "printful" | "cj";
+  supplier: "printful" | "cj" | "point";
   blank: string;
   printFront: string;
   printBack: string;
@@ -315,8 +315,17 @@ export const capProducts: Product[] = [
   },
 ];
 
+const extraProducts: Product[] = [];
+
+/** Preview-only catalogs call this after a dynamic import so they stay out of the public bundle. */
+export function registerProducts(items: Product[]) {
+  for (const item of items) {
+    if (!extraProducts.some((current) => current.slug === item.slug)) extraProducts.push(item);
+  }
+}
+
 export function getProduct(slug: string) {
-  return [...products, ...customProducts, ...capProducts, ...bagProducts].find((product) => product.slug === slug);
+  return [...products, ...customProducts, ...capProducts, ...bagProducts, ...extraProducts].find((product) => product.slug === slug);
 }
 
 /** Checkout uses the slug, so the green chub must not stay on Mean Orange. */
@@ -347,6 +356,7 @@ export function laneLabel(lane: Lane) {
   if (lane === "tee") return "Tee";
   if (lane === "hoodie") return "Hoodie";
   if (lane === "cap") return "Cap";
+  if (lane === "skate") return "Deck";
   return "Bag";
 }
 

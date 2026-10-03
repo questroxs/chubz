@@ -18,6 +18,7 @@ import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type 
 import { CHUB_FACES, CHUB_INKS, faceSrc, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
 import { useOwnerDesk } from "@/lib/owner-desk";
+import { useSkateCatalog, useSkateRack } from "@/lib/skate-host";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>): { blank?: string } => {
@@ -26,8 +27,9 @@ export const Route = createFileRoute("/product/$slug")({
   },
   head: ({ params }) => {
     const product = getProduct(params.slug);
+    const title = product && product.lane !== "skate" ? `${product.name} — Chubz` : "Missing piece — Chubz";
     return {
-      meta: [{ title: product ? `${product.name} — Chubz` : "Missing piece — Chubz" }],
+      meta: [{ title }],
     };
   },
   component: ProductPage,
@@ -40,6 +42,8 @@ function ProductPage() {
   const requested = blankById(requestedBlank);
   const add = useShop((state) => state.add);
   const desk = useOwnerDesk();
+  const onSkate = useSkateRack();
+  useSkateCatalog();
   const fromHome = useShop((state) => state.chubFromHome);
   const storedFace = useShop((state) => state.chubFace);
   const storedInk = useShop((state) => state.chubInk);
@@ -78,12 +82,25 @@ function ProductPage() {
     };
   }, [face, ink]);
 
-  if (!product) {
+  if (!product || (product.lane === "skate" && !onSkate)) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16">
         <h1 className="text-3xl font-semibold">That piece isn’t up.</h1>
         <Link to="/shop" search={{ lane: "all" }} className="mt-6 inline-flex min-h-11 items-center text-pink">
           Back to the rack
+        </Link>
+      </main>
+    );
+  }
+
+  if (product.lane === "skate") {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-16">
+        <p className="text-xs font-semibold uppercase tracking-widest text-volt">Deck</p>
+        <h1 className="mt-2 text-4xl font-semibold">{product.name}</h1>
+        <p className="mt-4 text-mute">This width is on Skateboard gear, with the art upload.</p>
+        <Link to="/skate" search={{ deck: product.slug }} className="mt-6 inline-flex min-h-11 items-center bg-yellow px-4 font-semibold uppercase tracking-widest text-yellow-ink">
+          Open the deck
         </Link>
       </main>
     );

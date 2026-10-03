@@ -4,6 +4,7 @@ import { colorById, FREE_SHIP_AT, getProduct, money, STANDARD_SHIPPING, unitPric
 import { colorOnBlank, defaultBlankId } from "@/lib/blanks";
 import { createCheckoutSession } from "@/lib/create-checkout";
 import { useShop } from "@/lib/shop-store";
+import { useSkateCatalog } from "@/lib/skate-host";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Chubz" }] }),
@@ -16,11 +17,12 @@ function CheckoutPage() {
   const clear = useShop((state) => state.clear);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  useSkateCatalog();
 
   const rows = lines
     .map((line) => {
       const product = getProduct(line.slug);
-      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+      const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" && product.lane !== "skate" ? defaultBlankId(product.lane) : undefined);
       const price = unitPrice(line.slug, line.backPrint, blankId);
       const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;

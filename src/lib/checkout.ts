@@ -47,12 +47,12 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
     const size = sizeOk ? (record.size as Size) : undefined;
     const colorId = typeof record.colorId === "string" ? record.colorId : "";
     const blankId = typeof record.blankId === "string" && blankById(record.blankId) ? record.blankId : undefined;
-    const resolvedBlank = blankId ?? (product && !product.custom && product.lane !== "bag" ? defaultBlankId(product.lane) : undefined);
+    const resolvedBlank = blankId ?? (product && !product.custom && product.lane !== "bag" && product.lane !== "skate" ? defaultBlankId(product.lane) : undefined);
     const color = (resolvedBlank ? colorOnBlank(resolvedBlank, colorId) : undefined) ?? colorById(colorId);
     const quantity = typeof record.quantity === "number" ? record.quantity : Number(record.quantity);
     const backPrint = record.backPrint === true;
     if (!product || !size || !color || !Number.isFinite(quantity) || quantity < 1) continue;
-    if (product.oneSize && size !== "OS") throw new Error("That bag is one size.");
+    if (product.oneSize && size !== "OS") throw new Error("That piece is one size.");
     if (!product.oneSize && size === "OS" && blankById(resolvedBlank)?.lane !== "cap") throw new Error("Pick a shirt size.");
     if (resolvedBlank && !blankSizes(resolvedBlank).includes(size)) throw new Error("That size isn’t on this blank.");
     if (resolvedBlank && !colorOnBlank(resolvedBlank, colorId)) throw new Error("That color isn’t on this blank.");

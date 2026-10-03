@@ -107,7 +107,11 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
           name,
           description: blank
             ? `${blank.note} ${blank.file === "embroidery_front" ? "Embroidered on the front." : "Printed on the front."}`
-            : `${product.blank}. Printful DTF.`,
+            : product.supplier === "point"
+              ? "Point Distribution steep deck. Your file prints on the bottom. Placed by hand on Skateboard Dropshipper."
+              : product.supplier === "cj"
+                ? product.blank
+                : `${product.blank}. Printful DTF.`,
           images: withImages && product.looks[0]?.src ? [`${origin}${product.looks[0].src}`] : undefined,
           metadata: { slug: product.slug, job: jobs[index]?.id ?? "", size: line.size, color: color.name },
         },
@@ -116,6 +120,13 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
   });
 
   const subtotal = lines.reduce((sum, line) => sum + (unitPrice(line.slug, line.backPrint, line.blankId) ?? 0) * line.quantity, 0);
+  const hasPoint = lines.some((line) => getProduct(line.slug)?.supplier === "point");
+  const hasPrintful = lines.some((line) => getProduct(line.slug)?.supplier === "printful");
+  const footer = hasPoint && !hasPrintful
+    ? "Skate decks are placed with Point Distribution after payment. Questions stay with Chubz."
+    : hasPoint
+      ? "Printful prints the apparel. Skate decks are placed with Point Distribution after payment. Questions stay with Chubz."
+      : "Printed by Printful after this payment. Questions stay with Chubz.";
 
   return {
     mode: "payment",
@@ -131,7 +142,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
       enabled: true,
       invoice_data: {
         description: `Chubz — ${items.length} print ${items.length === 1 ? "job" : "jobs"}`,
-        footer: "Printed by Printful after this payment. Questions stay with Chubz.",
+        footer,
       },
     },
     payment_intent_data: {
@@ -141,7 +152,9 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
     },
     custom_text: {
       shipping_address: {
-        message: "US only. Printful prints in about 2–5 business days, then the carrier has it. Standard shipping is $7.95, free at $90.",
+        message: hasPoint
+          ? "US only. Skate decks are placed with Point Distribution in Las Vegas after payment. Apparel still goes through Printful."
+          : "US only. Printful prints in about 2–5 business days, then the carrier has it. Standard shipping is $7.95, free at $90.",
       },
       submit: { message: "Gear (caps, cans, markers) is not in this charge." },
     },

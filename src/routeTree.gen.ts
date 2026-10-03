@@ -19,6 +19,7 @@ import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as PrintRouteImport } from './routes/print'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SkateRouteImport } from './routes/skate'
 import { Route as WallRouteImport } from './routes/wall'
 import { Route as ProductSlugRouteImport } from './routes/product/$slug'
 
@@ -72,6 +73,11 @@ const ShopRoute = ShopRouteImport.update({
   path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SkateRoute = SkateRouteImport.update({
+  id: '/skate',
+  path: '/skate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WallRoute = WallRouteImport.update({
   id: '/wall',
   path: '/wall',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/policies': typeof PoliciesRoute
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
+  '/skate': typeof SkateRoute
   '/wall': typeof WallRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/policies': typeof PoliciesRoute
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
+  '/skate': typeof SkateRoute
   '/wall': typeof WallRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/policies': typeof PoliciesRoute
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
+  '/skate': typeof SkateRoute
   '/wall': typeof WallRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/policies'
     | '/print'
     | '/shop'
+    | '/skate'
     | '/wall'
     | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/policies'
     | '/print'
     | '/shop'
+    | '/skate'
     | '/wall'
     | '/product/$slug'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/policies'
     | '/print'
     | '/shop'
+    | '/skate'
     | '/wall'
     | '/product/$slug'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   PoliciesRoute: typeof PoliciesRoute
   PrintRoute: typeof PrintRoute
   ShopRoute: typeof ShopRoute
+  SkateRoute: typeof SkateRoute
   WallRoute: typeof WallRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skate': {
+      id: '/skate'
+      path: '/skate'
+      fullPath: '/skate'
+      preLoaderRoute: typeof SkateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wall': {
       id: '/wall'
       path: '/wall'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   PoliciesRoute: PoliciesRoute,
   PrintRoute: PrintRoute,
   ShopRoute: ShopRoute,
+  SkateRoute: SkateRoute,
   WallRoute: WallRoute,
   ProductSlugRoute: ProductSlugRoute,
 }

@@ -52,6 +52,13 @@ const COSTS: Record<string, number> = {
   "canvas-sling": 6.7,
   "military-sling": 13.98,
   "leather-sling": 5.31,
+  "steep-775": 45.99,
+  "steep-788": 45.99,
+  "steep-800": 45.99,
+  "steep-813": 45.99,
+  "steep-825": 45.99,
+  "steep-838": 45.99,
+  "steep-850": 45.99,
 };
 
 const NOTES: Record<string, string> = {
@@ -65,6 +72,13 @@ const NOTES: Record<string, string> = {
   "canvas-sling": "Wholesale $6.70. About a 50% margin on the CJ wholesale price.",
   "military-sling": "CJ oxford chest sling wholesale $13.98.",
   "leather-sling": "Wholesale $5.31. Street $16.",
+  "steep-775": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
+  "steep-788": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
+  "steep-800": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
+  "steep-813": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
+  "steep-825": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
+  "steep-838": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
+  "steep-850": "Stand-in $45.99. Point’s public FAQ says a one-off custom deck is roughly $45.99. Login prices are hidden. Street $69 is about 50% over that stand-in.",
 };
 
 function hostsOf(request: Request) {
