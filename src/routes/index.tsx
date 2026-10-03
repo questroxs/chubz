@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ColorPalette } from "@/components/color-palette";
+import { HomeIntro } from "@/components/home-intro";
 import { ProductCard } from "@/components/product-card";
 import { WornLook } from "@/components/worn-look";
 import { CHUB_FACES, CHUB_INKS, inkById } from "@/lib/chub-ink";
@@ -15,7 +16,12 @@ export const Route = createFileRoute("/")({
         content: "Tees, hoodies, and embroidered caps with the chub. Unisex blanks from Printful.",
       },
     ],
-    links: [{ rel: "preload", as: "image", href: "/looks/home-model.jpg" }],
+    links: [
+      { rel: "preload", as: "image", href: "/art/chub-orange.png" },
+      { rel: "preload", as: "image", href: "/art/chub-blue.png" },
+      { rel: "preload", as: "image", href: "/art/chub-green.png" },
+      { rel: "preload", as: "image", href: "/looks/home-model.jpg" },
+    ],
   }),
   component: Home,
 });
@@ -30,6 +36,7 @@ function Home() {
 
   return (
     <main>
+      <HomeIntro />
       <section
         className="relative aspect-[3/2] max-h-[78vh] w-full overflow-hidden border-b border-line bg-ink bg-contain bg-center bg-no-repeat"
         style={{ backgroundImage: "url(/art/chubz-crew.jpg)" }}

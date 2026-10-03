@@ -1,5 +1,6 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
+import "@/lib/home-intro-gate";
 import { CartSheet } from "@/components/cart-sheet";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ShopHydrated } from "@/components/shop-hydrated";
