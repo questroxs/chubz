@@ -31,8 +31,12 @@ function Home() {
     <main>
       <section className="relative border-b border-line">
         <img
-          src="/art/chubz-crew.png"
+          src="/art/chubz-crew.jpg"
           alt="CHUBZ graffiti with the orange, blue, and green chubs"
+          width={1100}
+          height={733}
+          decoding="async"
+          fetchPriority="high"
           className="max-h-[78vh] w-full bg-ink object-contain"
         />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent" />

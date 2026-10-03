@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { faceSrc, inkById, type ChubFace } from "@/lib/chub-ink";
+import { faceSrc, inkById, modelLook, type ChubFace } from "@/lib/chub-ink";
 
-const MODEL = "/looks/blank-tee.jpg";
 const MASK = "/looks/blank-tee-mask.png";
 
 function loadImage(src: string) {
@@ -66,14 +65,22 @@ export function WornLook({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [drawn, setDrawn] = useState(false);
+  const photo = modelLook(face, ink);
+  const shirtIsBlack = (() => {
+    const [r, g, b] = hexToRgb(shirtHex);
+    return r + g + b < 90;
+  })();
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || shirtIsBlack) {
+      setDrawn(false);
+      return;
+    }
     let cancel = false;
     setDrawn(false);
     const color = inkById(ink).hex;
-    Promise.all([loadImage(MODEL), loadImage(MASK), loadImage(faceSrc(face))])
+    Promise.all([loadImage("/looks/blank-tee.jpg"), loadImage(MASK), loadImage(faceSrc(face))])
       .then(([model, mask, chub]) => {
         if (cancel) return;
         const width = 720;
@@ -84,14 +91,13 @@ export function WornLook({
         if (!context) return;
         context.drawImage(model, 0, 0, width, height);
         const [tr, tg, tb] = hexToRgb(shirtHex);
-        const shirtIsBlack = tr + tg + tb < 90;
         const maskCanvas = document.createElement("canvas");
         maskCanvas.width = width;
         maskCanvas.height = height;
         const maskContext = maskCanvas.getContext("2d", { willReadFrequently: true });
         maskContext?.drawImage(mask, 0, 0, width, height);
         const matte = maskContext?.getImageData(0, 0, width, height);
-        if (matte && !shirtIsBlack) {
+        if (matte) {
           const photo = context.getImageData(0, 0, width, height);
           const data = photo.data;
           const alpha = matte.data;
@@ -123,21 +129,25 @@ export function WornLook({
         );
         if (!cancel) setDrawn(true);
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!cancel) setDrawn(false);
+      });
     return () => {
       cancel = true;
     };
-  }, [face, ink, shirtHex]);
+  }, [face, ink, shirtHex, photo, shirtIsBlack]);
 
   return (
     <div className={`relative overflow-hidden bg-panel ${className ?? ""}`}>
-      <img src={MODEL} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
-      <canvas
-        ref={canvasRef}
-        className={drawn ? "absolute inset-0 h-full w-full object-cover" : "absolute inset-0 h-full w-full object-cover opacity-0"}
-        role="img"
-        aria-label={alt}
-      />
+      <img src={photo} alt={alt} decoding="async" className="h-full w-full object-cover" />
+      {shirtIsBlack ? null : (
+        <canvas
+          ref={canvasRef}
+          className={drawn ? "absolute inset-0 h-full w-full object-cover" : "absolute inset-0 h-full w-full object-cover opacity-0"}
+          role="img"
+          aria-label={alt}
+        />
+      )}
     </div>
   );
 }
