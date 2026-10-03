@@ -60,6 +60,7 @@ function CartPage() {
                         {row.product.oneSize ? "One size" : `${blankById(row.blankId)?.name ? `${blankById(row.blankId)?.name} · ` : ""}${row.color.name} · size ${row.size}`}
                         {row.backPrint ? " · front + back" : ""}
                       </p>
+                      {row.note ? <p className="mt-1 line-clamp-4 whitespace-pre-line text-xs text-mute">{row.note}</p> : null}
                     </div>
                     <p className="font-semibold">{money(row.price * row.qty)}</p>
                   </div>

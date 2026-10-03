@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { DeckStudio, renderPlacementJpeg, type DeckPlace } from "@/components/deck-place";
 import { compressImage } from "@/lib/compress-image";
 import { money } from "@/lib/catalog";
 import { useOwnerDesk } from "@/lib/owner-desk";
@@ -27,21 +28,6 @@ const SHAPES = [
   { name: "40\" pintail", note: "Longboard pintail, custom bottom print." },
 ];
 
-const PARTS = [
-  {
-    name: "Grip tape",
-    note: "Die-cut grip. Premium grit on a perforated sheet. Point’s minimum is 100 sheets. Point does not publish a one-off grip photo.",
-  },
-  {
-    name: "Wheels",
-    note: "Custom printed wheels. 25 sets minimum. Sizes and colors can mix inside one graphic. No single-set photo from Point.",
-  },
-  {
-    name: "Trucks",
-    note: "Stock trucks in 5.0, 5.25, 5.5, and longboard. Pad-printed hangers. 25 sets minimum. No one-off truck photo from Point.",
-  },
-];
-
 function SkatePage() {
   const requested = Route.useSearch().deck;
   const [slug, setSlug] = useState(requested ?? "steep-800");
@@ -50,6 +36,10 @@ function SkatePage() {
   const [art, setArt] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const placed = useRef<{ place: DeckPlace; note: string } | null>(null);
+  const onPlace = useCallback((place: DeckPlace, text: string) => {
+    placed.current = { place, note: text };
+  }, []);
 
   useEffect(() => {
     if (requested) setSlug(requested);
@@ -76,14 +66,24 @@ function SkatePage() {
     }
   }
 
-  function addDeck() {
+  async function addDeck() {
     if (!deck) return;
     if (!art) {
       setNote("Upload the graphic first. PNG or JPG.");
       return;
     }
-    add({ slug: deck.slug, size: "OS", colorId: "black", backPrint: false, qty: 1, art });
-    setNote(`${deck.name} is in the cart.`);
+    const spot = placed.current;
+    let proof: string | undefined;
+    if (spot) {
+      try {
+        const jpeg = await renderPlacementJpeg(art, Number(deck.tag), spot.place);
+        if (jpeg.length <= 180_000) proof = jpeg;
+      } catch {
+        proof = undefined;
+      }
+    }
+    add({ slug: deck.slug, size: "OS", colorId: "black", backPrint: false, qty: 1, art, note: spot?.note, proof });
+    setNote(`${deck.name} is in the cart. Placement goes to the shop email at checkout.`);
   }
 
   if (!deck) {
@@ -106,22 +106,13 @@ function SkatePage() {
 
       <div className="mt-8 grid gap-8 md:grid-cols-2">
         <div>
+          <DeckStudio art={art} widthIn={Number(deck.tag)} onPlace={onPlace} />
           <img
             src="/skate/steep-top.jpg"
             alt="Point’s 8.00 steep deck. The graphic on the board is their sample, not your order."
-            className="w-full border border-line bg-white object-contain"
+            className="mt-4 max-h-72 w-full border border-line bg-white object-contain"
           />
           <p className="mt-2 text-sm text-mute">Point’s 8.00 steep photo. The sample graphic is not your order.</p>
-          <div className="mt-4 border border-line bg-white p-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-ink">Your file on a blank</p>
-            <div className="mx-auto mt-3 flex h-80 w-28 items-center justify-center rounded-[40%] bg-[#e7d3b0]">
-              {art ? (
-                <img src={art} alt="Your deck graphic" className="max-h-[70%] max-w-[80%] object-contain" />
-              ) : (
-                <span className="px-2 text-center text-xs font-semibold uppercase tracking-widest text-ink">Upload</span>
-              )}
-            </div>
-          </div>
         </div>
 
         <div>
@@ -135,6 +126,9 @@ function SkatePage() {
             {deck.details.map((detail) => (
               <li key={detail}>{detail}</li>
             ))}
+            <li>JPEG, 300 DPI, 2700 × 10200 px, CMYK. RGB is converted. Transparency prints as white.</li>
+            <li>Do not draw the deck outline or truck holes into the file. Those lines print.</li>
+            <li>Art should be a little bigger than the live area. A few millimeters can shift.</li>
           </ul>
 
           <fieldset className="mt-6">
@@ -174,7 +168,7 @@ function SkatePage() {
           </button>
           <button
             type="button"
-            onClick={addDeck}
+            onClick={() => void addDeck()}
             className="mt-3 inline-flex min-h-12 w-full items-center justify-center bg-yellow px-5 text-lg font-semibold uppercase tracking-widest text-yellow-ink sm:ml-3 sm:mt-6 sm:w-auto"
           >
             Add deck
@@ -196,24 +190,6 @@ function SkatePage() {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="mt-14">
-        <h2 className="text-2xl font-semibold">Grip, wheels, trucks</h2>
-        <p className="mt-2 max-w-2xl text-sm text-mute">
-          Same company. These are wholesale minimums, not one-off photos, so nothing here is invented and nothing is in the cart.
-        </p>
-        <ul className="mt-4 grid gap-3 md:grid-cols-3">
-          {PARTS.map((part) => (
-            <li key={part.name} className="border border-line bg-panel p-4">
-              <p className="text-lg font-semibold">{part.name}</p>
-              <p className="mt-2 text-sm text-mute">{part.note}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-sm text-mute">
-          Point Distribution, 3050 Westwood Drive #A17, Las Vegas, NV 89109. (702) 222-1204. info@pointdistribution.com.
-        </p>
       </section>
     </main>
   );

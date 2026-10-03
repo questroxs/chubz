@@ -162,7 +162,7 @@ function checkoutPayload(
     payment_intent_data: {
       description: artNote(subtotal, lines, artUrls),
       receipt_email: "questroxs18@gmail.com",
-      metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs), ...artMeta(artUrls) },
+      metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs), ...artMeta(artUrls), ...placeMeta(lines) },
     },
     custom_text: {
       shipping_address: {
@@ -172,7 +172,7 @@ function checkoutPayload(
       },
       submit: { message: "Gear (caps, cans, markers) is not in this charge." },
     },
-    metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs), ...artMeta(artUrls) },
+    metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs), ...artMeta(artUrls), ...placeMeta(lines) },
     automatic_tax: withTax ? { enabled: true } : undefined,
     shipping_options: shippingOptions(subtotal).map((option) => ({
       shipping_rate_data: {
@@ -229,6 +229,14 @@ function artNote(subtotal: number, lines: CheckoutLine[], artUrls: Array<string 
   if (!notes.length) return base;
   const full = `${base}. ${notes.join(" · ")}`;
   return full.length > 990 ? `${full.slice(0, 987)}...` : full;
+}
+
+function placeMeta(lines: CheckoutLine[]): Record<string, string> {
+  const meta: Record<string, string> = {};
+  lines.forEach((line, index) => {
+    if (line.note) meta[`place${index}`] = line.note.replace(/\s+/g, " ").slice(0, 500);
+  });
+  return meta;
 }
 
 function artMeta(artUrls: Array<string | null>): Record<string, string> {

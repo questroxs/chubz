@@ -4,8 +4,7 @@ import tls from "node:tls";
 export const SKATE_ART_INBOX = "questroxs18@gmail.com";
 
 /**
- * @param {{ subject: string, message: string, filename: string, jpeg: Uint8Array }} input
- * @returns {Promise<string>}
+ * @param {{ subject: string, message: string, filename: string, jpeg: Uint8Array, proof?: Uint8Array, proofName?: string }} input
  */
 export async function sendSkateGraphic(input) {
   const password = (process.env.GMAIL_APP_PASSWORD || "").replace(/\s/g, "");
@@ -14,8 +13,9 @@ export async function sendSkateGraphic(input) {
   const boundary = `chubz${crypto.randomUUID().replaceAll("-", "")}`;
   const subject = input.subject.replace(/[\r\n]/g, " ").slice(0, 180);
   const text = input.message.replace(/\r?\n/g, "\r\n");
-  const image = Buffer.from(input.jpeg).toString("base64").replace(/.{1,76}/g, "$&\r\n").trim();
-  const mime = [
+  const files = [{ filename, jpeg: input.jpeg }];
+  if (input.proof) files.push({ filename: input.proofName || "placement.jpg", jpeg: input.proof });
+  const parts = [
     `From: Chubz <${SKATE_ART_INBOX}>`,
     `To: ${SKATE_ART_INBOX}`,
     `Subject: ${subject}`,
@@ -26,15 +26,21 @@ export async function sendSkateGraphic(input) {
     "Content-Type: text/plain; charset=utf-8",
     "",
     text,
-    `--${boundary}`,
-    `Content-Type: image/jpeg; name="${filename}"`,
-    `Content-Disposition: attachment; filename="${filename}"`,
-    "Content-Transfer-Encoding: base64",
-    "",
-    image,
-    `--${boundary}--`,
-    "",
-  ].join("\r\n");
+  ];
+  for (const file of files) {
+    const safe = file.filename.replace(/[^a-z0-9.-]/gi, "") || "deck.jpg";
+    const image = Buffer.from(file.jpeg).toString("base64").replace(/.{1,76}/g, "$&\r\n").trim();
+    parts.push(
+      `--${boundary}`,
+      `Content-Type: image/jpeg; name="${safe}"`,
+      `Content-Disposition: attachment; filename="${safe}"`,
+      "Content-Transfer-Encoding: base64",
+      "",
+      image,
+    );
+  }
+  parts.push(`--${boundary}--`, "");
+  const mime = parts.join("\r\n");
   const stuffed = mime
     .split("\r\n")
     .map((line) => (line.startsWith(".") ? `.${line}` : line))
@@ -43,6 +49,10 @@ export async function sendSkateGraphic(input) {
   return "sent";
 }
 
+/**
+ * @param {string} password
+ * @param {string} data
+ */
 function smtpSend(password, data) {
   const user = SKATE_ART_INBOX;
   return new Promise((resolve, reject) => {
@@ -51,6 +61,7 @@ function smtpSend(password, data) {
     /** @type {null | (() => void)} */
     let pump = null;
     let settled = false;
+    /** @type {(error: unknown) => void} */
     const fail = (error) => {
       if (settled) return;
       settled = true;

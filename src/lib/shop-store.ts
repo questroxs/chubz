@@ -11,6 +11,10 @@ export type BagLine = {
   backPrint: boolean;
   qty: number;
   art?: string;
+  /** Placement, trucks, wheels, and grip for a deck order. */
+  note?: string;
+  /** JPEG of how they placed the graphic. */
+  proof?: string;
   /** mean-orange, blue-yellow, and so on. The print file is `art`. */
   ink?: string;
   blankId?: string;

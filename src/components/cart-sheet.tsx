@@ -95,6 +95,7 @@ export function CartSheet() {
                     {row.product.oneSize ? "One size" : `${blankById(row.blankId)?.name ? `${blankById(row.blankId)?.name} · ` : ""}${row.ink ? `${row.ink.replace("-", " ")} · ` : ""}${row.color.name} · ${row.size}`}
                     {row.backPrint ? " · front + back" : ""} · {money(row.price)}
                   </p>
+                  {row.note ? <p className="line-clamp-3 whitespace-pre-line text-xs text-mute">{row.note}</p> : null}
                   <div className="mt-2 flex items-center gap-2">
                     <button type="button" className="size-11 border border-line" aria-label="Decrease quantity" onClick={() => setQty(row.id, row.qty - 1)}>
                       −

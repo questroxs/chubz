@@ -19,6 +19,7 @@ export async function emailSkateGraphics(lines: CheckoutLine[]): Promise<{ sent:
     const product = getProduct(line.slug);
     if (!product || product.lane !== "skate" || product.supplier !== "point" || !line.art) continue;
     const jpeg = jpegFromArt(line.art);
+    const proof = line.proof ? jpegFromArt(line.proof) : null;
     if (!jpeg) {
       detail = "bad-jpeg";
       continue;
@@ -26,9 +27,11 @@ export async function emailSkateGraphics(lines: CheckoutLine[]): Promise<{ sent:
     try {
       detail = await sendSkateGraphic({
         subject: `Chubz deck graphic · ${product.name}`,
-        message: `${product.name}\nSlug ${line.slug}\nQty ${line.quantity}\nPlace this file on Skateboard Dropshipper. It is the checkout preview, not the full 9×34 print file.`,
+        message: `${product.name}\nSlug ${line.slug}\nQty ${line.quantity}\n${line.note ?? "No placement note."}\n\nThe first JPEG is the file they uploaded. The second, if attached, is how they placed it. Neither is a full 2700×10200 print file unless their upload already was.`,
         filename: `${line.slug}.jpg`,
         jpeg,
+        proof: proof ?? undefined,
+        proofName: `${line.slug}-placement.jpg`,
       });
       sent += 1;
     } catch (error) {

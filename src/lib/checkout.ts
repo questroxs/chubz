@@ -10,6 +10,8 @@ export type CheckoutLine = {
   art?: string;
   ink?: string;
   blankId?: string;
+  note?: string;
+  proof?: string;
 };
 
 const ART_LIMIT = 180_000;
@@ -35,6 +37,8 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       art?: unknown;
       ink?: unknown;
       blankId?: unknown;
+      note?: unknown;
+      proof?: unknown;
     };
     const slug = typeof record.slug === "string" ? record.slug.trim() : "";
     const product = getProduct(slug);
@@ -73,6 +77,11 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
     if (product.custom && !art) throw new Error("Custom pieces need your artwork.");
     const ink =
       typeof record.ink === "string" && /^[a-z]+(-[a-z]+)?$/.test(record.ink) ? record.ink : undefined;
+    const note = typeof record.note === "string" ? record.note.replace(/[^\S\n]+/g, " ").trim().slice(0, 1500) : undefined;
+    let proof: string | undefined;
+    if (typeof record.proof === "string" && record.proof.startsWith("data:image/jpeg") && record.proof.length <= ART_LIMIT) {
+      proof = record.proof;
+    }
     lines.push({
       slug,
       quantity: Math.min(8, Math.floor(quantity)),
@@ -82,6 +91,8 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       art,
       ink,
       blankId: resolvedBlank,
+      note: note || undefined,
+      proof,
     });
   }
 
