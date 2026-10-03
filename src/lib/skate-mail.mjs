@@ -1,4 +1,6 @@
-/** Deck uploads land here. FormSubmit delivers the JPEG; no mail password is stored in the shop. */
+import tls from "node:tls";
+
+/** Deck uploads land here. Sent through Gmail using a send-only app password. */
 export const SKATE_ART_INBOX = "questroxs18@gmail.com";
 
 /**
@@ -6,41 +8,108 @@ export const SKATE_ART_INBOX = "questroxs18@gmail.com";
  * @returns {Promise<string>}
  */
 export async function sendSkateGraphic(input) {
+  const password = (process.env.GMAIL_APP_PASSWORD || "").replace(/\s/g, "");
+  if (password.length < 16) throw new Error("Gmail app password is not set");
   const filename = input.filename.replace(/[^a-z0-9.-]/gi, "") || "deck.jpg";
-  const boundary = `----chubz${crypto.randomUUID().replaceAll("-", "")}`;
-  const enc = new TextEncoder();
-  /** @param {string} name @param {string} value */
-  const field = (name, value) =>
-    enc.encode(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`);
-  const parts = [
-    field("_subject", input.subject),
-    field("_captcha", "false"),
-    field("_template", "table"),
-    field("deck", input.message),
-    enc.encode(
-      `--${boundary}\r\nContent-Disposition: form-data; name="attachment"; filename="${filename}"\r\nContent-Type: image/jpeg\r\n\r\n`,
-    ),
-    input.jpeg,
-    enc.encode(`\r\n--${boundary}--\r\n`),
-  ];
-  const length = parts.reduce((sum, part) => sum + part.length, 0);
-  const body = new Uint8Array(length);
-  let offset = 0;
-  for (const part of parts) {
-    body.set(part, offset);
-    offset += part.length;
-  }
-  const response = await fetch(`https://formsubmit.co/ajax/${SKATE_ART_INBOX}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": `multipart/form-data; boundary=${boundary}`,
-      Origin: "https://mrchubz.com",
-      Referer: "https://mrchubz.com/skate",
-    },
-    body,
+  const boundary = `chubz${crypto.randomUUID().replaceAll("-", "")}`;
+  const subject = input.subject.replace(/[\r\n]/g, " ").slice(0, 180);
+  const text = input.message.replace(/\r?\n/g, "\r\n");
+  const image = Buffer.from(input.jpeg).toString("base64").replace(/.{1,76}/g, "$&\r\n").trim();
+  const mime = [
+    `From: Chubz <${SKATE_ART_INBOX}>`,
+    `To: ${SKATE_ART_INBOX}`,
+    `Subject: ${subject}`,
+    "MIME-Version: 1.0",
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    "",
+    `--${boundary}`,
+    "Content-Type: text/plain; charset=utf-8",
+    "",
+    text,
+    `--${boundary}`,
+    `Content-Type: image/jpeg; name="${filename}"`,
+    `Content-Disposition: attachment; filename="${filename}"`,
+    "Content-Transfer-Encoding: base64",
+    "",
+    image,
+    `--${boundary}--`,
+    "",
+  ].join("\r\n");
+  const stuffed = mime
+    .split("\r\n")
+    .map((line) => (line.startsWith(".") ? `.${line}` : line))
+    .join("\r\n");
+  await smtpSend(password, stuffed);
+  return "sent";
+}
+
+function smtpSend(password, data) {
+  const user = SKATE_ART_INBOX;
+  return new Promise((resolve, reject) => {
+    const socket = tls.connect({ host: "smtp.gmail.com", port: 465, servername: "smtp.gmail.com" });
+    let buf = "";
+    /** @type {null | (() => void)} */
+    let pump = null;
+    let settled = false;
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
+      socket.destroy();
+      reject(error instanceof Error ? error : new Error(String(error)));
+    };
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      socket.end();
+      resolve("sent");
+    };
+    const readReply = () =>
+      new Promise((res, rej) => {
+        const take = () => {
+          const match = buf.match(/(?:\d{3}-[^\r]*\r\n)*\d{3} [^\r]*\r\n/);
+          if (!match) return;
+          const reply = match[0];
+          buf = buf.slice(reply.length);
+          pump = null;
+          const last = reply.trim().split("\r\n").at(-1) ?? "";
+          const code = Number(last.slice(0, 3));
+          const text = reply.replaceAll("\r\n", " | ").slice(0, 240);
+          if (code >= 400) rej(new Error(text));
+          else res(text);
+        };
+        pump = take;
+        take();
+      });
+    socket.on("data", (chunk) => {
+      buf += chunk.toString("latin1");
+      pump?.();
+    });
+    socket.on("error", fail);
+    socket.setTimeout(20_000, () => fail(new Error("Gmail timed out")));
+    void (async () => {
+      try {
+        await readReply();
+        socket.write("EHLO mrchubz.com\r\n");
+        await readReply();
+        socket.write("AUTH LOGIN\r\n");
+        await readReply();
+        socket.write(`${Buffer.from(user).toString("base64")}\r\n`);
+        await readReply();
+        socket.write(`${Buffer.from(password).toString("base64")}\r\n`);
+        await readReply();
+        socket.write(`MAIL FROM:<${user}>\r\n`);
+        await readReply();
+        socket.write(`RCPT TO:<${user}>\r\n`);
+        await readReply();
+        socket.write("DATA\r\n");
+        await readReply();
+        socket.write(`${data}\r\n.\r\n`);
+        await readReply();
+        socket.write("QUIT\r\n");
+        done();
+      } catch (error) {
+        fail(error);
+      }
+    })();
   });
-  const text = await response.text();
-  if (!response.ok) throw new Error(text.slice(0, 240) || `Mail failed (${response.status})`);
-  return text.slice(0, 240);
 }

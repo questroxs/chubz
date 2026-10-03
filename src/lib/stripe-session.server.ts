@@ -195,7 +195,7 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
   const { hostSkateArt } = await import("@/lib/skate-art.server");
   await Promise.race([
     emailSkateGraphics(lines),
-    new Promise((resolve) => setTimeout(resolve, 4_000)),
+    new Promise((resolve) => setTimeout(resolve, 12_000)),
   ]);
   const artUrls = await hostSkateArt(lines);
   const origin = requestOrigin();
