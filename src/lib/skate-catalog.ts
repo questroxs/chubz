@@ -4,7 +4,7 @@ const skateDetails = [
   "Custom bottom print through Skateboard Dropshipper, the dropship side of Point Distribution in Las Vegas.",
   "These steep widths use a 9 × 34 in artboard, 300 DPI JPEG, 2700 × 10200 px.",
   "The big photo is Point’s 8.00 steep shot. The graphic already on that deck is their sample, not your file.",
-  "Point’s API starts around $1,000 a week, so this does not auto-send. The art stays on the order for you to place on their site.",
+  "Made to order after checkout. Chubz places the deck with Point Distribution.",
 ];
 
 function skate(slug: string, name: string, tag: string, thumb: string): Product {

@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { Menu, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 import { bagCount, useShop } from "@/lib/shop-store";
-import { useSkateRack } from "@/lib/skate-host";
 
 export function SiteHeader() {
   const hydrated = useShop((state) => state.hydrated);
@@ -10,7 +9,6 @@ export function SiteHeader() {
   const setCartOpen = useShop((state) => state.setCartOpen);
   const [open, setOpen] = useState(false);
   const shown = hydrated ? count : 0;
-  const skate = useSkateRack();
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
@@ -45,11 +43,9 @@ export function SiteHeader() {
           <Link to="/gear" className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
             Gear
           </Link>
-          {skate ? (
-            <Link to="/skate" className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
-              Skate gear
-            </Link>
-          ) : null}
+          <Link to="/skate" className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
+            Skate
+          </Link>
           <Link to="/wall" className="px-3 py-2 text-sm font-semibold uppercase tracking-widest text-mute hover:text-paper">
             The Wall
           </Link>
@@ -76,15 +72,6 @@ export function SiteHeader() {
           </button>
         </div>
       </div>
-      {skate ? (
-        <Link
-          to="/skate"
-          className="flex min-h-12 items-center justify-center bg-yellow text-sm font-semibold uppercase tracking-widest text-yellow-ink md:hidden"
-          onClick={() => setOpen(false)}
-        >
-          Skateboard gear
-        </Link>
-      ) : null}
       {open ? (
         <nav className="flex flex-col border-t border-line px-4 py-2 md:hidden" aria-label="Mobile">
           <Link to="/shop" search={{ lane: "all" }} className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
@@ -99,11 +86,9 @@ export function SiteHeader() {
           <Link to="/gear" className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
             Gear
           </Link>
-          {skate ? (
-            <Link to="/skate" className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
-              Skate gear
-            </Link>
-          ) : null}
+          <Link to="/skate" className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
+            Skate
+          </Link>
           <Link to="/wall" className="min-h-11 py-3 text-lg font-semibold uppercase tracking-widest" onClick={() => setOpen(false)}>
             The Wall
           </Link>

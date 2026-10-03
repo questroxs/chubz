@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { compressImage } from "@/lib/compress-image";
 import { money } from "@/lib/catalog";
 import { useOwnerDesk } from "@/lib/owner-desk";
-import { skatePageAllowed } from "@/lib/skate-host";
 import { skateProducts } from "@/lib/skate-catalog";
 import { useShop } from "@/lib/shop-store";
 
@@ -12,9 +11,11 @@ export const Route = createFileRoute("/skate")({
     const deck = typeof search.deck === "string" ? search.deck : "";
     return /^steep-\d{3}$/.test(deck) ? { deck } : {};
   },
-  loader: async () => ({ show: await skatePageAllowed() }),
   head: () => ({
-    meta: [{ title: "Chubz" }, { name: "description", content: "Chubz streetwear." }],
+    meta: [
+      { title: "Skateboard gear — Chubz" },
+      { name: "description", content: "Steep skate decks. Upload the graphic for the bottom." },
+    ],
   }),
   component: SkatePage,
 });
@@ -42,7 +43,6 @@ const PARTS = [
 ];
 
 function SkatePage() {
-  const { show } = Route.useLoaderData();
   const requested = Route.useSearch().deck;
   const [slug, setSlug] = useState(requested ?? "steep-800");
   const add = useShop((state) => state.add);
@@ -50,11 +50,6 @@ function SkatePage() {
   const [art, setArt] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    if (!show) return;
-    document.title = "Skateboard gear — Chubz";
-  }, [show]);
 
   useEffect(() => {
     if (requested) setSlug(requested);
@@ -91,7 +86,7 @@ function SkatePage() {
     setNote(`${deck.name} is in the cart.`);
   }
 
-  if (!show || !deck) {
+  if (!deck) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16">
         <h1 className="text-3xl font-semibold">That page isn’t on this shop.</h1>
@@ -106,7 +101,7 @@ function SkatePage() {
       <p className="text-xs font-semibold uppercase tracking-widest text-volt">Point Distribution · Las Vegas</p>
       <h1 className="mt-2 text-4xl font-semibold">Skateboard gear</h1>
       <p className="mt-3 max-w-2xl text-mute">
-        Steep decks from Skateboard Dropshipper, using their photos. Upload the bottom graphic. Grip, wheels, and trucks are on their wholesale side, not as one-off pictures, so they are listed and not in the cart.
+        Steep decks, printed on the bottom. Pick a width and upload the graphic.
       </p>
 
       <div className="mt-8 grid gap-8 md:grid-cols-2">
@@ -191,7 +186,7 @@ function SkatePage() {
       <section className="mt-14">
         <h2 className="text-2xl font-semibold">Also on their shop</h2>
         <p className="mt-2 max-w-2xl text-sm text-mute">
-          Point sells these too. The public copies of their photos for these shapes did not come through, so they are not a buy button and there is no stand-in picture.
+          Point sells these too. They are not in the cart yet.
         </p>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {SHAPES.map((shape) => (

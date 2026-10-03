@@ -64,6 +64,15 @@ function Home() {
         </div>
       </section>
 
+      <div className="border-b border-line">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+          <p className="text-sm font-semibold uppercase tracking-widest text-mute">Steep decks · your graphic on the bottom</p>
+          <Link to="/skate" className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold uppercase tracking-widest text-paper hover:text-pink">
+            Skate
+          </Link>
+        </div>
+      </div>
+
       <section className="mx-auto grid max-w-6xl items-start gap-8 px-4 py-14 md:grid-cols-[1.2fr_0.8fr]">
         <WornLook
           face={face}

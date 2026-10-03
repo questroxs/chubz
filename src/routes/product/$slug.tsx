@@ -18,7 +18,7 @@ import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type 
 import { CHUB_FACES, CHUB_INKS, faceSrc, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
 import { useOwnerDesk } from "@/lib/owner-desk";
-import { useSkateCatalog, useSkateRack } from "@/lib/skate-host";
+import "@/lib/skate-catalog";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>): { blank?: string } => {
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/product/$slug")({
   },
   head: ({ params }) => {
     const product = getProduct(params.slug);
-    const title = product && product.lane !== "skate" ? `${product.name} — Chubz` : "Missing piece — Chubz";
+    const title = product ? `${product.name} — Chubz` : "Missing piece — Chubz";
     return {
       meta: [{ title }],
     };
@@ -42,8 +42,6 @@ function ProductPage() {
   const requested = blankById(requestedBlank);
   const add = useShop((state) => state.add);
   const desk = useOwnerDesk();
-  const onSkate = useSkateRack();
-  useSkateCatalog();
   const fromHome = useShop((state) => state.chubFromHome);
   const storedFace = useShop((state) => state.chubFace);
   const storedInk = useShop((state) => state.chubInk);
@@ -82,7 +80,7 @@ function ProductPage() {
     };
   }, [face, ink]);
 
-  if (!product || (product.lane === "skate" && !onSkate)) {
+  if (!product) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16">
         <h1 className="text-3xl font-semibold">That piece isn’t up.</h1>
