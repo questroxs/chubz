@@ -177,6 +177,8 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
 }
 
 export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ url: string; livemode: boolean }> {
+  const { emailSkateGraphics } = await import("@/lib/skate-mail.server");
+  await emailSkateGraphics(lines);
   const origin = requestOrigin();
   const jobs = await saveJobs(lines);
   const attempts: Array<[boolean, boolean]> = [
