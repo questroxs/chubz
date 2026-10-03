@@ -20,7 +20,6 @@ import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as PrintRouteImport } from './routes/print'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SkateRouteImport } from './routes/skate'
-import { Route as SkateArtCheckRouteImport } from './routes/skate-art-check'
 import { Route as WallRouteImport } from './routes/wall'
 import { Route as ProductSlugRouteImport } from './routes/product/$slug'
 
@@ -79,11 +78,6 @@ const SkateRoute = SkateRouteImport.update({
   path: '/skate',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SkateArtCheckRoute = SkateArtCheckRouteImport.update({
-  id: '/skate-art-check',
-  path: '/skate-art-check',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const WallRoute = WallRouteImport.update({
   id: '/wall',
   path: '/wall',
@@ -107,7 +101,6 @@ export interface FileRoutesByFullPath {
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
   '/skate': typeof SkateRoute
-  '/skate-art-check': typeof SkateArtCheckRoute
   '/wall': typeof WallRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -123,7 +116,6 @@ export interface FileRoutesByTo {
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
   '/skate': typeof SkateRoute
-  '/skate-art-check': typeof SkateArtCheckRoute
   '/wall': typeof WallRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -140,7 +132,6 @@ export interface FileRoutesById {
   '/print': typeof PrintRoute
   '/shop': typeof ShopRoute
   '/skate': typeof SkateRoute
-  '/skate-art-check': typeof SkateArtCheckRoute
   '/wall': typeof WallRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -158,7 +149,6 @@ export interface FileRouteTypes {
     | '/print'
     | '/shop'
     | '/skate'
-    | '/skate-art-check'
     | '/wall'
     | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -174,7 +164,6 @@ export interface FileRouteTypes {
     | '/print'
     | '/shop'
     | '/skate'
-    | '/skate-art-check'
     | '/wall'
     | '/product/$slug'
   id:
@@ -190,7 +179,6 @@ export interface FileRouteTypes {
     | '/print'
     | '/shop'
     | '/skate'
-    | '/skate-art-check'
     | '/wall'
     | '/product/$slug'
   fileRoutesById: FileRoutesById
@@ -207,7 +195,6 @@ export interface RootRouteChildren {
   PrintRoute: typeof PrintRoute
   ShopRoute: typeof ShopRoute
   SkateRoute: typeof SkateRoute
-  SkateArtCheckRoute: typeof SkateArtCheckRoute
   WallRoute: typeof WallRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
@@ -291,13 +278,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skate-art-check': {
-      id: '/skate-art-check'
-      path: '/skate-art-check'
-      fullPath: '/skate-art-check'
-      preLoaderRoute: typeof SkateArtCheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/wall': {
       id: '/wall'
       path: '/wall'
@@ -327,7 +307,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrintRoute: PrintRoute,
   ShopRoute: ShopRoute,
   SkateRoute: SkateRoute,
-  SkateArtCheckRoute: SkateArtCheckRoute,
   WallRoute: WallRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
