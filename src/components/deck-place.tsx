@@ -1,29 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { GRIPS, TRUCKS, WHEELS, type GripId, type TruckId, type WheelId } from "@/lib/skate-gear";
 
 /** Point’s standard-deck artboard. Steep widths on this shop are all under 8.5. */
 export const SHEET_W = 9;
 export const SHEET_H = 34;
-
-export const TRUCKS = [
-  { id: "none", label: "No trucks" },
-  { id: "5.0", label: "Stock 5.0" },
-  { id: "5.25", label: "Stock 5.25" },
-  { id: "5.5", label: "Stock 5.5" },
-  { id: "longboard", label: "Longboard" },
-] as const;
-
-export const WHEELS = [
-  { id: "none", label: "No wheels" },
-  { id: "type-t", label: "Type T · 99a" },
-  { id: "type-d", label: "Type D · 101a inner / 99a outer" },
-  { id: "type-pc", label: "Type PC · 98a outer" },
-  { id: "type-lb", label: "Type LB · 58–76 mm" },
-] as const;
-
-export const GRIPS = [
-  { id: "none", label: "No grip" },
-  { id: "sheet", label: "Perforated sheet" },
-] as const;
 
 export type DeckPlace = {
   side: "bottom" | "top";
@@ -31,9 +11,9 @@ export type DeckPlace = {
   scaleY: number;
   ox: number;
   oy: number;
-  truck: (typeof TRUCKS)[number]["id"];
-  wheel: (typeof WHEELS)[number]["id"];
-  grip: (typeof GRIPS)[number]["id"];
+  truck: TruckId;
+  wheel: WheelId;
+  grip: GripId;
 };
 
 const START: DeckPlace = {
@@ -82,9 +62,9 @@ export function placeNote(width: string, px: { w: number; h: number } | null, pl
     lines.push(`About ${dpiX} DPI across and ${dpiY} DPI down at this size. Point wants 300 DPI, 2700×10200 px, CMYK JPEG.`);
   }
   lines.push(
-    `Trucks: ${truck}. Point’s stock widths are 5.0, 5.25, 5.5, and longboard. A custom hanger or baseplate color is 25 sets.`,
-    `Wheels: ${wheel}. Type T is 99a, stock program, 25 sets to print. Type D and Type PC are 250 sets. Type LB custom print is 25 sets, 58–76 mm.`,
-    `Grip: ${grip}. Point’s sheet is premium grit on a waterproof perforated backing. A custom die-cut is 100 sheets.`,
+    `Trucks: ${truck}${TRUCKS.find((item) => item.id === place.truck)?.price ? ` (+$${TRUCKS.find((item) => item.id === place.truck)?.price})` : ""}. Point’s stock widths are 5.0, 5.25, 5.5, and longboard. A custom hanger or baseplate color is 25 sets.`,
+    `Wheels: ${wheel}${WHEELS.find((item) => item.id === place.wheel)?.price ? ` (+$${WHEELS.find((item) => item.id === place.wheel)?.price})` : ""}. Type T is 99a. Type D and Type PC are specialty. Type LB is 58–76 mm.`,
+    `Grip: ${grip}${GRIPS.find((item) => item.id === place.grip)?.price ? ` (+$${GRIPS.find((item) => item.id === place.grip)?.price})` : ""}. Premium grit on a waterproof perforated sheet. A custom die-cut is 100 sheets.`,
     "Point’s steep deck is a bottom print. The rounded shape is this width on the 9×34 sheet, not their die line.",
   );
   return lines.join("\n");
@@ -346,33 +326,33 @@ export function DeckStudio({
         <div className="mt-2 grid grid-cols-2 gap-2">
           {TRUCKS.map((item) => (
             <button key={item.id} type="button" aria-pressed={place.truck === item.id} onClick={() => patch({ truck: item.id })} className={place.truck === item.id ? "min-h-11 border-2 border-pink px-2 text-xs font-semibold uppercase tracking-widest" : "min-h-11 border border-line px-2 text-xs font-semibold uppercase tracking-widest"}>
-              {item.label}
+              {item.label}{item.price ? ` · $${item.price}` : ""}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-sm text-mute">Point’s stock trucks. A custom hanger or baseplate color is 25 sets, so it is not a separate price here.</p>
+        <p className="mt-2 text-sm text-mute">Stock trucks, added to the deck. A custom hanger or baseplate color is 25 sets, so that is not a one-off price.</p>
       </fieldset>
       <fieldset className="mt-4">
         <legend className="text-xs font-semibold uppercase tracking-widest">Wheels</legend>
         <div className="mt-2 grid gap-2">
           {WHEELS.map((item) => (
             <button key={item.id} type="button" aria-pressed={place.wheel === item.id} onClick={() => patch({ wheel: item.id })} className={place.wheel === item.id ? "min-h-11 border-2 border-pink px-2 text-left text-xs font-semibold uppercase tracking-widest" : "min-h-11 border border-line px-2 text-left text-xs font-semibold uppercase tracking-widest"}>
-              {item.label}
+              {item.label}{item.price ? ` · $${item.price}` : ""}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-sm text-mute">Type T is their 99a stock program. Custom wheel printing starts at 25 sets. Type D and Type PC are 250 sets.</p>
+        <p className="mt-2 text-sm text-mute">A set of four. Type T is 99a. Custom printing on wheels starts at 25 sets, so these are stock.</p>
       </fieldset>
       <fieldset className="mt-4">
         <legend className="text-xs font-semibold uppercase tracking-widest">Grip</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {GRIPS.map((item) => (
             <button key={item.id} type="button" aria-pressed={place.grip === item.id} onClick={() => patch({ grip: item.id })} className={place.grip === item.id ? "min-h-11 border-2 border-pink px-2 text-xs font-semibold uppercase tracking-widest" : "min-h-11 border border-line px-2 text-xs font-semibold uppercase tracking-widest"}>
-              {item.label}
+              {item.label}{item.price ? ` · $${item.price}` : ""}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-sm text-mute">Premium grit on a waterproof perforated sheet. A custom die-cut is 100 sheets.</p>
+        <p className="mt-2 text-sm text-mute">One perforated sheet, added to the deck. A custom die-cut is 100 sheets.</p>
       </fieldset>
     </div>
   );

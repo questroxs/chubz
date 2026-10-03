@@ -15,6 +15,9 @@ export type BagLine = {
   note?: string;
   /** JPEG of how they placed the graphic. */
   proof?: string;
+  truck?: string;
+  wheel?: string;
+  grip?: string;
   /** mean-orange, blue-yellow, and so on. The print file is `art`. */
   ink?: string;
   blankId?: string;

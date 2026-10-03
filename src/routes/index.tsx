@@ -15,6 +15,7 @@ export const Route = createFileRoute("/")({
         content: "Tees, hoodies, and embroidered caps with the chub. Unisex blanks from Printful.",
       },
     ],
+    links: [{ rel: "preload", as: "image", href: "/looks/home-model.jpg" }],
   }),
   component: Home,
 });

@@ -21,7 +21,7 @@ function CartPage() {
     .map((line) => {
       const product = getProduct(line.slug);
       const blankId = line.blankId ?? (product && !product.custom && product.lane !== "bag" && product.lane !== "skate" ? defaultBlankId(product.lane) : undefined);
-      const price = unitPrice(line.slug, line.backPrint, blankId);
+      const price = unitPrice(line.slug, line.backPrint, blankId, line);
       const color = (blankId ? colorOnBlank(blankId, line.colorId) : undefined) ?? colorById(line.colorId);
       if (!product || price == null || !color) return null;
       return { ...line, product, price, color };

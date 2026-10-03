@@ -1,5 +1,6 @@
 import { blankById } from "@/lib/blanks";
 import { colorsFor, SHIRT_COLORS, type ShirtColor } from "@/lib/gildan-colors";
+import { gearPrice, type GearPick } from "@/lib/skate-gear";
 
 export { colorsFor, SHIRT_COLORS };
 export type { ShirtColor };
@@ -340,7 +341,7 @@ export function colorById(id: string) {
   return SHIRT_COLORS.find((color) => color.id === id);
 }
 
-export function unitPrice(slug: string, backPrint: boolean, blankId?: string) {
+export function unitPrice(slug: string, backPrint: boolean, blankId?: string, gear?: GearPick) {
   const product = getProduct(slug);
   if (!product) return null;
   const blank = blankById(blankId);
@@ -349,7 +350,8 @@ export function unitPrice(slug: string, backPrint: boolean, blankId?: string) {
     return blank.price + (backPrint ? BACK_PRINT_PRICE : 0);
   }
   if (backPrint && !product.custom) return null;
-  return product.price + (backPrint ? BACK_PRINT_PRICE : 0);
+  const base = product.price + (backPrint ? BACK_PRINT_PRICE : 0);
+  return product.lane === "skate" ? base + gearPrice(gear) : base;
 }
 
 export function laneLabel(lane: Lane) {

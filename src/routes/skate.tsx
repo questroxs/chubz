@@ -5,6 +5,7 @@ import { compressImage } from "@/lib/compress-image";
 import { money } from "@/lib/catalog";
 import { useOwnerDesk } from "@/lib/owner-desk";
 import { skateProducts } from "@/lib/skate-catalog";
+import { gearPrice, truckById, wheelById, gripById } from "@/lib/skate-gear";
 import { useShop } from "@/lib/shop-store";
 
 export const Route = createFileRoute("/skate")({
@@ -35,10 +36,12 @@ function SkatePage() {
   const desk = useOwnerDesk();
   const [art, setArt] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [spot, setSpot] = useState<DeckPlace | null>(null);
   const [busy, setBusy] = useState(false);
   const placed = useRef<{ place: DeckPlace; note: string } | null>(null);
   const onPlace = useCallback((place: DeckPlace, text: string) => {
     placed.current = { place, note: text };
+    setSpot(place);
   }, []);
 
   useEffect(() => {
@@ -82,7 +85,19 @@ function SkatePage() {
         proof = undefined;
       }
     }
-    add({ slug: deck.slug, size: "OS", colorId: "black", backPrint: false, qty: 1, art, note: spot?.note, proof });
+    add({
+      slug: deck.slug,
+      size: "OS",
+      colorId: "black",
+      backPrint: false,
+      qty: 1,
+      art,
+      note: spot?.note,
+      proof,
+      truck: spot?.place.truck,
+      wheel: spot?.place.wheel,
+      grip: spot?.place.grip,
+    });
     setNote(`${deck.name} is in the cart. Placement goes to the shop email at checkout.`);
   }
 
@@ -95,6 +110,9 @@ function SkatePage() {
   }
 
   const cost = desk?.costs[deck.slug];
+  const extras = gearPrice(spot ?? undefined);
+  const total = deck.price + extras;
+  const picked = [truckById(spot?.truck), wheelById(spot?.wheel), gripById(spot?.grip)].filter((item) => item.price > 0);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -118,7 +136,11 @@ function SkatePage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-yellow">{deck.tag} steep</p>
           <h2 className="mt-1 text-3xl font-semibold">{deck.name}</h2>
-          <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(deck.price)}</p>
+          <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(total)}</p>
+          <p className="mt-2 text-sm text-mute">
+            Deck {money(deck.price)}
+            {picked.length ? ` · ${picked.map((item) => `${item.label} ${money(item.price)}`).join(" · ")}` : " · add trucks, wheels, or grip on the sheet"}
+          </p>
           {cost != null ? <p className="mt-2 text-sm text-mute">Wholesale {money(cost)}</p> : null}
           {desk?.notes[deck.slug] ? <p className="mt-2 text-sm text-mute">{desk.notes[deck.slug]}</p> : null}
           <p className="mt-4 text-mute">{deck.blurb}</p>

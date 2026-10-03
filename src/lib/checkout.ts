@@ -1,5 +1,6 @@
 import { colorById, colorsFor, getProduct, SIZES, unitPrice, type Size } from "@/lib/catalog";
 import { blankById, blankSizes, blankVariantId, colorOnBlank, defaultBlankId } from "@/lib/blanks";
+import { GRIPS, TRUCKS, WHEELS } from "@/lib/skate-gear";
 
 export type CheckoutLine = {
   slug: string;
@@ -12,6 +13,9 @@ export type CheckoutLine = {
   blankId?: string;
   note?: string;
   proof?: string;
+  truck?: string;
+  wheel?: string;
+  grip?: string;
 };
 
 const ART_LIMIT = 180_000;
@@ -39,6 +43,9 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       blankId?: unknown;
       note?: unknown;
       proof?: unknown;
+      truck?: unknown;
+      wheel?: unknown;
+      grip?: unknown;
     };
     const slug = typeof record.slug === "string" ? record.slug.trim() : "";
     const product = getProduct(slug);
@@ -78,6 +85,9 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
     const ink =
       typeof record.ink === "string" && /^[a-z]+(-[a-z]+)?$/.test(record.ink) ? record.ink : undefined;
     const note = typeof record.note === "string" ? record.note.replace(/[^\S\n]+/g, " ").trim().slice(0, 1500) : undefined;
+    const truck = typeof record.truck === "string" && TRUCKS.some((item) => item.id === record.truck) ? record.truck : undefined;
+    const wheel = typeof record.wheel === "string" && WHEELS.some((item) => item.id === record.wheel) ? record.wheel : undefined;
+    const grip = typeof record.grip === "string" && GRIPS.some((item) => item.id === record.grip) ? record.grip : undefined;
     let proof: string | undefined;
     if (typeof record.proof === "string" && record.proof.startsWith("data:image/jpeg") && record.proof.length <= ART_LIMIT) {
       proof = record.proof;
@@ -93,6 +103,9 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       blankId: resolvedBlank,
       note: note || undefined,
       proof,
+      truck,
+      wheel,
+      grip,
     });
   }
 

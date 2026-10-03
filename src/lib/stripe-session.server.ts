@@ -1,5 +1,6 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { colorById, getProduct, money, unitPrice } from "@/lib/catalog";
+import { gearLabel } from "@/lib/skate-gear";
 import { blankById, colorOnBlank } from "@/lib/blanks";
 import type { CheckoutLine } from "@/lib/checkout";
 import { getSql } from "@/lib/db";
@@ -51,7 +52,7 @@ async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
   for (const line of lines) {
     const product = getProduct(line.slug);
     const color = (line.blankId ? colorOnBlank(line.blankId, line.colorId) : undefined) ?? colorById(line.colorId);
-    const price = unitPrice(line.slug, line.backPrint, line.blankId);
+    const price = unitPrice(line.slug, line.backPrint, line.blankId, line);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
     jobs.push({
       id: `job_${crypto.randomUUID()}`,
@@ -67,7 +68,7 @@ async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
     const sql = await getSql();
     for (const [index, line] of lines.entries()) {
       const job = jobs[index];
-      const price = unitPrice(line.slug, line.backPrint, line.blankId);
+      const price = unitPrice(line.slug, line.backPrint, line.blankId, line);
       if (!job || price == null) continue;
       await sql`
         insert into print_jobs (id, slug, size, color_name, back_print, quantity, unit_price, art)
@@ -100,11 +101,12 @@ function checkoutPayload(
   const items = lines.map((line, index) => {
     const product = getProduct(line.slug);
     const color = (line.blankId ? colorOnBlank(line.blankId, line.colorId) : undefined) ?? colorById(line.colorId);
-    const price = unitPrice(line.slug, line.backPrint, line.blankId);
+    const price = unitPrice(line.slug, line.backPrint, line.blankId, line);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
     const blank = blankById(line.blankId);
     const artUrl = artUrls[index] ?? null;
-    const name = `${product.name}${blank ? ` · ${blank.name}` : ""}${line.ink ? ` · ${line.ink.replace("-", " ")} chub` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}`;
+    const extra = gearLabel(line);
+    const name = `${product.name}${blank ? ` · ${blank.name}` : ""}${line.ink ? ` · ${line.ink.replace("-", " ")} chub` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}${extra ? ` · ${extra}` : ""}`;
     const plain = blank
       ? `${blank.note} ${blank.file === "embroidery_front" ? "Embroidered on the front." : "Printed on the front."}`
       : product.supplier === "point"
@@ -133,7 +135,7 @@ function checkoutPayload(
     };
   });
 
-  const subtotal = lines.reduce((sum, line) => sum + (unitPrice(line.slug, line.backPrint, line.blankId) ?? 0) * line.quantity, 0);
+  const subtotal = lines.reduce((sum, line) => sum + (unitPrice(line.slug, line.backPrint, line.blankId, line) ?? 0) * line.quantity, 0);
   const hasPoint = lines.some((line) => getProduct(line.slug)?.supplier === "point");
   const hasPrintful = lines.some((line) => getProduct(line.slug)?.supplier === "printful");
   const footer = hasPoint && !hasPrintful

@@ -104,6 +104,7 @@ export function ownerWholesale(): OwnerDesk | null {
   return {
     costs: COSTS,
     notes: NOTES,
-    gearNote: "Prices sit about 50% over the CJdropshipping wholesale number on that SKU.",
+    gearNote:
+      "Deck stand-in is Point’s public one-off, about $45.99, street $69 (33% margin). Trucks stand-in $18 street $36, longboard $24 street $48. Wheels stand-in Type T $14 street $28, Type D and PC $22 street $44, Type LB $18 street $36. Grip stand-in $5 street $12. Point hides the real login price.",
   };
 }

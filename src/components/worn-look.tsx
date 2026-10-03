@@ -65,7 +65,7 @@ export function WornLook({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [drawn, setDrawn] = useState(false);
-  const photo = modelLook(face, ink);
+  const photo = face === "mean" && ink === "orange" ? "/looks/home-model.jpg" : modelLook(face, ink);
   const shirtIsBlack = (() => {
     const [r, g, b] = hexToRgb(shirtHex);
     return r + g + b < 90;
@@ -139,7 +139,24 @@ export function WornLook({
 
   return (
     <div className={`relative overflow-hidden bg-panel ${className ?? ""}`}>
-      <img src={photo} alt={alt} decoding="async" className="h-full w-full object-cover" />
+      <img
+        src={photo}
+        alt={alt}
+        width={720}
+        height={1080}
+        decoding="async"
+        fetchPriority="high"
+        className="h-full w-full bg-ink object-cover"
+        onError={(event) => {
+          const img = event.currentTarget;
+          if (img.dataset.fallback === "1") {
+            img.style.visibility = "hidden";
+            return;
+          }
+          img.dataset.fallback = "1";
+          img.src = "/art/chub-orange.png";
+        }}
+      />
       {shirtIsBlack ? null : (
         <canvas
           ref={canvasRef}
