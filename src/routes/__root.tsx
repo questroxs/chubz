@@ -5,6 +5,7 @@ import { CartSheet } from "@/components/cart-sheet";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ShopHydrated } from "@/components/shop-hydrated";
 import { SiteFooter } from "@/components/site-footer";
+import { VisitMeter } from "@/components/visit-meter";
 import { SiteHeader } from "@/components/site-header";
 import appCss from "../styles.css?url";
 
@@ -46,6 +47,7 @@ export const Route = createRootRoute({
               <Outlet />
             </div>
             <SiteFooter />
+            <VisitMeter />
           </div>
         </AuthProvider>
         <Scripts />
