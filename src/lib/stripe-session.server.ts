@@ -89,14 +89,29 @@ async function saveJobs(lines: CheckoutLine[]): Promise<SavedJob[]> {
   return jobs;
 }
 
-function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[], withImages: boolean, withTax: boolean) {
+function checkoutPayload(
+  lines: CheckoutLine[],
+  origin: string,
+  jobs: SavedJob[],
+  artUrls: Array<string | null>,
+  withImages: boolean,
+  withTax: boolean,
+) {
   const items = lines.map((line, index) => {
     const product = getProduct(line.slug);
     const color = (line.blankId ? colorOnBlank(line.blankId, line.colorId) : undefined) ?? colorById(line.colorId);
     const price = unitPrice(line.slug, line.backPrint, line.blankId);
     if (!product || !color || price == null) throw new Error("Cart has a piece we can’t sell.");
     const blank = blankById(line.blankId);
+    const artUrl = artUrls[index] ?? null;
     const name = `${product.name}${blank ? ` · ${blank.name}` : ""}${line.ink ? ` · ${line.ink.replace("-", " ")} chub` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}`;
+    const plain = blank
+      ? `${blank.note} ${blank.file === "embroidery_front" ? "Embroidered on the front." : "Printed on the front."}`
+      : product.supplier === "point"
+        ? "Point Distribution steep deck. Your file prints on the bottom."
+        : product.supplier === "cj"
+          ? product.blank
+          : `${product.blank}. Printful DTF.`;
     return {
       quantity: line.quantity,
       price_data: {
@@ -105,14 +120,13 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
         tax_behavior: "exclusive",
         product_data: {
           name,
-          description: blank
-            ? `${blank.note} ${blank.file === "embroidery_front" ? "Embroidered on the front." : "Printed on the front."}`
-            : product.supplier === "point"
-              ? "Point Distribution steep deck. Your file prints on the bottom. Placed by hand on Skateboard Dropshipper."
-              : product.supplier === "cj"
-                ? product.blank
-                : `${product.blank}. Printful DTF.`,
-          images: withImages && product.looks[0]?.src ? [`${origin}${product.looks[0].src}`] : undefined,
+          description: artUrl ? `Deck graphic, save this file: ${artUrl}` : plain,
+          images:
+            withImages && artUrl
+              ? [artUrl]
+              : withImages && product.looks[0]?.src
+                ? [`${origin}${product.looks[0].src}`]
+                : undefined,
           metadata: { slug: product.slug, job: jobs[index]?.id ?? "", size: line.size, color: color.name },
         },
       },
@@ -146,9 +160,9 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
       },
     },
     payment_intent_data: {
-      description: `Chubz print order ${money(subtotal)}`,
+      description: artNote(subtotal, lines, artUrls),
       receipt_email: "questroxs18@gmail.com",
-      metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs) },
+      metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs), ...artMeta(artUrls) },
     },
     custom_text: {
       shipping_address: {
@@ -158,7 +172,7 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
       },
       submit: { message: "Gear (caps, cans, markers) is not in this charge." },
     },
-    metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs) },
+    metadata: { jobs: jobs.map((job) => job.id).join(","), ...encodeJobs(jobs), ...artMeta(artUrls) },
     automatic_tax: withTax ? { enabled: true } : undefined,
     shipping_options: shippingOptions(subtotal).map((option) => ({
       shipping_rate_data: {
@@ -178,7 +192,12 @@ function checkoutPayload(lines: CheckoutLine[], origin: string, jobs: SavedJob[]
 
 export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ url: string; livemode: boolean }> {
   const { emailSkateGraphics } = await import("@/lib/skate-mail.server");
-  await emailSkateGraphics(lines);
+  const { hostSkateArt } = await import("@/lib/skate-art.server");
+  await Promise.race([
+    emailSkateGraphics(lines),
+    new Promise((resolve) => setTimeout(resolve, 4_000)),
+  ]);
+  const artUrls = await hostSkateArt(lines);
   const origin = requestOrigin();
   const jobs = await saveJobs(lines);
   const attempts: Array<[boolean, boolean]> = [
@@ -188,7 +207,7 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
   ];
   let session: StripeSession = {};
   for (const [withImages, withTax] of attempts) {
-    session = await postCheckout(checkoutPayload(lines, origin, jobs, withImages, withTax));
+    session = await postCheckout(checkoutPayload(lines, origin, jobs, artUrls, withImages, withTax));
     if (session.url) break;
     const message = session.error?.message?.toLowerCase() ?? "";
     const imageBlocked = message.includes("image") || message.includes("url");
@@ -197,4 +216,25 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
   }
   if (!session.url) throw new Error(session.error?.message || "Stripe did not return a checkout URL.");
   return { url: session.url, livemode: Boolean(session.livemode) };
+}
+
+function artNote(subtotal: number, lines: CheckoutLine[], artUrls: Array<string | null>): string {
+  const notes: string[] = [];
+  lines.forEach((line, index) => {
+    const url = artUrls[index];
+    if (url) notes.push(`Deck graphic ${line.slug}: ${url}`);
+    else if (line.art && getProduct(line.slug)?.lane === "skate") notes.push(`Deck graphic ${line.slug}: MISSING`);
+  });
+  const base = `Chubz print order ${money(subtotal)}`;
+  if (!notes.length) return base;
+  const full = `${base}. ${notes.join(" · ")}`;
+  return full.length > 990 ? `${full.slice(0, 987)}...` : full;
+}
+
+function artMeta(artUrls: Array<string | null>): Record<string, string> {
+  const meta: Record<string, string> = {};
+  artUrls.forEach((url, index) => {
+    if (url && url.length <= 500) meta[`art${index}`] = url;
+  });
+  return meta;
 }

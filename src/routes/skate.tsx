@@ -30,15 +30,15 @@ const SHAPES = [
 const PARTS = [
   {
     name: "Grip tape",
-    note: "Die-cut grip. Premium grit on a perforated sheet. Point’s minimum is 100 sheets. Their dropship shop does not publish a one-off grip photo.",
+    note: "Die-cut grip. Premium grit on a perforated sheet. Point’s minimum is 100 sheets. Point does not publish a one-off grip photo.",
   },
   {
     name: "Wheels",
-    note: "Custom printed wheels. 25 sets minimum. Sizes and colors can mix inside one graphic. No single-set photo on the dropship shop.",
+    note: "Custom printed wheels. 25 sets minimum. Sizes and colors can mix inside one graphic. No single-set photo from Point.",
   },
   {
     name: "Trucks",
-    note: "Stock trucks in 5.0, 5.25, 5.5, and longboard. Pad-printed hangers. 25 sets minimum. No one-off truck photo on the dropship shop.",
+    note: "Stock trucks in 5.0, 5.25, 5.5, and longboard. Pad-printed hangers. 25 sets minimum. No one-off truck photo from Point.",
   },
 ];
 
@@ -201,7 +201,7 @@ function SkatePage() {
       <section className="mt-14">
         <h2 className="text-2xl font-semibold">Grip, wheels, trucks</h2>
         <p className="mt-2 max-w-2xl text-sm text-mute">
-          Same company. These are wholesale minimums, not one-off dropship photos, so nothing here is invented and nothing is in the cart.
+          Same company. These are wholesale minimums, not one-off photos, so nothing here is invented and nothing is in the cart.
         </p>
         <ul className="mt-4 grid gap-3 md:grid-cols-3">
           {PARTS.map((part) => (

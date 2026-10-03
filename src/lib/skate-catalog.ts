@@ -1,7 +1,7 @@
 import { registerProducts, type Product } from "@/lib/catalog";
 
 const skateDetails = [
-  "Custom bottom print through Skateboard Dropshipper, the dropship side of Point Distribution in Las Vegas.",
+  "Custom bottom print. Point Distribution in Las Vegas prints the bottom.",
   "These steep widths use a 9 × 34 in artboard, 300 DPI JPEG, 2700 × 10200 px.",
   "The big photo is Point’s 8.00 steep shot. The graphic already on that deck is their sample, not your file.",
   "Made to order after checkout. Chubz places the deck with Point Distribution.",
@@ -20,7 +20,7 @@ function skate(slug: string, name: string, tag: string, thumb: string): Product 
     artAlt: "Point Distribution 8.00 steep deck with their sample graphic",
     looks: [
       { src: "/skate/steep-top.jpg", alt: "Point’s 8.00 steep deck, sample graphic still on the board" },
-      { src: thumb, alt: `${name} outline from Skateboard Dropshipper` },
+      { src: thumb, alt: `${name} width outline` },
     ],
     custom: true,
     oneSize: true,
