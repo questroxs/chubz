@@ -6,7 +6,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="border border-line bg-panel">
       <Link to="/product/$slug" params={{ slug: product.slug }} className="block">
-        <img src={look.src} alt={look.alt} className="aspect-[3/4] w-full object-cover" />
+        <img src={look.src} alt={look.alt} loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
         <div className="flex items-end justify-between gap-3 p-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-volt">

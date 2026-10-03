@@ -30,15 +30,19 @@ function Home() {
 
   return (
     <main>
-      <section className="relative border-b border-line">
+      <section
+        className="relative aspect-[3/2] max-h-[78vh] w-full overflow-hidden border-b border-line bg-ink bg-contain bg-center bg-no-repeat"
+        style={{ backgroundImage: "url(/art/chubz-crew.jpg)" }}
+      >
         <img
           src="/art/chubz-crew.jpg"
           alt="CHUBZ graffiti with the orange, blue, and green chubs"
           width={1100}
           height={733}
-          decoding="async"
+          decoding="sync"
           fetchPriority="high"
-          className="max-h-[78vh] w-full bg-ink object-contain"
+          className="h-full w-full object-contain"
+          onError={(event) => event.currentTarget.remove()}
         />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent" />
         <div className="absolute inset-x-0 bottom-0 mx-auto flex max-w-6xl flex-col gap-4 px-4 pb-8 md:pb-12">
@@ -103,7 +107,7 @@ function Home() {
                   onClick={() => setChub(option.face, option.ink)}
                   className={active ? "border-2 border-pink bg-panel p-2" : "border border-line bg-panel p-2"}
                 >
-                  <img src={`/art/chub-${option.face === "mean" ? "orange" : option.face}.png`} alt="" className="mx-auto h-36 w-full object-contain" />
+                  <img src={`/art/chub-${option.face === "mean" ? "orange" : option.face}.png`} alt="" loading="lazy" decoding="async" className="mx-auto h-36 w-full object-contain" />
                   <span className="mt-1 block text-xs font-semibold uppercase tracking-widest">{option.label}</span>
                 </button>
               );
@@ -152,14 +156,14 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
-          <img src="/looks/orange-tee-a.jpg" alt="Model in a black tee with the orange chub" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-tee-a.jpg" alt="Model in a black tee with the blue chub" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/orange-hoodie.jpg" alt="Model in a black hoodie with the orange chub" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-hoodie.jpg" alt="Model in a black hoodie with the blue chub" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/orange-tee-b.jpg" alt="Model in a tee with the orange chub, alley" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-tee-b.jpg" alt="Model in a tee with the blue chub" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/mean-green.jpg" alt="Model wearing the green chub" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/campaign.jpg" alt="Campaign shot of the chub on a model" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/orange-tee-a.jpg" alt="Model in a black tee with the orange chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/blue-tee-a.jpg" alt="Model in a black tee with the blue chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/orange-hoodie.jpg" alt="Model in a black hoodie with the orange chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/blue-hoodie.jpg" alt="Model in a black hoodie with the blue chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/orange-tee-b.jpg" alt="Model in a tee with the orange chub, alley" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/blue-tee-b.jpg" alt="Model in a tee with the blue chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/mean-green.jpg" alt="Model wearing the green chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
+          <img src="/looks/campaign.jpg" alt="Campaign shot of the chub on a model" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
         </div>
       </section>
 

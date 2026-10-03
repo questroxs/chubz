@@ -63,28 +63,35 @@ export function WornLook({
   className?: string;
   alt: string;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [drawn, setDrawn] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [broken, setBroken] = useState(false);
+  const [painted, setPainted] = useState<string | null>(null);
   const photo = face === "mean" && ink === "orange" ? "/looks/home-model.jpg" : modelLook(face, ink);
+  const shown = painted ?? photo;
   const shirtIsBlack = (() => {
     const [r, g, b] = hexToRgb(shirtHex);
     return r + g + b < 90;
   })();
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || shirtIsBlack) {
-      setDrawn(false);
+    setBroken(false);
+    const image = imgRef.current;
+    if (image && image.complete && image.naturalWidth === 0) setBroken(true);
+  }, [shown]);
+
+  useEffect(() => {
+    if (shirtIsBlack) {
+      setPainted(null);
       return;
     }
     let cancel = false;
-    setDrawn(false);
     const color = inkById(ink).hex;
     Promise.all([loadImage("/looks/blank-tee.jpg"), loadImage(MASK), loadImage(faceSrc(face))])
       .then(([model, mask, chub]) => {
         if (cancel) return;
         const width = 720;
         const height = Math.round((width * model.height) / model.width);
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
         const context = canvas.getContext("2d", { willReadFrequently: true });
@@ -127,42 +134,34 @@ export function WornLook({
           printWidth,
           printHeight,
         );
-        if (!cancel) setDrawn(true);
+        if (!cancel) {
+          setPainted(canvas.toDataURL("image/jpeg", 0.82));
+          setBroken(false);
+        }
       })
       .catch(() => {
-        if (!cancel) setDrawn(false);
+        if (!cancel) setPainted(null);
       });
     return () => {
       cancel = true;
     };
-  }, [face, ink, shirtHex, photo, shirtIsBlack]);
+  }, [face, ink, shirtHex, shirtIsBlack]);
 
   return (
-    <div className={`relative overflow-hidden bg-panel ${className ?? ""}`}>
-      <img
-        src={photo}
-        alt={alt}
-        width={720}
-        height={1080}
-        decoding="async"
-        fetchPriority="high"
-        className="h-full w-full bg-ink object-cover"
-        onError={(event) => {
-          const img = event.currentTarget;
-          if (img.dataset.fallback === "1") {
-            img.style.visibility = "hidden";
-            return;
-          }
-          img.dataset.fallback = "1";
-          img.src = "/art/chub-orange.png";
-        }}
-      />
-      {shirtIsBlack ? null : (
-        <canvas
-          ref={canvasRef}
-          className={drawn ? "absolute inset-0 h-full w-full object-cover" : "absolute inset-0 h-full w-full object-cover opacity-0"}
-          role="img"
-          aria-label={alt}
+    <div
+      className={`relative overflow-hidden bg-ink bg-cover bg-center ${className ?? ""}`}
+      style={broken ? undefined : { backgroundImage: `url("${shown}")` }}
+    >
+      {broken ? null : (
+        <img
+          ref={imgRef}
+          src={shown}
+          alt={alt}
+          width={720}
+          height={1080}
+          decoding="async"
+          className="relative z-0 h-full w-full object-cover"
+          onError={() => setBroken(true)}
         />
       )}
     </div>
