@@ -1,246 +1,47 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ColorPalette } from "@/components/color-palette";
-import { HomeIntro } from "@/components/home-intro";
-import { ProductCard } from "@/components/product-card";
-import { WornLook } from "@/components/worn-look";
-import { CHUB_FACES, CHUB_INKS, inkById } from "@/lib/chub-ink";
-import { colorById, FREE_SHIP_AT, products, SIZES, slugForChub } from "@/lib/catalog";
-import { useShop } from "@/lib/shop-store";
+import { createFileRoute } from "@tanstack/react-router";
+
+const CHUBS = [
+  { src: "/art/chub-orange.png", alt: "Orange chub" },
+  { src: "/art/chub-blue.png", alt: "Blue chub" },
+  { src: "/art/chub-green.png", alt: "Green chub" },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Chubz — Straight off the wall" },
+      { title: "Chubz — Coming soon" },
       {
         name: "description",
-        content: "Tees, hoodies, and embroidered caps with the chub. Unisex blanks from Printful.",
+        content: "Chubz is coming soon. Straight off the wall, onto your back.",
       },
     ],
-    links: [
-      { rel: "preload", as: "image", href: "/art/chub-orange.png" },
-      { rel: "preload", as: "image", href: "/art/chub-blue.png" },
-      { rel: "preload", as: "image", href: "/art/chub-green.png" },
-      { rel: "preload", as: "image", href: "/looks/home-model.jpg" },
-    ],
+    links: CHUBS.map((chub) => ({ rel: "preload", as: "image", href: chub.src })),
   }),
   component: Home,
 });
 
 function Home() {
-  const face = useShop((state) => state.chubFace);
-  const ink = useShop((state) => state.chubInk);
-  const shirtId = useShop((state) => state.chubShirt);
-  const setChub = useShop((state) => state.setChub);
-  const setShirt = useShop((state) => state.setShirt);
-  const shirt = colorById(shirtId);
-
   return (
-    <main>
-      <HomeIntro />
-      <section
-        className="relative aspect-[3/2] max-h-[78vh] w-full overflow-hidden border-b border-line bg-ink bg-contain bg-center bg-no-repeat"
-        style={{ backgroundImage: "url(/art/chubz-crew.jpg)" }}
-      >
-        <img
-          src="/art/chubz-crew.jpg"
-          alt="CHUBZ graffiti with the orange, blue, and green chubs"
-          width={1100}
-          height={733}
-          decoding="sync"
-          fetchPriority="high"
-          className="h-full w-full object-contain"
-          onError={(event) => event.currentTarget.remove()}
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 mx-auto flex max-w-6xl flex-col gap-4 px-4 pb-8 md:pb-12">
-          <p className="text-sm font-semibold uppercase tracking-widest text-yellow">Drop 01 · the chub</p>
-          <h1 className="font-display text-6xl leading-none text-paper md:text-8xl">Chubz</h1>
-          <p className="max-w-xl text-xl text-paper md:text-2xl">Straight off the wall, onto your back.</p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/shop"
-              search={{ lane: "all" }}
-              className="inline-flex min-h-11 items-center bg-pink px-5 font-semibold uppercase tracking-widest text-pink-ink"
-            >
-              Shop the drop
-            </Link>
-            <Link
-              to="/caps"
-              className="inline-flex min-h-11 items-center bg-yellow px-5 font-semibold uppercase tracking-widest text-yellow-ink"
-            >
-              Embroidered caps
-            </Link>
-            <Link
-              to="/print"
-              className="inline-flex min-h-11 items-center border border-paper px-5 font-semibold uppercase tracking-widest text-paper"
-            >
-              Print your art
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <div className="border-b border-line">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-          <p className="text-sm font-semibold uppercase tracking-widest text-mute">Steep decks · your graphic on the bottom</p>
-          <Link to="/skate" className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold uppercase tracking-widest text-paper hover:text-pink">
-            Skate
-          </Link>
-        </div>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-ink px-6 py-16 text-center">
+      <p className="text-xs font-semibold uppercase tracking-[0.35em] text-pink">mrchubz.com</p>
+      <h1 className="mt-5 font-display text-7xl leading-none text-paper sm:text-8xl">Chubz</h1>
+      <p className="mt-8 text-3xl font-semibold uppercase tracking-[0.18em] text-yellow sm:text-5xl">Coming soon</p>
+      <p className="mt-4 max-w-md text-lg text-mute">Straight off the wall, onto your back.</p>
+      <div className="mt-14 flex items-end justify-center gap-3 sm:gap-6">
+        {CHUBS.map((chub) => (
+          <img
+            key={chub.src}
+            src={chub.src}
+            alt={chub.alt}
+            width={280}
+            height={300}
+            className="w-24 sm:w-36"
+            onError={(event) => {
+              event.currentTarget.remove();
+            }}
+          />
+        ))}
       </div>
-
-      <section className="mx-auto grid max-w-6xl items-start gap-8 px-4 py-14 md:grid-cols-[1.2fr_0.8fr]">
-        <WornLook
-          face={face}
-          ink={ink}
-          shirtHex={shirt?.hex ?? "#141414"}
-          alt={`Model in a ${shirt?.name ?? "black"} tee with the ${inkById(ink).name} ${face === "green" ? "round-eye" : face === "blue" ? "slanted-eye" : "X-eye"} chub`}
-          className="aspect-[2/3] w-full border border-line object-cover"
-        />
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-pink">On the model</p>
-          <h2 className="mt-2 text-3xl font-semibold">Print your chub.</h2>
-          <p className="mt-3 text-mute">
-            Three originals. X eyes, slanted eyes, round eyes. The print changes color. The shirt stays black until you pick a shirt color.
-          </p>
-          <div className="mt-6 grid grid-cols-3 gap-2">
-            {CHUB_FACES.map((option) => {
-              const active = face === option.face;
-              return (
-                <button
-                  key={option.face}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setChub(option.face, option.ink)}
-                  className={active ? "border-2 border-pink bg-panel p-2" : "border border-line bg-panel p-2"}
-                >
-                  <img src={`/art/chub-${option.face === "mean" ? "orange" : option.face}.png`} alt="" loading="lazy" decoding="async" className="mx-auto h-36 w-full object-contain" />
-                  <span className="mt-1 block text-xs font-semibold uppercase tracking-widest">{option.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          <fieldset className="mt-5">
-            <legend className="text-sm font-semibold uppercase tracking-widest">Chub color</legend>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {CHUB_INKS.map((swatch) => (
-                <button
-                  key={swatch.id}
-                  type="button"
-                  aria-label={swatch.name}
-                  aria-pressed={ink === swatch.id}
-                  onClick={() => setChub(face, swatch.id)}
-                  className={ink === swatch.id ? "size-11 border-2 border-pink" : "size-11 border border-line"}
-                  style={{ background: swatch.hex }}
-                />
-              ))}
-            </div>
-            <p className="mt-2 text-sm">
-              {inkById(ink).name} chub · {shirt?.name ?? "Black"} shirt
-            </p>
-          </fieldset>
-          <div className="mt-5">
-            <ColorPalette lane="tee" value={shirtId} onChange={setShirt} />
-          </div>
-          <Link
-            to="/product/$slug"
-            params={{ slug: slugForChub("tee", face) }}
-            className="mt-6 inline-flex min-h-11 items-center bg-pink px-5 font-semibold uppercase tracking-widest text-pink-ink"
-          >
-            Print this chub
-          </Link>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 pb-6">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold">On the models</h2>
-            <p className="mt-2 text-mute">The chub on a person. Tees and hoodies.</p>
-          </div>
-          <Link to="/shop" search={{ lane: "all" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
-            The rack
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
-          <img src="/looks/orange-tee-a.jpg" alt="Model in a black tee with the orange chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-tee-a.jpg" alt="Model in a black tee with the blue chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/orange-hoodie.jpg" alt="Model in a black hoodie with the orange chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-hoodie.jpg" alt="Model in a black hoodie with the blue chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/orange-tee-b.jpg" alt="Model in a tee with the orange chub, alley" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-tee-b.jpg" alt="Model in a tee with the blue chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/mean-green.jpg" alt="Model wearing the green chub" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/campaign.jpg" alt="Campaign shot of the chub on a model" loading="lazy" decoding="async" className="aspect-[3/4] w-full object-cover" />
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 pb-6 pt-10">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <h2 className="text-2xl font-semibold">On the rack</h2>
-          <Link to="/shop" search={{ lane: "all" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
-            All pieces
-          </Link>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="text-2xl font-semibold">The run</h2>
-        <p className="mt-2 max-w-lg text-mute">
-          S through XXL on every piece. Boxy on purpose — size down if you want it closer. Hoodies use the
-          same letters and hang a little longer.
-        </p>
-        <ol className="mt-6 grid grid-cols-5 gap-2">
-          {SIZES.map((size) => (
-            <li key={size} className="border border-line bg-panel py-5 text-center">
-              <span className="text-xl font-bold md:text-4xl">{size}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="border-y border-line bg-panel">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-pink">01</p>
-            <h3 className="mt-2 text-xl font-semibold">Pick a size</h3>
-            <p className="mt-2 text-mute">Tee or hoodie. Pick the chub color and the shirt color. Caps are on their own page.</p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-yellow">02</p>
-            <h3 className="mt-2 text-xl font-semibold">It prints</h3>
-            <p className="mt-2 text-mute">Printful prints the shirt, or embroiders the cap, after Stripe clears the order. Nothing sits on a shelf.</p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-volt">03</p>
-            <h3 className="mt-2 text-xl font-semibold">About a week</h3>
-            <p className="mt-2 text-mute">
-              Production is about 2–4 business days, then transit. Free shipping over ${FREE_SHIP_AT}. Pay on Stripe.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold">House fits</h2>
-            <p className="mt-2 text-mute">Same models, closer crop. Tag your own on the wall.</p>
-          </div>
-          <Link to="/wall" className="text-sm font-semibold uppercase tracking-widest text-pink">
-            The wall
-          </Link>
-        </div>
-        <div className="mt-6 grid grid-cols-3 gap-2 md:gap-4">
-          <img src="/looks/orange-tee-b.jpg" alt="House fit, orange chub tee" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-hoodie.jpg" alt="House fit, blue chub hoodie" className="aspect-[3/4] w-full object-cover" />
-          <img src="/looks/blue-tee-a.jpg" alt="House fit, blue chub tee" className="aspect-[3/4] w-full object-cover" />
-        </div>
-      </section>
     </main>
   );
 }
