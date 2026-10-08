@@ -133,8 +133,9 @@
 }
 
 .intro-chub-c {
-  top: 54%;
-  right: 5%;
+  top: 56%;
+  right: 8%;
+  width: min(30vw, 158px);
   animation-delay: 0.3s;
 }
 
