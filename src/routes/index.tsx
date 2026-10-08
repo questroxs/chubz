@@ -35,21 +35,19 @@ function Home() {
     <main>
       <HomeIntro />
       <section
-        className="relative aspect-[3/2] max-h-[78vh] w-full overflow-hidden border-b border-line bg-ink bg-contain bg-center bg-no-repeat"
-        style={{ backgroundImage: "url(/art/chubz-lineup.jpg)" }}
+        className="relative w-full overflow-hidden border-b border-line bg-ink"
       >
         <img
           src="/art/chubz-lineup.jpg"
-          alt="Orange spray character, blue Quest, and the green one-eyed character"
+          alt="Orange spray character, blue Quest, and the green marker character"
           width={1100}
           height={733}
           decoding="sync"
           fetchPriority="high"
-          className="h-full w-full object-contain"
+          className="h-auto max-h-[78vh] w-full object-contain"
           onError={(event) => event.currentTarget.remove()}
         />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 mx-auto flex max-w-6xl flex-col gap-4 px-4 pb-8 md:pb-12">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8">
           <p className="text-sm font-semibold uppercase tracking-widest text-yellow">Drop 01 · the chub</p>
           <h1 className="font-display text-6xl leading-none text-paper md:text-8xl">Chubz</h1>
           <p className="max-w-xl text-xl text-paper md:text-2xl">Straight off the wall, onto your back.</p>
