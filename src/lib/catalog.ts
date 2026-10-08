@@ -119,7 +119,7 @@ export const products: Product[] = [
     details: teeDetails,
     art: "/art/prints/thumb-green.png",
     artAlt: "Green character in a beanie holding a marker",
-    looks: [{ src: "/looks/fit5-tee-white.jpg", alt: "White tee with the green marker character on a model" }],
+    looks: [{ src: "/looks/fit6-tee-white.jpg", alt: "White tee with the green marker character on a model" }],
     custom: false,
     oneSize: false,
     supplier: "printful",

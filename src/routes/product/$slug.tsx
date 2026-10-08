@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ColorPalette } from "@/components/color-palette";
 import {
@@ -38,18 +38,13 @@ export const Route = createFileRoute("/product/$slug")({
 function ProductPage() {
   const { slug } = Route.useParams();
   const { blank: requestedBlank } = Route.useSearch();
+  const navigate = useNavigate();
   const product = getProduct(slug);
   const requested = blankById(requestedBlank);
   const add = useShop((state) => state.add);
   const desk = useOwnerDesk();
-  const fromHome = useShop((state) => state.chubFromHome);
-  const storedFace = useShop((state) => state.chubFace);
-  const storedInk = useShop((state) => state.chubInk);
   const setChub = useShop((state) => state.setChub);
-  const setShirt = useShop((state) => state.setShirt);
-  const storedShirt = useShop((state) => state.chubShirt);
   const [size, setSize] = useState<Size | null>(null);
-  const [colorId, setColorId] = useState(storedShirt || "black");
   const [qty, setQty] = useState(1);
   const [shot, setShot] = useState(0);
   const [note, setNote] = useState("");
@@ -68,12 +63,26 @@ function ProductPage() {
               : "mean";
   const openingWear: BlankLane =
     requested?.lane ?? (product?.lane === "hoodie" ? "hoodie" : product?.lane === "cap" ? "cap" : "tee");
-  const keepFace = fromHome && !requested;
-  const [face, setFace] = useState<ChubFace>(keepFace ? storedFace : openingFace);
-  const [ink, setInk] = useState(keepFace ? storedInk : (CHUB_FACES.find((item) => item.face === openingFace)?.ink ?? "orange"));
+  const openingInk = CHUB_FACES.find((item) => item.face === openingFace)?.ink ?? "orange";
+  const openingColor = slug.includes("quest") ? "red" : slug.includes("one-eye") ? "white" : "black";
+  const [colorId, setColorId] = useState(openingColor);
+  const [face, setFace] = useState<ChubFace>(openingFace);
+  const [ink, setInk] = useState(openingInk);
   const [wear, setWear] = useState<BlankLane>(openingWear);
   const [blankId, setBlankId] = useState(requested?.id ?? defaultBlankId(openingWear));
-  const [mark, setMark] = useState(faceSrc(keepFace ? storedFace : openingFace));
+  const [mark, setMark] = useState(faceSrc(openingFace));
+
+  useEffect(() => {
+    setFace(openingFace);
+    setInk(openingInk);
+    setWear(openingWear);
+    setBlankId(requested?.id ?? defaultBlankId(openingWear));
+    setColorId(openingColor);
+    setSize(null);
+    setShot(0);
+    setNote("");
+    setChub(openingFace, openingInk);
+  }, [slug]);
 
   useEffect(() => {
     if (!requested) return;
@@ -119,6 +128,7 @@ function ProductPage() {
   const frames = product.looks.filter((look) => look.src);
   const frame = frames[Math.min(shot, Math.max(frames.length - 1, 0))];
   const worn = product.supplier === "printful" && !product.custom;
+  const showOrderedLook = Boolean(frame) && worn && wear !== "cap";
   const blank = blankById(blankId) ?? blanksFor(wear)[0];
   const swatches = blankColors(blank.id);
   const color = swatches.find((item) => item.id === colorId) ?? swatches[0] ?? colorById(colorId);
@@ -182,6 +192,27 @@ function ProductPage() {
     });
   }
 
+  function openPiece(nextLane: "tee" | "hoodie" | "cap", nextFace: ChubFace) {
+    if (nextLane === "cap") {
+      setFace(nextFace);
+      setWear("cap");
+      setBlankId(defaultBlankId("cap"));
+      setSize(null);
+      setNote("");
+      return;
+    }
+    const next = slugForChub(nextLane, nextFace);
+    if (getProduct(next) && next !== slug) {
+      void navigate({ to: "/product/$slug", params: { slug: next } });
+      return;
+    }
+    setFace(nextFace);
+    setWear(nextLane);
+    setBlankId(defaultBlankId(nextLane));
+    setSize(null);
+    setNote("");
+  }
+
   return (
     <main className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
       <div>
@@ -192,6 +223,12 @@ function ProductPage() {
             hex={color?.hex ?? "#181717"}
             shape={hatShape(blank.id)}
             className="relative aspect-[3/4] w-full overflow-hidden border border-line bg-[#2c2a28]"
+          />
+        ) : showOrderedLook && frame ? (
+          <img
+            src={frame.src}
+            alt={frame.alt}
+            className="aspect-[2/3] w-full border border-line object-cover bg-panel"
           />
         ) : worn ? (
           <WornLook
@@ -261,9 +298,9 @@ function ProductPage() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => {
-                      setFace(option.face);
                       setInk(option.ink);
                       setChub(option.face, option.ink);
+                      openPiece(wear === "cap" ? "tee" : wear, option.face);
                     }}
                     className={active ? "border-2 border-pink bg-panel p-2" : "border border-line bg-panel p-2"}
                   >
@@ -312,12 +349,7 @@ function ProductPage() {
                   key={option}
                   type="button"
                   aria-pressed={wear === option}
-                  onClick={() => {
-                    setWear(option);
-                    setBlankId(defaultBlankId(option));
-                    setSize(null);
-                    setNote("");
-                  }}
+                  onClick={() => openPiece(option, face)}
                   className={wear === option ? "min-h-11 bg-pink px-3 font-semibold uppercase tracking-widest text-pink-ink" : "min-h-11 border border-line bg-panel px-3 font-semibold uppercase tracking-widest"}
                 >
                   {option === "tee" ? "Tee" : option === "hoodie" ? "Hoodie" : "Cap"}

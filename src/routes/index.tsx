@@ -165,7 +165,7 @@ function Home() {
             <img src="/looks/fit-tee-red.jpg" alt="Red tee with blue Quest" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "one-eye-tee" }}>
-            <img src="/looks/fit5-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit6-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "mob-tee" }}>
             <img src="/looks/fit-tee-latina.jpg" alt="Black tee with Mob" className="aspect-[2/3] w-full object-cover" />
