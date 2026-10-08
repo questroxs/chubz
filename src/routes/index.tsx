@@ -98,7 +98,7 @@ function Home() {
           <p className="text-xs font-semibold uppercase tracking-widest text-pink">On the model</p>
           <h2 className="mt-2 text-3xl font-semibold">Print your chub.</h2>
           <p className="mt-3 text-mute">
-            Three colors on the wall: orange, blue, and green. Spray, Quest, and One Eye lead. Mob and the round-eyed chub are in the rack. Pick a character, then a color. The model changes with every swatch.
+            Spray, Quest, One Eye, and Mob. Pick a character, then a color. The model changes with every swatch.
           </p>
           <div className="mt-6 grid grid-cols-3 gap-2">
             {CHUB_FACES.map((option) => {

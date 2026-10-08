@@ -24,7 +24,6 @@ export const CHUB_FACES: Array<{ face: ChubFace; ink: string; label: string }> =
   { face: "quest", ink: "blue", label: "Quest" },
   { face: "thumb", ink: "green", label: "One eye" },
   { face: "mob", ink: "green", label: "Mob" },
-  { face: "green", ink: "green", label: "Round eyes" },
 ];
 
 const NEW_FACES = new Set<ChubFace>(["spray", "thumb", "quest", "mob"]);
