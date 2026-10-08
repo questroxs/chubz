@@ -159,16 +159,16 @@ function Home() {
         </div>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
           <Link to="/product/$slug" params={{ slug: "spray-tee" }}>
-            <img src="/looks/model-tee-black.jpg" alt="Black tee with the orange spray character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-tee-black.jpg" alt="Black tee with the orange spray character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "quest-tee" }}>
-            <img src="/looks/model-tee-red.jpg" alt="Red tee with blue Quest" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-tee-red.jpg" alt="Red tee with blue Quest" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "one-eye-tee" }}>
-            <img src="/looks/model-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "mob-tee" }}>
-            <img src="/looks/model-tee-latina.jpg" alt="Black tee with Mob" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-tee-latina.jpg" alt="Black tee with Mob" className="aspect-[2/3] w-full object-cover" />
           </Link>
         </div>
       </section>
@@ -185,16 +185,16 @@ function Home() {
         </div>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
           <Link to="/product/$slug" params={{ slug: "spray-hood" }}>
-            <img src="/looks/model-hood-black.jpg" alt="Black hoodie with the orange spray character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-hood-black.jpg" alt="Black hoodie with the orange spray character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "quest-hood" }}>
-            <img src="/looks/model-hood-red.jpg" alt="Red hoodie with blue Quest" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-hood-red.jpg" alt="Red hoodie with blue Quest" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "one-eye-hood" }}>
-            <img src="/looks/model-hood-white.jpg" alt="White hoodie with the green marker character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-hood-white.jpg" alt="White hoodie with the green marker character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "mob-hood" }}>
-            <img src="/looks/model-hood-latina.jpg" alt="Black hoodie with Mob" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit-hood-latina.jpg" alt="Black hoodie with Mob" className="aspect-[2/3] w-full object-cover" />
           </Link>
         </div>
       </section>

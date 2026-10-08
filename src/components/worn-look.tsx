@@ -117,10 +117,12 @@ export function WornLook({
           (face === "blue" && ink === "blue") ||
           (face === "green" && ink === "green");
         const print = native ? chub : recolorChub(chub, color);
-        const printWidth = Math.round(width * (face === "quest" ? 0.34 : face === "mob" ? 0.46 : 0.42));
-        const printHeight = Math.round((printWidth * print.height) / print.width);
+        const box = Math.round(width * 0.4);
+        const scale = Math.min(box / print.width, box / print.height);
+        const printWidth = Math.round(print.width * scale);
+        const printHeight = Math.round(print.height * scale);
         const centerX = width * 0.5;
-        const centerY = height * (face === "quest" ? 0.55 : 0.58);
+        const centerY = height * 0.6;
         context.drawImage(
           print,
           Math.round(centerX - printWidth / 2),
