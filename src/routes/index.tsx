@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [
-      { rel: "preload", as: "image", href: "/art/chubz-lineup.jpg" },
+      { rel: "preload", as: "image", href: "/art/chubz-crew.jpg" },
     ],
   }),
   component: Home,
@@ -38,7 +38,7 @@ function Home() {
         className="relative w-full overflow-hidden border-b border-line bg-ink"
       >
         <img
-          src="/art/chubz-lineup.jpg"
+          src="/art/chubz-crew.jpg"
           alt="Orange spray character, blue Quest, and the green marker character"
           width={1100}
           height={733}
