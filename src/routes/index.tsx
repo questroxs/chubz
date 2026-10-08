@@ -165,7 +165,7 @@ function Home() {
             <img src="/looks/fit-tee-red.jpg" alt="Red tee with blue Quest" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "one-eye-tee" }}>
-            <img src="/looks/fit-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit4-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "mob-tee" }}>
             <img src="/looks/fit-tee-latina.jpg" alt="Black tee with Mob" className="aspect-[2/3] w-full object-cover" />
@@ -188,10 +188,10 @@ function Home() {
             <img src="/looks/fit-hood-black.jpg" alt="Black hoodie with the orange spray character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "quest-hood" }}>
-            <img src="/looks/fit-hood-red.jpg" alt="Red hoodie with blue Quest" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit4-hood-red.jpg" alt="Red hoodie with blue Quest" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "one-eye-hood" }}>
-            <img src="/looks/fit-hood-white.jpg" alt="White hoodie with the green marker character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit4-hood-white.jpg" alt="White hoodie with the green marker character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "mob-hood" }}>
             <img src="/looks/fit-hood-latina.jpg" alt="Black hoodie with Mob" className="aspect-[2/3] w-full object-cover" />
