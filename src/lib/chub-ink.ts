@@ -44,7 +44,7 @@ export function isNewFace(face: ChubFace) {
 /** The file Printful should print. New characters are precolored so the order matches the model. */
 export function printSrc(face: ChubFace, inkId: string) {
   const ink = inkById(inkId).id;
-  const ext = face === "quest" || face === "mob" ? "jpg" : "png";
+  const ext = face === "mob" ? "jpg" : "png";
   return `/art/prints/${face}-${ink}.${ext}`;
 }
 

@@ -159,7 +159,7 @@ export const products: Product[] = [
     tag: "Wall",
     blurb: "The blue wall piece. Shift the color and the print follows.",
     details: teeDetails,
-    art: "/art/prints/quest-blue.jpg",
+    art: "/art/prints/quest-blue.png",
     artAlt: "Blue Quest character on a wall",
     looks: [{ src: "/art/chub-quest.jpg", alt: "Quest painted on a concrete wall" }],
     custom: false,
