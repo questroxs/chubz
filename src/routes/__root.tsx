@@ -1,4 +1,4 @@
-import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import "@/lib/home-intro-gate";
 import { CartSheet } from "@/components/cart-sheet";
@@ -8,23 +8,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { VisitMeter } from "@/components/visit-meter";
 import { SiteHeader } from "@/components/site-header";
 import appCss from "../styles.css?url";
-
-function Frame() {
-  const path = useRouterState({ select: (state) => state.location.pathname });
-  const comingSoon = path === "/";
-
-  return (
-    <div className="flex min-h-screen flex-col">
-      {comingSoon ? null : <SiteHeader />}
-      {comingSoon ? null : <CartSheet />}
-      <div className={comingSoon ? "" : "flex-1"}>
-        <Outlet />
-      </div>
-      {comingSoon ? null : <SiteFooter />}
-      {comingSoon ? null : <VisitMeter />}
-    </div>
-  );
-}
 
 export const Route = createRootRoute({
   head: () => ({
@@ -57,7 +40,15 @@ export const Route = createRootRoute({
         <PreviewHostBridge />
         <AuthProvider>
           <ShopHydrated />
-          <Frame />
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <CartSheet />
+            <div className="flex-1">
+              <Outlet />
+            </div>
+            <SiteFooter />
+            <VisitMeter />
+          </div>
         </AuthProvider>
         <Scripts />
       </body>

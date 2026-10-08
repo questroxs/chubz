@@ -15,7 +15,7 @@ import {
 import { WornLook } from "@/components/worn-look";
 import { CapMark, hatShape } from "@/components/cap-mark";
 import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type BlankLane } from "@/lib/blanks";
-import { CHUB_FACES, CHUB_INKS, faceSrc, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
+import { CHUB_FACES, CHUB_INKS, faceLabel, faceSrc, inkById, isNewFace, printSrc, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
 import { useOwnerDesk } from "@/lib/owner-desk";
 import "@/lib/skate-catalog";
@@ -53,12 +53,24 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const [shot, setShot] = useState(0);
   const [note, setNote] = useState("");
-  const openingFace: ChubFace = slug.includes("blue") ? "blue" : slug.includes("green") ? "green" : "mean";
+  const openingFace: ChubFace = slug.includes("quest")
+    ? "quest"
+    : slug.includes("mob")
+      ? "mob"
+      : slug.includes("spray")
+        ? "spray"
+        : slug.includes("one-eye")
+          ? "thumb"
+          : slug.includes("blue")
+            ? "blue"
+            : slug.includes("green")
+              ? "green"
+              : "mean";
   const openingWear: BlankLane =
     requested?.lane ?? (product?.lane === "hoodie" ? "hoodie" : product?.lane === "cap" ? "cap" : "tee");
   const keepFace = fromHome && !requested;
   const [face, setFace] = useState<ChubFace>(keepFace ? storedFace : openingFace);
-  const [ink, setInk] = useState(keepFace ? storedInk : openingFace === "blue" ? "blue" : openingFace === "green" ? "green" : "orange");
+  const [ink, setInk] = useState(keepFace ? storedInk : (CHUB_FACES.find((item) => item.face === openingFace)?.ink ?? "orange"));
   const [wear, setWear] = useState<BlankLane>(openingWear);
   const [blankId, setBlankId] = useState(requested?.id ?? defaultBlankId(openingWear));
   const [mark, setMark] = useState(faceSrc(keepFace ? storedFace : openingFace));
@@ -146,13 +158,18 @@ function ProductPage() {
         qty,
         art,
         ink: product.custom ? undefined : ink,
+        face: product.custom ? undefined : face,
         blankId: product.custom ? undefined : blank.id,
       });
-      const inkName = product.custom ? "" : `${inkById(ink).name} chub · `;
+      const inkName = product.custom ? "" : `${faceLabel(face)} · ${inkById(ink).name} · `;
       setNote(`${selling.name} · ${blank.name} · ${inkName}${pickedColor.name} · ${pickedSize} is in the cart.`);
     };
     if (product.custom) {
       finish();
+      return;
+    }
+    if (isNewFace(face)) {
+      finish(printSrc(face, ink));
       return;
     }
     void renderChub(face, ink).then((rendered) => {
@@ -251,7 +268,7 @@ function ProductPage() {
                     className={active ? "border-2 border-pink bg-panel p-2" : "border border-line bg-panel p-2"}
                   >
                     <img
-                      src={`/art/chub-${option.face === "mean" ? "orange" : option.face}.png`}
+                      src={faceSrc(option.face)}
                       alt=""
                       className="mx-auto h-32 w-full object-contain"
                     />

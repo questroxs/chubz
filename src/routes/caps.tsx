@@ -4,7 +4,7 @@ import { WornCap } from "@/components/worn-cap";
 import { ColorPalette } from "@/components/color-palette";
 import { blankById, blankColors, blankSizesFor, blanksFor, type Blank } from "@/lib/blanks";
 import { getProduct, money, slugForChub, type Size } from "@/lib/catalog";
-import { CHUB_FACES, CHUB_INKS, inkById, renderChub, type ChubFace } from "@/lib/chub-ink";
+import { CHUB_FACES, CHUB_INKS, faceLabel, inkById, isNewFace, printSrc, renderChub, type ChubFace } from "@/lib/chub-ink";
 import { useShop } from "@/lib/shop-store";
 import { useOwnerDesk } from "@/lib/owner-desk";
 
@@ -96,7 +96,7 @@ function CapsPage() {
   const add = useShop((state) => state.add);
   const desk = useOwnerDesk();
   const caps = blanksFor("cap");
-  const [face, setFace] = useState<ChubFace>("mean");
+  const [face, setFace] = useState<ChubFace>("spray");
   const [ink, setInk] = useState("orange");
   const [blankId, setBlankId] = useState(requested && blankById(requested) ? requested : "cap-dad");
   const [colorId, setColorId] = useState("black");
@@ -125,10 +125,15 @@ function CapsPage() {
         qty,
         art,
         ink,
+        face,
         blankId: blank.id,
       });
-      setNote(`${selling.name} · ${blank.name} · ${inkById(ink).name} chub · ${color.name} · ${readySize} is in the cart.`);
+      setNote(`${selling.name} · ${blank.name} · ${faceLabel(face)} · ${inkById(ink).name} · ${color.name} · ${readySize} is in the cart.`);
     };
+    if (isNewFace(face)) {
+      finish(printSrc(face, ink));
+      return;
+    }
     void renderChub(face, ink).then((rendered) => {
       const art = rendered.startsWith("data:") ? rendered : undefined;
       if (art && art.length > 180_000) {

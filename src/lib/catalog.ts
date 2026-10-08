@@ -1,4 +1,5 @@
 import { blankById } from "@/lib/blanks";
+import type { ChubFace } from "@/lib/chub-ink";
 import { colorsFor, SHIRT_COLORS, type ShirtColor } from "@/lib/gildan-colors";
 import { gearPrice, type GearPick } from "@/lib/skate-gear";
 
@@ -125,6 +126,78 @@ export const products: Product[] = [
     art: "/art/chub-green.png",
     artAlt: "Green chub with round eyes",
     looks: [{ src: "/looks/mean-green.jpg", alt: "Model in a tee with the green chub" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
+    printFront: '11" × 16"',
+    printBack: '11" × 16"',
+  },
+  {
+    slug: "spray-tee",
+    name: "Spray",
+    lane: "tee",
+    price: 32,
+    tag: "One eye",
+    blurb: "Cap, can, and a grin. Pick the body color. Pink stays pink.",
+    details: teeDetails,
+    art: "/art/prints/spray-orange.png",
+    artAlt: "Orange spray-can character",
+    looks: [{ src: "/art/chub-spray.png", alt: "Spray character with a can" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
+    printFront: '11" × 16"',
+    printBack: '11" × 16"',
+  },
+  {
+    slug: "quest-tee",
+    name: "Quest",
+    lane: "tee",
+    price: 32,
+    tag: "Wall",
+    blurb: "The blue wall piece. Shift the color and the print follows.",
+    details: teeDetails,
+    art: "/art/prints/quest-blue.jpg",
+    artAlt: "Blue Quest character on a wall",
+    looks: [{ src: "/art/chub-quest.jpg", alt: "Quest painted on a concrete wall" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
+    printFront: '11" × 16"',
+    printBack: '11" × 16"',
+  },
+  {
+    slug: "one-eye-tee",
+    name: "One Eye",
+    lane: "tee",
+    price: 32,
+    tag: "Thumb",
+    blurb: "The one-eyed chub. Green until you pick another color.",
+    details: teeDetails,
+    art: "/art/prints/thumb-green.png",
+    artAlt: "Green one-eyed character giving a thumbs up",
+    looks: [{ src: "/art/chub-thumb.png", alt: "Green one-eyed character" }],
+    custom: false,
+    oneSize: false,
+    supplier: "printful",
+    blank: "Gildan 5000 · Printful",
+    printFront: '11" × 16"',
+    printBack: '11" × 16"',
+  },
+  {
+    slug: "mob-tee",
+    name: "Mob",
+    lane: "tee",
+    price: 32,
+    tag: "Night",
+    blurb: "Chain, can, and the city. The color you pick is the color that prints.",
+    details: teeDetails,
+    art: "/art/prints/mob-green.jpg",
+    artAlt: "Green Mob character at sunset",
+    looks: [{ src: "/art/chub-mob.jpg", alt: "Mob character in front of a sunset skyline" }],
     custom: false,
     oneSize: false,
     supplier: "printful",
@@ -330,7 +403,11 @@ export function getProduct(slug: string) {
 }
 
 /** Checkout uses the slug, so the green chub must not stay on Mean Orange. */
-export function slugForChub(lane: "tee" | "hoodie" | "cap", face: "mean" | "blue" | "green") {
+export function slugForChub(lane: "tee" | "hoodie" | "cap", face: ChubFace) {
+  if (face === "spray") return "spray-tee";
+  if (face === "thumb") return "one-eye-tee";
+  if (face === "quest") return "quest-tee";
+  if (face === "mob") return "mob-tee";
   const piece = lane === "hoodie" ? "hood" : lane === "cap" ? "cap" : "tee";
   if (face === "blue") return `blue-mood-${piece}`;
   if (face === "green") return `round-green-${piece}`;

@@ -1,4 +1,5 @@
 import { getRequest } from "@tanstack/react-start/server";
+import { faceLabel } from "@/lib/chub-ink";
 import { colorById, getProduct, money, unitPrice } from "@/lib/catalog";
 import { gearLabel } from "@/lib/skate-gear";
 import { blankById, colorOnBlank } from "@/lib/blanks";
@@ -106,7 +107,8 @@ function checkoutPayload(
     const blank = blankById(line.blankId);
     const artUrl = artUrls[index] ?? null;
     const extra = gearLabel(line);
-    const name = `${product.name}${blank ? ` · ${blank.name}` : ""}${line.ink ? ` · ${line.ink.replace("-", " ")} chub` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}${extra ? ` · ${extra}` : ""}`;
+    const who = line.face ? faceLabel(line.face) : "";
+    const name = `${product.name}${who ? ` · ${who}` : ""}${blank ? ` · ${blank.name}` : ""}${line.ink ? ` · ${line.ink.replace("-", " ")}` : ""} · ${color.name} · ${line.size}${line.backPrint ? " · front + back" : ""}${extra ? ` · ${extra}` : ""}`;
     const plain = blank
       ? `${blank.note} ${blank.file === "embroidery_front" ? "Embroidered on the front." : "Printed on the front."}`
       : product.supplier === "point"
@@ -201,6 +203,11 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
   ]);
   const artUrls = await hostSkateArt(lines);
   const origin = requestOrigin();
+  const printUrls = lines.map((line, index) => {
+    if (artUrls[index]) return artUrls[index];
+    if (line.art?.startsWith("/art/prints/")) return `${origin}${line.art}`;
+    return null;
+  });
   const jobs = await saveJobs(lines);
   const attempts: Array<[boolean, boolean]> = [
     [true, true],
@@ -209,7 +216,7 @@ export async function createStripeCheckoutUrl(lines: CheckoutLine[]): Promise<{ 
   ];
   let session: StripeSession = {};
   for (const [withImages, withTax] of attempts) {
-    session = await postCheckout(checkoutPayload(lines, origin, jobs, artUrls, withImages, withTax));
+    session = await postCheckout(checkoutPayload(lines, origin, jobs, printUrls, withImages, withTax));
     if (session.url) break;
     const message = session.error?.message?.toLowerCase() ?? "";
     const imageBlocked = message.includes("image") || message.includes("url");
@@ -224,7 +231,7 @@ function artNote(subtotal: number, lines: CheckoutLine[], artUrls: Array<string 
   const notes: string[] = [];
   lines.forEach((line, index) => {
     const url = artUrls[index];
-    if (url) notes.push(`Deck graphic ${line.slug}: ${url}`);
+    if (url) notes.push(`Print file ${line.slug}: ${url}`);
     else if (line.art && getProduct(line.slug)?.lane === "skate") notes.push(`Deck graphic ${line.slug}: MISSING`);
   });
   const base = `Chubz print order ${money(subtotal)}`;

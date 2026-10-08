@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { faceSrc, inkById, modelLook, type ChubFace } from "@/lib/chub-ink";
+import { faceSrc, inkById, isNewFace, printSrc, type ChubFace } from "@/lib/chub-ink";
 
 const MASK = "/looks/blank-tee-mask.png";
 
@@ -66,12 +66,8 @@ export function WornLook({
   const imgRef = useRef<HTMLImageElement>(null);
   const [broken, setBroken] = useState(false);
   const [painted, setPainted] = useState<string | null>(null);
-  const photo = face === "mean" && ink === "orange" ? "/looks/home-model.jpg" : modelLook(face, ink);
+  const photo = "/looks/blank-tee.jpg";
   const shown = painted ?? photo;
-  const shirtIsBlack = (() => {
-    const [r, g, b] = hexToRgb(shirtHex);
-    return r + g + b < 90;
-  })();
 
   useEffect(() => {
     setBroken(false);
@@ -80,13 +76,10 @@ export function WornLook({
   }, [shown]);
 
   useEffect(() => {
-    if (shirtIsBlack) {
-      setPainted(null);
-      return;
-    }
     let cancel = false;
     const color = inkById(ink).hex;
-    Promise.all([loadImage("/looks/blank-tee.jpg"), loadImage(MASK), loadImage(faceSrc(face))])
+    const artwork = isNewFace(face) ? printSrc(face, ink) : faceSrc(face);
+    Promise.all([loadImage("/looks/blank-tee.jpg"), loadImage(MASK), loadImage(artwork)])
       .then(([model, mask, chub]) => {
         if (cancel) return;
         const width = 720;
@@ -119,11 +112,12 @@ export function WornLook({
           context.putImageData(photo, 0, 0);
         }
         const native =
+          isNewFace(face) ||
           (face === "mean" && ink === "orange") ||
           (face === "blue" && ink === "blue") ||
           (face === "green" && ink === "green");
         const print = native ? chub : recolorChub(chub, color);
-        const printWidth = Math.round(width * 0.42);
+        const printWidth = Math.round(width * (face === "quest" || face === "mob" ? 0.5 : 0.42));
         const printHeight = Math.round((printWidth * print.height) / print.width);
         const centerX = width * 0.49;
         const centerY = height * 0.59;
@@ -145,7 +139,7 @@ export function WornLook({
     return () => {
       cancel = true;
     };
-  }, [face, ink, shirtHex, shirtIsBlack]);
+  }, [face, ink, shirtHex]);
 
   return (
     <div

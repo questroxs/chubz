@@ -10,6 +10,7 @@ export type CheckoutLine = {
   backPrint: boolean;
   art?: string;
   ink?: string;
+  face?: string;
   blankId?: string;
   note?: string;
   proof?: string;
@@ -40,6 +41,7 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       backPrint?: unknown;
       art?: unknown;
       ink?: unknown;
+      face?: unknown;
       blankId?: unknown;
       note?: unknown;
       proof?: unknown;
@@ -76,7 +78,9 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
     if (backPrint && (!product.custom || blankById(resolvedBlank)?.lane === "cap")) throw new Error("Back prints are on custom pieces only.");
     if (unitPrice(slug, backPrint, resolvedBlank) == null) throw new Error("That piece isn’t priced.");
     let art: string | undefined;
-    if (typeof record.art === "string" && record.art.length > 0) {
+    if (typeof record.art === "string" && /^\/art\/prints\/[a-z]+-[a-z]+\.(png|jpg)$/.test(record.art)) {
+      art = record.art;
+    } else if (typeof record.art === "string" && record.art.length > 0) {
       if (!record.art.startsWith("data:image/jpeg")) throw new Error("Art has to be a JPEG upload.");
       if (record.art.length > ART_LIMIT) throw new Error("Art file is too heavy. Export a smaller PNG and try again.");
       art = record.art;
@@ -84,6 +88,10 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
     if (product.custom && !art) throw new Error("Custom pieces need your artwork.");
     const ink =
       typeof record.ink === "string" && /^[a-z]+(-[a-z]+)?$/.test(record.ink) ? record.ink : undefined;
+    const face =
+      typeof record.face === "string" && /^(mean|blue|green|spray|thumb|quest|mob)$/.test(record.face)
+        ? record.face
+        : undefined;
     const note = typeof record.note === "string" ? record.note.replace(/[^\S\n]+/g, " ").trim().slice(0, 1500) : undefined;
     const truck = typeof record.truck === "string" && TRUCKS.some((item) => item.id === record.truck) ? record.truck : undefined;
     const wheel = typeof record.wheel === "string" && WHEELS.some((item) => item.id === record.wheel) ? record.wheel : undefined;
@@ -100,6 +108,7 @@ export function parseCheckoutLines(input: unknown): CheckoutLine[] {
       backPrint,
       art,
       ink,
+      face,
       blankId: resolvedBlank,
       note: note || undefined,
       proof,

@@ -14,9 +14,11 @@ export const Route = createFileRoute("/wall")({
 });
 
 const house = [
+  { src: "/art/chub-quest.jpg", alt: "Quest painted on a concrete wall", caption: "Quest" },
+  { src: "/art/chub-spray.png", alt: "Spray character with a can", caption: "Spray" },
+  { src: "/art/chub-thumb.png", alt: "Green one-eyed character", caption: "One Eye" },
+  { src: "/art/chub-mob.jpg", alt: "Mob character at sunset", caption: "Mob" },
   { src: "/looks/campaign.jpg", alt: "Campaign group in Chubz black", caption: "Drop 01, full crew" },
-  { src: "/looks/orange-tee-a.jpg", alt: "Orange chub tee", caption: "Mean Orange" },
-  { src: "/looks/blue-hoodie.jpg", alt: "Blue chub hoodie", caption: "Blue Mood Hood" },
 ];
 
 const slaps = ["bg-pink text-pink-ink", "bg-yellow text-yellow-ink", "bg-volt text-volt-ink"] as const;

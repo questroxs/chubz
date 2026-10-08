@@ -50,7 +50,7 @@ export function jobsFromMetadata(metadata: Record<string, string> | undefined): 
         color_name: color,
         quantity,
         back_print: back === "1",
-        art: null,
+        art: metadata[`art${rows.length}`]?.startsWith("http") ? metadata[`art${rows.length}`] : null,
         blank_id: blank,
       });
     }

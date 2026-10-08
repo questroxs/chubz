@@ -1,4 +1,4 @@
-export type ChubFace = "mean" | "blue" | "green";
+export type ChubFace = "mean" | "blue" | "green" | "spray" | "thumb" | "quest" | "mob";
 
 export type ChubInk = {
   id: string;
@@ -14,23 +14,45 @@ export const CHUB_INKS: ChubInk[] = [
   { id: "red", name: "Red", hex: "#e0232a" },
   { id: "pink", name: "Pink", hex: "#ff2d78" },
   { id: "green", name: "Green", hex: "#3cba4a" },
+  { id: "purple", name: "Purple", hex: "#7a3cff" },
+  { id: "white", name: "White", hex: "#f4f4f4" },
 ];
 
-/** Originals: orange X eyes, blue slanted eyes, green round eyes. */
+/** Homepage stays one orange, one blue, one green. The classic orange and blue chubs are off this row. */
 export const CHUB_FACES: Array<{ face: ChubFace; ink: string; label: string }> = [
-  { face: "mean", ink: "orange", label: "X eyes" },
-  { face: "blue", ink: "blue", label: "Slanted eyes" },
+  { face: "spray", ink: "orange", label: "Spray" },
+  { face: "quest", ink: "blue", label: "Quest" },
+  { face: "thumb", ink: "green", label: "One eye" },
+  { face: "mob", ink: "green", label: "Mob" },
   { face: "green", ink: "green", label: "Round eyes" },
 ];
 
+const NEW_FACES = new Set<ChubFace>(["spray", "thumb", "quest", "mob"]);
+
 export function inkById(id: string) {
   return CHUB_INKS.find((ink) => ink.id === id) ?? CHUB_INKS[0];
+}
+
+export function faceLabel(face: string) {
+  return CHUB_FACES.find((item) => item.face === face)?.label ?? "Chub";
+}
+
+export function isNewFace(face: ChubFace) {
+  return NEW_FACES.has(face);
+}
+
+/** The file Printful should print. New characters are precolored so the order matches the model. */
+export function printSrc(face: ChubFace, inkId: string) {
+  const ink = inkById(inkId).id;
+  const ext = face === "quest" || face === "mob" ? "jpg" : "png";
+  return `/art/prints/${face}-${ink}.${ext}`;
 }
 
 const MODEL_COLORS = new Set(["orange", "blue", "yellow", "red", "pink", "green"]);
 
 /** Model in the shirt. No bare chub. Face "blue" is the slanted-eye drawing. */
 export function modelLook(face: ChubFace, ink: string) {
+  if (isNewFace(face)) return "/looks/blank-tee.jpg";
   const side = face === "blue" ? "mood" : "mean";
   const color = MODEL_COLORS.has(ink) ? ink : face === "blue" ? "blue" : "orange";
   return `/looks/${side}-${color}.jpg`;
@@ -39,12 +61,17 @@ export function modelLook(face: ChubFace, ink: string) {
 export function faceSrc(face: ChubFace) {
   if (face === "blue") return "/art/chub-blue.png";
   if (face === "green") return "/art/chub-green.png";
+  if (face === "spray") return "/art/chub-spray.png";
+  if (face === "thumb") return "/art/chub-thumb.png";
+  if (face === "quest") return "/art/chub-quest.jpg";
+  if (face === "mob") return "/art/chub-mob.jpg";
   return "/art/chub-orange.png";
 }
 
 const cache = new Map<string, string>();
 
 export function renderChub(face: ChubFace, inkId: string): Promise<string> {
+  if (isNewFace(face)) return Promise.resolve(printSrc(face, inkId));
   const ink = inkById(inkId);
   const native =
     (face === "mean" && ink.id === "orange") ||

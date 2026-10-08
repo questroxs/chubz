@@ -20,6 +20,7 @@ export type BagLine = {
   grip?: string;
   /** mean-orange, blue-yellow, and so on. The print file is `art`. */
   ink?: string;
+  face?: string;
   blankId?: string;
 };
 
@@ -47,7 +48,7 @@ export const useShop = create<ShopState>()(
       lines: [],
       hydrated: false,
       cartOpen: false,
-      chubFace: "mean",
+      chubFace: "spray",
       chubInk: "orange",
       chubShirt: "black",
       chubFromHome: false,
@@ -60,7 +61,7 @@ export const useShop = create<ShopState>()(
           line.id ??
           (line.art && !line.ink
             ? `${line.slug}:${line.size}:${line.colorId}:${Date.now()}`
-            : `${line.slug}:${line.blankId ?? "house"}:${line.size}:${line.colorId}:${line.ink ?? "house"}:${line.backPrint ? "b" : "f"}`);
+            : `${line.slug}:${line.blankId ?? "house"}:${line.size}:${line.colorId}:${line.face ?? "chub"}:${line.ink ?? "house"}:${line.backPrint ? "b" : "f"}`);
         const lines = get().lines.slice();
         const index = lines.findIndex((item) => item.id === id);
         if (index >= 0) {

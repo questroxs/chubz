@@ -47,6 +47,7 @@ export function CartSheet() {
             backPrint: row.backPrint,
             art: row.art,
             ink: row.ink,
+            face: row.face,
             blankId: row.blankId,
             note: row.note,
             proof: row.proof,
