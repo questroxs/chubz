@@ -22,7 +22,7 @@ export const CHUB_INKS: ChubInk[] = [
 export const CHUB_FACES: Array<{ face: ChubFace; ink: string; label: string }> = [
   { face: "spray", ink: "orange", label: "Spray" },
   { face: "quest", ink: "blue", label: "Quest" },
-  { face: "thumb", ink: "green", label: "One eye" },
+  { face: "thumb", ink: "green", label: "Marker" },
   { face: "mob", ink: "green", label: "Mob" },
 ];
 

@@ -160,10 +160,44 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
-          <WornLook face="spray" ink="orange" shirtHex="#141414" alt="Model in a black tee with the orange spray character" className="aspect-[2/3] w-full" />
-          <WornLook face="quest" ink="blue" shirtHex="#141414" alt="Model in a black tee with blue Quest" className="aspect-[2/3] w-full" />
-          <WornLook face="thumb" ink="green" shirtHex="#f4f4f4" alt="Model in a white tee with the green one-eyed character" className="aspect-[2/3] w-full" />
-          <WornLook face="mob" ink="purple" shirtHex="#1a1028" alt="Model in a dark tee with purple Mob" className="aspect-[2/3] w-full" />
+          <Link to="/product/$slug" params={{ slug: "spray-tee" }}>
+            <img src="/looks/model-tee-black.jpg" alt="Black tee with the orange spray character" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+          <Link to="/product/$slug" params={{ slug: "quest-tee" }}>
+            <img src="/looks/model-tee-red.jpg" alt="Red tee with blue Quest" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+          <Link to="/product/$slug" params={{ slug: "one-eye-tee" }}>
+            <img src="/looks/model-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+          <Link to="/product/$slug" params={{ slug: "mob-tee" }}>
+            <img src="/looks/model-tee-latina.jpg" alt="Black tee with Mob" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-6 pt-10">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold">On the hoodies</h2>
+            <p className="mt-2 text-mute">Same four characters. Black, red, white, and black.</p>
+          </div>
+          <Link to="/shop" search={{ lane: "hoodie" }} className="text-sm font-semibold uppercase tracking-widest text-volt">
+            Hoodies
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+          <Link to="/product/$slug" params={{ slug: "spray-hood" }}>
+            <img src="/looks/model-hood-black.jpg" alt="Black hoodie with the orange spray character" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+          <Link to="/product/$slug" params={{ slug: "quest-hood" }}>
+            <img src="/looks/model-hood-red.jpg" alt="Red hoodie with blue Quest" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+          <Link to="/product/$slug" params={{ slug: "one-eye-hood" }}>
+            <img src="/looks/model-hood-white.jpg" alt="White hoodie with the green marker character" className="aspect-[2/3] w-full object-cover" />
+          </Link>
+          <Link to="/product/$slug" params={{ slug: "mob-hood" }}>
+            <img src="/looks/model-hood-latina.jpg" alt="Black hoodie with Mob" className="aspect-[2/3] w-full object-cover" />
+          </Link>
         </div>
       </section>
 

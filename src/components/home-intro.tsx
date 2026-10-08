@@ -4,7 +4,7 @@ import { markHomeIntroPlayed, shouldPlayHomeIntro } from "@/lib/home-intro-gate"
 const CHUBS = [
   { src: "/art/wipe/spray-orange.png", className: "intro-chub-a" },
   { src: "/art/wipe/quest-blue.png", className: "intro-chub-b" },
-  { src: "/art/wipe/one-eye-green.png", className: "intro-chub-c" },
+  { src: "/art/wipe/marker-green.png", className: "intro-chub-c" },
 ];
 
 /** Full-screen wipe. Homepage entry only. */

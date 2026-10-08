@@ -115,8 +115,10 @@
 .intro-chub {
   position: absolute;
   z-index: 2;
-  width: min(46vw, 240px);
-  height: auto;
+  width: min(42vw, 220px);
+  height: min(30vh, 240px);
+  object-fit: contain;
+  object-position: center;
   pointer-events: none;
   animation: intro-pop 0.7s cubic-bezier(0.16, 1.2, 0.3, 1) both;
 }
