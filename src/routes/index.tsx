@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [
-      { rel: "preload", as: "image", href: "/art/chubz-crew.jpg" },
+      { rel: "preload", as: "image", href: "/art/quest-wall.jpg" },
     ],
   }),
   component: Home,
@@ -38,10 +38,10 @@ function Home() {
         className="relative w-full overflow-hidden border-b border-line bg-ink"
       >
         <img
-          src="/art/chubz-crew.jpg"
-          alt="Orange spray character, blue Quest, and the green marker character"
-          width={1100}
-          height={733}
+          src="/art/quest-wall.jpg"
+          alt="Quest and Chubz graffiti with the orange, blue, and green characters"
+          width={1968}
+          height={1008}
           decoding="sync"
           fetchPriority="high"
           className="h-auto max-h-[78vh] w-full object-contain"
@@ -165,7 +165,7 @@ function Home() {
             <img src="/looks/fit-tee-red.jpg" alt="Red tee with blue Quest" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "one-eye-tee" }}>
-            <img src="/looks/fit4-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
+            <img src="/looks/fit5-tee-white.jpg" alt="White tee with the green marker character" className="aspect-[2/3] w-full object-cover" />
           </Link>
           <Link to="/product/$slug" params={{ slug: "mob-tee" }}>
             <img src="/looks/fit-tee-latina.jpg" alt="Black tee with Mob" className="aspect-[2/3] w-full object-cover" />
