@@ -2,9 +2,9 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { markHomeIntroPlayed, shouldPlayHomeIntro } from "@/lib/home-intro-gate";
 
 const CHUBS = [
-  { src: "/art/chub-orange.png", className: "intro-chub-a" },
-  { src: "/art/chub-blue.png", className: "intro-chub-b" },
-  { src: "/art/chub-green.png", className: "intro-chub-c" },
+  { src: "/art/wipe/spray-orange.png", className: "intro-chub-a" },
+  { src: "/art/wipe/quest-blue.png", className: "intro-chub-b" },
+  { src: "/art/wipe/round-green.png", className: "intro-chub-c" },
 ];
 
 /** Full-screen wipe. Homepage entry only. */
