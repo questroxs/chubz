@@ -13,6 +13,7 @@ import {
   type Size,
 } from "@/lib/catalog";
 import { WornLook } from "@/components/worn-look";
+import { ModelStage, stageFor } from "@/components/model-stage";
 import { CapMark, hatShape } from "@/components/cap-mark";
 import { blankById, blankColors, blankSizesFor, blanksFor, defaultBlankId, type BlankLane } from "@/lib/blanks";
 import { CHUB_FACES, CHUB_INKS, faceLabel, faceSrc, inkById, isNewFace, printSrc, renderChub, type ChubFace } from "@/lib/chub-ink";
@@ -128,7 +129,9 @@ function ProductPage() {
   const frames = product.looks.filter((look) => look.src);
   const frame = frames[Math.min(shot, Math.max(frames.length - 1, 0))];
   const worn = product.supplier === "printful" && !product.custom;
-  const showOrderedLook = Boolean(frame) && worn && wear !== "cap";
+  const stage = stageFor(slug);
+  const picked = slugForChub(wear === "hoodie" ? "hoodie" : wear === "cap" ? "cap" : "tee", face);
+  const pickedProduct = getProduct(picked) ?? product;
   const blank = blankById(blankId) ?? blanksFor(wear)[0];
   const swatches = blankColors(blank.id);
   const color = swatches.find((item) => item.id === colorId) ?? swatches[0] ?? colorById(colorId);
@@ -224,10 +227,12 @@ function ProductPage() {
             shape={hatShape(blank.id)}
             className="relative aspect-[3/4] w-full overflow-hidden border border-line bg-[#2c2a28]"
           />
-        ) : showOrderedLook && frame ? (
-          <img
-            src={frame.src}
-            alt={frame.alt}
+        ) : stage && wear !== "cap" ? (
+          <ModelStage
+            slug={slug}
+            face={face}
+            ink={ink}
+            alt={frame?.alt ?? product.name}
             className="aspect-[2/3] w-full border border-line object-cover bg-panel"
           />
         ) : worn ? (
@@ -267,7 +272,7 @@ function ProductPage() {
           {laneLabel(product.lane)} · {product.tag}
           {product.oneSize ? " · one size" : ` · ${color?.name ?? "Black"}`}
         </p>
-        <h1 className="mt-2 text-4xl font-semibold">{wear === "cap" ? blank.name : product.name}</h1>
+        <h1 className="mt-2 text-4xl font-semibold">{wear === "cap" ? blank.name : pickedProduct.name}</h1>
         <p className="mt-3 w-fit bg-yellow px-2 py-1 text-lg font-bold text-yellow-ink">{money(product.custom || product.oneSize ? product.price : blank.price)}</p>
         {desk && (desk.costs[product.oneSize || product.custom ? product.slug : blank.id] ?? desk.costs[product.slug]) != null ? (
           <p className="mt-2 text-sm text-mute">
@@ -298,9 +303,9 @@ function ProductPage() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => {
+                      setFace(option.face);
                       setInk(option.ink);
                       setChub(option.face, option.ink);
-                      openPiece(wear === "cap" ? "tee" : wear, option.face);
                     }}
                     className={active ? "border-2 border-pink bg-panel p-2" : "border border-line bg-panel p-2"}
                   >
