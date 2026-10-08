@@ -6,21 +6,17 @@ export type Stage = {
   cx: number;
   cy: number;
   box: number;
-  /** A point on plain shirt fabric, used to cover the old print. */
-  sample: [number, number];
-  face: ChubFace;
-  ink: string;
 };
 
 const STAGES: Record<string, Stage> = {
-  "spray-tee": { src: "/looks/fit-tee-black.jpg", cx: 0.51, cy: 0.64, box: 0.34, sample: [0.2, 0.78], face: "spray", ink: "orange" },
-  "quest-tee": { src: "/looks/fit-tee-red.jpg", cx: 0.49, cy: 0.58, box: 0.34, sample: [0.16, 0.62], face: "quest", ink: "blue" },
-  "one-eye-tee": { src: "/looks/fit6-tee-white.jpg", cx: 0.51, cy: 0.72, box: 0.32, sample: [0.18, 0.75], face: "thumb", ink: "green" },
-  "mob-tee": { src: "/looks/fit-tee-latina.jpg", cx: 0.51, cy: 0.64, box: 0.34, sample: [0.2, 0.82], face: "mob", ink: "green" },
-  "spray-hood": { src: "/looks/fit-hood-black.jpg", cx: 0.52, cy: 0.56, box: 0.28, sample: [0.3, 0.74], face: "spray", ink: "orange" },
-  "quest-hood": { src: "/looks/fit4-hood-red.jpg", cx: 0.55, cy: 0.55, box: 0.26, sample: [0.28, 0.68], face: "quest", ink: "blue" },
-  "one-eye-hood": { src: "/looks/fit4-hood-white.jpg", cx: 0.54, cy: 0.5, box: 0.24, sample: [0.75, 0.7], face: "thumb", ink: "green" },
-  "mob-hood": { src: "/looks/fit-hood-latina.jpg", cx: 0.52, cy: 0.6, box: 0.28, sample: [0.24, 0.78], face: "mob", ink: "green" },
+  "spray-tee": { src: "/looks/base-tee-black.jpg", cx: 0.5, cy: 0.62, box: 0.38 },
+  "quest-tee": { src: "/looks/base-tee-red.jpg", cx: 0.5, cy: 0.58, box: 0.34 },
+  "one-eye-tee": { src: "/looks/base-tee-white.jpg", cx: 0.51, cy: 0.68, box: 0.32 },
+  "mob-tee": { src: "/looks/base-tee-latina.jpg", cx: 0.5, cy: 0.62, box: 0.36 },
+  "spray-hood": { src: "/looks/base-hood-black.jpg", cx: 0.5, cy: 0.55, box: 0.28 },
+  "quest-hood": { src: "/looks/base-hood-red.jpg", cx: 0.5, cy: 0.52, box: 0.26 },
+  "one-eye-hood": { src: "/looks/base-hood-white.jpg", cx: 0.52, cy: 0.5, box: 0.24 },
+  "mob-hood": { src: "/looks/base-hood-latina.jpg", cx: 0.5, cy: 0.58, box: 0.28 },
 };
 
 export function stageFor(slug: string) {
@@ -90,11 +86,6 @@ export function ModelStage({
   useEffect(() => {
     if (!stage) return;
     let cancel = false;
-    const untouched = face === stage.face && ink === stage.ink;
-    if (untouched) {
-      setPainted(null);
-      return;
-    }
     Promise.all([loadImage(stage.src), loadImage(printSrc(face, ink))])
       .then(([model, artwork]) => {
         if (cancel) return;
@@ -103,22 +94,23 @@ export function ModelStage({
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        const context = canvas.getContext("2d", { willReadFrequently: true });
+        const context = canvas.getContext("2d");
         if (!context) return;
         context.drawImage(model, 0, 0, width, height);
-        const sx = Math.min(width - 1, Math.max(0, Math.round(stage.sample[0] * width)));
-        const sy = Math.min(height - 1, Math.max(0, Math.round(stage.sample[1] * height)));
-        const pixel = context.getImageData(sx, sy, 1, 1).data;
-        const box = Math.round(width * stage.box);
-        const centerX = width * stage.cx;
-        const centerY = height * stage.cy;
-        context.fillStyle = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-        context.fillRect(centerX - box * 0.52, centerY - box * 0.56, box * 1.04, box * 1.12);
         const print = artwork.src.includes(".jpg") ? peelBackdrop(artwork) : artwork;
+        const box = Math.round(width * stage.box);
         const scale = Math.min(box / print.width, box / print.height);
         const printWidth = Math.round(print.width * scale);
         const printHeight = Math.round(print.height * scale);
-        context.drawImage(print, Math.round(centerX - printWidth / 2), Math.round(centerY - printHeight / 2), printWidth, printHeight);
+        const centerX = width * stage.cx;
+        const centerY = height * stage.cy;
+        context.drawImage(
+          print,
+          Math.round(centerX - printWidth / 2),
+          Math.round(centerY - printHeight / 2),
+          printWidth,
+          printHeight,
+        );
         if (!cancel) setPainted(canvas.toDataURL("image/jpeg", 0.84));
       })
       .catch(() => {
