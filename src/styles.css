@@ -195,9 +195,22 @@
 .soon {
   position: relative;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.25rem 0 2.5rem;
   overflow: hidden;
-  background: #140d10;
+  background: #070708;
   color: #f3efe6;
+}
+
+.soon-banner {
+  display: block;
+  width: min(1100px, 100%);
+  height: auto;
+  object-fit: contain;
 }
 
 .soon-bricks,
@@ -319,7 +332,7 @@
 .soon-lock {
   position: relative;
   z-index: 4;
-  padding: 8vh 1rem 0;
+  padding: 0 1rem;
   text-align: center;
 }
 
@@ -447,10 +460,7 @@
 }
 
 @media (max-width: 640px) {
-  .tag-chubz { top: 34%; }
-  .tag-miami { bottom: 28%; }
-  .soon-lock { padding-top: 6vh; }
-  .walker img, .walker-b img { height: 150px; }
+  .soon-lock { padding-top: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
