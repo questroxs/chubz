@@ -11,6 +11,8 @@ import { VisitMeter } from "@/components/visit-meter";
 import { SiteHeader } from "@/components/site-header";
 import appCss from "../styles.css?url";
 
+const START_TRACK = `(function(){var a=new Audio("/audio/quest-rocks.mp3");a.preload="auto";var go=function(){var p=a.play();if(p&&p.catch)p.catch(function(){});};go();var once=function(){go();window.removeEventListener("pointerdown",once,true);window.removeEventListener("keydown",once,true);};window.addEventListener("pointerdown",once,true);window.addEventListener("keydown",once,true);})();`;
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -41,6 +43,12 @@ export const Route = createRootRoute({
   component: () => (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {COMING_SOON ? (
+          <>
+            <link rel="preload" href="/audio/quest-rocks.mp3" as="audio" fetchPriority="high" />
+            <script dangerouslySetInnerHTML={{ __html: START_TRACK }} />
+          </>
+        ) : null}
         <HeadContent />
       </head>
       <body>
