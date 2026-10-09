@@ -91,7 +91,7 @@ export function CartSheet() {
             rows.map((row) => (
               <div key={row.id} className="flex gap-3 border border-line bg-panel p-2">
                 {row.art || row.product.looks[0]?.src ? (
-                  <img src={row.art ?? row.product.looks[0].src} alt="" className="h-16 w-14 object-cover" />
+                  <img src={row.art ?? row.product.looks[0].src} alt="" className={row.art ? "h-16 w-14 bg-ink object-contain" : "h-16 w-14 object-cover"} />
                 ) : (
                   <div className="grid h-16 w-14 place-items-center bg-ink text-[10px] font-bold uppercase">{row.product.tag}</div>
                 )}
