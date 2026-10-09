@@ -62,7 +62,7 @@ export function faceSrc(face: ChubFace) {
   if (face === "green") return "/art/chub-green.png";
   if (face === "spray") return "/art/chub-spray.png";
   if (face === "thumb") return "/art/chub-thumb.png";
-  if (face === "quest") return "/art/chub-quest.jpg";
+  if (face === "quest") return "/art/prints/quest-blue.png";
   if (face === "mob") return "/art/chub-mob.jpg";
   return "/art/chub-orange.png";
 }
