@@ -16,6 +16,9 @@ export function ComingSoon() {
         <p className="soon-crew">Mr Chubz</p>
         <h1>Coming soon</h1>
         <p className="soon-date">{LAUNCH_LABEL}</p>
+        <audio className="soon-track" controls preload="metadata" src="/audio/quest-rocks.mp3">
+          Quest Rocks
+        </audio>
       </div>
     </main>
   );
