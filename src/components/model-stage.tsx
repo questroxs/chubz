@@ -10,11 +10,11 @@ export type Stage = {
 
 const STAGES: Record<string, Stage> = {
   "spray-tee": { src: "/looks/base-tee-black.jpg", cx: 0.5, cy: 0.62, box: 0.38 },
-  "quest-tee": { src: "/looks/base-tee-red.jpg", cx: 0.5, cy: 0.6, box: 0.4 },
+  "quest-tee": { src: "/looks/base-tee-red.jpg", cx: 0.5, cy: 0.58, box: 0.34 },
   "one-eye-tee": { src: "/looks/base-tee-white.jpg", cx: 0.5, cy: 0.78, box: 0.32 },
   "mob-tee": { src: "/looks/base-tee-latina.jpg", cx: 0.53, cy: 0.67, box: 0.44 },
   "spray-hood": { src: "/looks/base-hood-black.jpg", cx: 0.5, cy: 0.55, box: 0.28 },
-  "quest-hood": { src: "/looks/base-hood-red.jpg", cx: 0.5, cy: 0.545, box: 0.36 },
+  "quest-hood": { src: "/looks/base-hood-red.jpg", cx: 0.5, cy: 0.52, box: 0.26 },
   "one-eye-hood": { src: "/looks/base-hood-white.jpg", cx: 0.52, cy: 0.5, box: 0.24 },
   "mob-hood": { src: "/looks/base-hood-latina.jpg", cx: 0.5, cy: 0.58, box: 0.28 },
 };

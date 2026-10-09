@@ -1,6 +1,5 @@
 import { ComingSoon } from "@/components/coming-soon";
 import { COMING_SOON } from "@/lib/coming-soon";
-import { shopOnThisHost } from "@/lib/shop-host";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import "@/lib/home-intro-gate";
@@ -13,7 +12,6 @@ import { SiteHeader } from "@/components/site-header";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
-  beforeLoad: async () => ({ shop: await shopOnThisHost() }),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -40,17 +38,15 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
     ],
   }),
-  component: function Root() {
-    const soon = COMING_SOON && !Route.useRouteContext().shop;
-    return (
+  component: () => (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {soon ? <link rel="preload" href="/audio/quest-rocks.mp3" as="audio" fetchPriority="high" /> : null}
+        {COMING_SOON ? <link rel="preload" href="/audio/quest-rocks.mp3" as="audio" fetchPriority="high" /> : null}
         <HeadContent />
       </head>
       <body>
         <PreviewHostBridge />
-        {soon ? (
+        {COMING_SOON ? (
           <ComingSoon />
         ) : (
           <AuthProvider>
@@ -69,6 +65,5 @@ export const Route = createRootRoute({
         <Scripts />
       </body>
     </html>
-    );
-  },
+  ),
 });

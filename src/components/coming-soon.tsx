@@ -8,10 +8,10 @@ export function ComingSoon() {
       <audio id="chubz-track" className="soon-track" src="/audio/quest-rocks.mp3" autoPlay playsInline preload="auto" />
       <script dangerouslySetInnerHTML={{ __html: UNLOCK }} />
       <img
-        src="/art/chubz-lineup.jpg"
-        alt="Chubz lineup"
-        width={1536}
-        height={1024}
+        src="/art/quest-wall.jpg"
+        alt="Mr Chubz graffiti banner"
+        width={1968}
+        height={1008}
         decoding="async"
         fetchPriority="low"
         className="soon-banner"
