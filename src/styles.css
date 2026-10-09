@@ -363,10 +363,11 @@
 }
 
 .soon-track {
-  display: block;
-  width: min(420px, 88vw);
-  margin: 1.1rem auto 0;
-  accent-color: #ffe14a;
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .soon-days {

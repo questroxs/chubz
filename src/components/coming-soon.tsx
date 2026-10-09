@@ -1,6 +1,26 @@
+import { useEffect, useRef } from "react";
 import { LAUNCH_LABEL } from "@/lib/coming-soon";
 
 export function ComingSoon() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const start = () => {
+      void audio.play().catch(() => undefined);
+    };
+    start();
+    const kick = () => start();
+    window.addEventListener("pointerdown", kick);
+    window.addEventListener("keydown", kick);
+    return () => {
+      window.removeEventListener("pointerdown", kick);
+      window.removeEventListener("keydown", kick);
+      audio.pause();
+    };
+  }, []);
+
   return (
     <main className="soon">
       <img
@@ -16,10 +36,8 @@ export function ComingSoon() {
         <p className="soon-crew">Mr Chubz</p>
         <h1>Coming soon</h1>
         <p className="soon-date">{LAUNCH_LABEL}</p>
-        <audio className="soon-track" controls preload="metadata" src="/audio/quest-rocks.mp3">
-          Quest Rocks
-        </audio>
       </div>
+      <audio ref={audioRef} className="soon-track" src="/audio/quest-rocks.mp3" autoPlay preload="auto" />
     </main>
   );
 }
