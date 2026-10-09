@@ -1,3 +1,5 @@
+import { ComingSoon } from "@/components/coming-soon";
+import { COMING_SOON } from "@/lib/coming-soon";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import "@/lib/home-intro-gate";
@@ -14,8 +16,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Chubz" },
-      { name: "description", content: "Chubz streetwear. Unisex Printful tees, hoodies, and embroidered caps, plus a wall for city pieces." },
+      { title: COMING_SOON ? "Chubz — Coming soon" : "Chubz" },
+      {
+        name: "description",
+        content: COMING_SOON
+          ? "Chubz is coming November 1st 2026. QUEST-1, MOB Crew, Miami 305."
+          : "Chubz streetwear. Unisex Printful tees, hoodies, and embroidered caps, plus a wall for city pieces.",
+      },
       { name: "theme-color", content: "#070708" },
     ],
     links: [
@@ -38,18 +45,22 @@ export const Route = createRootRoute({
       </head>
       <body>
         <PreviewHostBridge />
-        <AuthProvider>
-          <ShopHydrated />
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <CartSheet />
-            <div className="flex-1">
-              <Outlet />
+        {COMING_SOON ? (
+          <ComingSoon />
+        ) : (
+          <AuthProvider>
+            <ShopHydrated />
+            <div className="flex min-h-screen flex-col">
+              <SiteHeader />
+              <CartSheet />
+              <div className="flex-1">
+                <Outlet />
+              </div>
+              <SiteFooter />
+              <VisitMeter />
             </div>
-            <SiteFooter />
-            <VisitMeter />
-          </div>
-        </AuthProvider>
+          </AuthProvider>
+        )}
         <Scripts />
       </body>
     </html>
